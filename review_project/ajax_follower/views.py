@@ -24,6 +24,7 @@ def ajax_follow(request):
                 print('follow')
                 Follow.objects.add_follower(user, user_to_follow)
                 notify.send(sender = user, recipient = user_to_follow, verb = "vous suit", to_str = follow_notification(request.user))
+                print(follow_notification(request.user))
 
         elif follow == 'false':
             if Follow.objects.follows(user, user_to_follow):

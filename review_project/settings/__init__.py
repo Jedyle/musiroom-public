@@ -217,7 +217,9 @@ FLUENT_COMMENTS_DEFAULT_MODERATOR = 'ratings.moderation.UserLoggedInModerator'
 
 # Notifications
 
-NOTIFY_USE_JSONFIELD = True
+DJANGO_NOTIFICATIONS_CONFIG = {
+    'USE_JSONFIELD' : True,
+}
 
 # Feedback
 
