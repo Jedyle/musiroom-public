@@ -24,12 +24,7 @@ SECRET_KEY = '0s9p5k^@^uhv@58@-6$4ri84bzw26pbyp*y-^fupj)5sl=up-n'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 
-if os.environ.get('ENV') == 'PRODUCTION':
-    DEBUG = False
-    ALLOWED_HOSTS = ['localhost']
-else:
-    DEBUG = True
-
+DEBUG = True
 
 
 # Application definition
