@@ -21,10 +21,8 @@ def ajax_follow(request):
         user = request.user
         if follow == 'true':
             if not Follow.objects.follows(user, user_to_follow):
-                print('follow')
                 Follow.objects.add_follower(user, user_to_follow)
                 notify.send(sender = user, recipient = user_to_follow, verb = "vous suit", to_str = follow_notification(request.user))
-                print(follow_notification(request.user))
 
         elif follow == 'false':
             if Follow.objects.follows(user, user_to_follow):
@@ -65,7 +63,6 @@ def ajax_contacts(request, username):
         user = User.objects.get(username = username)
         if query_type == 'abonnes':
             contacts = User.objects.filter(following__followee = user)
-            print(contacts)
             
         elif query_type == 'abonnements' :
             contacts = User.objects.filter(followers__follower = user)
@@ -80,7 +77,6 @@ def ajax_contacts(request, username):
         elif sort == 'derniere_connexion':
             contacts = contacts.order_by('-last_login')
             
-
         if request.user.is_authenticated:        
             contact_list = make_json_contact_list(contacts, user=request.user)
         else:
