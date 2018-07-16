@@ -26,7 +26,7 @@ SECRET_KEY = '0s9p5k^@^uhv@58@-6$4ri84bzw26pbyp*y-^fupj)5sl=up-n'
 
 if os.environ.get('ENV') == 'PRODUCTION':
     DEBUG = False
-    ALLOWED_HOSTS = ['209.97.140.72']
+    ALLOWED_HOSTS = ['localhost']
 else:
     DEBUG = True
 
@@ -108,10 +108,10 @@ WSGI_APPLICATION = 'review_project.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'lamusitheque',
+        'NAME': 'reviews_bis',
         'USER': 'jeremy',
-        'PASSWORD': 'ChameauMalade',
-        'HOST': 'localhost',
+        'PASSWORD': '',
+        'HOST': '',
         'PORT' : '5432',
     }
 }
