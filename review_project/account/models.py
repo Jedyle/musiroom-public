@@ -33,7 +33,7 @@ class Account(models.Model):
     display_birth = models.BooleanField("Afficher naissance", default = True)
     display_name = models.BooleanField("Afficher nom", default = False)
     display_sex = models.BooleanField("Afficher sexe", default = False)
-    top_albums = models.ForeignKey(ItemList, on_delete=models.PROTECT)
+    top_albums = models.ForeignKey(ItemList, blank=True, null=True, on_delete=models.PROTECT)
 
     def __str__(self):
         return self.user.username

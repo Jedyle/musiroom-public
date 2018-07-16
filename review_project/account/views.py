@@ -149,6 +149,7 @@ def delete_account(request):
         if password_confirm.is_valid():
             password = password_confirm.cleaned_data.get('password')
             if request.user.check_password(password):
+                request.user.account.top_albums = None #prevents models.PROTECT to be triggered
                 request.user.delete()
                 return render(request, 'account/deleted.html')
             else:
