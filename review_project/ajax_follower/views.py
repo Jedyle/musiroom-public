@@ -83,7 +83,6 @@ def ajax_contacts(request, username):
             contact_list = make_json_contact_list(contacts)
 
         url_follow = reverse('ajax_follower:ajax_follow')
-        print(contact_list)
         return JsonResponse({ 'contacts' : contact_list , 'url_follow' : url_follow})
     return HttpResponseNotFound()
 
