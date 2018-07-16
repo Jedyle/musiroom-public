@@ -6,7 +6,7 @@
 	<h5 class="card-title"><a href="{% url 'profile' profile.user.username %}" >{{ profile.user.username }}</a> {% if is_followed is True %}<span class="label label-success">Vous suit</span>{% endif %}</h5>
     </div>
     <ul class="list-group list-group-flush">
-	{% if profile.user.first_name and profile.user.last_name and profile.display_name %}
+	{% if profile.user.first_name or profile.user.last_name and profile.display_name %}
 	<li class="list-group-item">
 	    {{ profile.user.first_name }} {{ profile.user.last_name }}
 	</li>
