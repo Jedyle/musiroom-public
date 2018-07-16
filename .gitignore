@@ -2,5 +2,5 @@ env/
 *~
 *#
 review_project/staticfiles/
-__pycache__
+*/__pycache__
 review_project/settings/production.py
