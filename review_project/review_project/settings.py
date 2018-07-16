@@ -26,10 +26,10 @@ SECRET_KEY = '0s9p5k^@^uhv@58@-6$4ri84bzw26pbyp*y-^fupj)5sl=up-n'
 
 if os.environ.get('ENV') == 'PRODUCTION':
     DEBUG = False
+    ALLOWED_HOSTS = ['http://209.97.140.72']
 else:
     DEBUG = True
 
-# ALLOWED_HOSTS = ['localhost']
 
 
 # Application definition
