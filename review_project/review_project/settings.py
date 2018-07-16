@@ -108,10 +108,10 @@ WSGI_APPLICATION = 'review_project.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'reviews_bis',
+        'NAME': 'lamusitheque',
         'USER': 'jeremy',
-        'PASSWORD': '',
-        'HOST': '',
+        'PASSWORD': 'ChameauMalade',
+        'HOST': 'localhost',
         'PORT' : '5432',
     }
 }
