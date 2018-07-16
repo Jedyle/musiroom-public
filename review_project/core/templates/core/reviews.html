@@ -1,3 +1,4 @@
+{% if reviews %}
 <ul class="list-group">
     {% for review in reviews %}
     <li class="list-group-item">
@@ -5,3 +6,6 @@
     </li>	    
     {% endfor %}
 </ul>
+{% else %}
+Aucun résultat trouvé.
+{% endif %}

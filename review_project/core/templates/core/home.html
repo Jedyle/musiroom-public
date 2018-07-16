@@ -66,7 +66,7 @@
 
 		<ul class="list-group">
 
-		    {% cache 300 new_reviews %}
+		    {% cache 60 new_reviews %}
 		    {% for review in reviews %}
 		    <li class="list-group-item">
 			<a href="{% url 'albums:album' review.rating.rating.albums.get.mbid %}"><img title="{{review.rating.rating.albums.get.title}}" src="{% static 'images/loading.gif' %}" data-src="{{ review.rating.rating.albums.get.get_cover }}" style="height : 50px"></a> &nbsp <a href="{% url 'albums:review' review.rating.rating.albums.get.mbid review.id %}">{{ review.title }}</a> par <a href="{% url 'profile' review.rating.user.username %}">{{review.rating.user}}</a> sur l'album <a href="{% url 'albums:album' review.rating.rating.albums.get.mbid %}">{{review.rating.rating.albums.get.title}}</a> ({{review.rating.score}}/10)
@@ -113,7 +113,7 @@
 
 		<ul class="list-group">
 
-		    {% cache 300 new_ratings %}
+		    {% cache 60 new_ratings %}
 		    {% for rating in ratings %}
 		    <li class="list-group-item">
 			<a href="{% url 'albums:album' rating.rating.albums.get.mbid %}"><img title="{{rating.rating.albums.get.title}}" src="{% static 'images/loading.gif' %}" data-src="{{ rating.rating.albums.get.get_cover }}" style="height : 50px"></a> &nbsp <a href="{% url 'profile' rating.user.username %}">{{rating.user}}</a> à donné la note de <strong>{{rating.score}}</strong> à l'album <a href="{% url 'albums:album' rating.rating.albums.get.mbid %}">{{rating.rating.albums.get.title}}</a>
