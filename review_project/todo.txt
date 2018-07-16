@@ -1,0 +1,43 @@
+ACCOUNT :
+ * BACK END:
+ - messagerie multi users (postman)
+ - ajouter une liste d'amis (éclaireurs et abonnés)
+
+ARTISTES :
+ * faire une fonction de vue 'globale' avec la BDD, et charger toute la disco en ajax petit à petit ?
+ * ajouter dans le modèle un champ 'photo', et/ou faire un plus beau résultat de recherche (ajouter pays/type de l'artiste)
+
+ALBUMS :
+ * BACK END:
+ - mettre collaborations dans discographie - OK
+ - plusieurs pages de recherche liées à musicbrainz - OK
+ - formulaire ajout genre - OK
+  - admin - OK
+ - pagination discographie artiste (voir à la fin)
+ - classifier certains artistes avec trop d'albums, et faire une fonction de load discographie pour les charger plus vite (à la fin)
+ - ajouter système de signalement des genres 'trolls' pour les albums (django-siteflags) -> voir au moment du front end avec Vue
+ - tests app 'albums' 
+ * FRONT END
+ - affichage asynchrone des images de disque et d'artiste
+ - remplacer quand pas d'images d'album ou d'artiste par une image par défaut
+ - améliorer barres de pagination pour recherche artistes et albums
+ - ajout track list et details album en ajax
+ - traduction textes désambiguation
+ - traduction menus (album + compilation, etc)
+
+
+MODERATION :
+- finir de traduire le contenu en français
+- filtrer par défault pour garder les statuts 'en attente' seulement
+
+RATINGS:
+- ajouter critiques
+- onglet 'mes notes' et 'mes critiques'
+- faire des fonctions de tri des critiques pour en mettre différentes en avant selon les jours
+- affichages de critiques petit à petit avec appel ajax comme senscritique
+
+RECHERCHE :
+- fonction de recherche asynchrone (surtout pour les albums) comme sur SC
+
+LISTES :
+- création de listes d'albums

@@ -1,0 +1,304 @@
+{% extends 'base.html' %}
+
+{% load staticfiles %}
+{% load ratings %}
+{% load jchart %}
+
+{% block title %}
+{{ album.title }}
+{% endblock %}
+
+{% block extrahead %}
+<link rel="stylesheet" href="{% static 'albums/css/style.css' %}">
+<link rel="stylesheet" href="{% static 'css/modal.css' %}">
+
+<link href="{% static 'css/trumbowyg.min.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+
+<div class="col-sm-12 col-md-3 col-lg-3">
+    {% include 'albums/album_sidebar.html' with album=album artists=artists mbid=mbid %}
+
+    <br>
+
+    {% if lists %}
+    <div class="row">
+	<div class="col-12">
+
+	    <h4>Listes avec cet album : </h4>
+
+	    <ul class="list-group">
+		{% for list in lists %}
+		<li class="list-group-item"><a href="{% url 'lists:display_list' list.id %}">{{ list.title }}</a> (par {{list.user.username}})</li>
+		{% endfor %}
+	    </ul>
+
+	    <a class="float-right" href="{% url 'albums:album_lists' mbid %}">Voir toutes les listes</a>
+	    
+	</div>
+
+    </div>
+    {% endif %}
+    
+</div>
+
+<div class="col-sm-12 col-md-9 col-lg-9">
+    
+    <div class="row">
+
+	<div class="col-sm-12 col-lg-8">
+
+	    <h1>{{ album.title }}</h1>
+
+	    <div class="row">
+		<div class="col-12">
+		    {% ratings album icon_width=24 icon_height=24 template_name='ratings/widget.html' %}
+		    
+		    {% if user.is_anonymous %}
+		    <p><a href="{% url 'login' %}?next={{request.path}}">Connectez vous</a> pour noter</p>
+		    {% endif %}
+		</div>
+	    </div>
+
+	    <br>
+
+	    <div class="row">
+		<div class="col-12">
+		    <div id="app-modal">
+			{% if rated %}
+			<input type="checkbox" id="rated" name="rated" checked v-model="rated" style="display: none" />
+			{% else %}
+			<input type="checkbox" id="rated" name="rated" v-model="rated" style="display: none"/>
+			{% endif %}
+
+			<a class="btn color-sanguine" :href="reviewlink" v-if="rated && reviewed" v-cloak>Voir ma critique</a>
+
+			<button type="button" class="btn color-sanguine" @click="loadReview" v-if="rated && !reviewed" v-cloak>Critiquer</button>
+			<button type="button" class="btn color-sanguine" @click="loadReview" v-else-if="rated && reviewed" v-cloak>Modifier ma critique</button>
+			{% if user.is_authenticated %}
+			<button type="button" class="btn color-sanguine" @click="loadLists" v-cloak>Ajouter à une liste</button>
+			{% endif %}
+
+			<reviewmodal :show="showModal" :view="modalView" :lists_url="lists_url" :set_item_url="set_item_url" :delete_item_url="delete_item_url" :mbid="mbid"  :review_url="review_url" v-on="modalHandlers" :rated="rated" ></reviewmodal>
+		    </div>
+		</div>
+	    </div>
+
+	    <br>
+	    
+	</div>
+	
+
+	<div class="col-sm-12 col-lg-3">
+
+	    <div style="max-width : 300px" class="border">
+		{% if average %}		
+		<div class="h1 text-center"> <strong>{{ average|floatformat:'-1' }}</strong></div>
+		{% render_chart 'reviews:ratings_chart' album.id %}
+		{% else %}
+		<p class="h1 text-center">Aucune note</p>
+		{% endif %}
+	    </div>
+	    
+	    
+	</div>
+
+    </div>
+
+    <hr>
+    <br>
+
+    <div class="row">
+	
+	<div class="col-sm-12 col-lg-8 order-2 order-lg-1 bg-light border">
+	    <h2>Critiques </h2>
+
+	    <br>
+
+	    <div id="app-review-list">
+
+		<reviewslist
+		    :component="prev_component"
+				reviewlisturl="{% url 'reviews:review_list' mbid %}"
+				:sort_methods="[{ id : 'byscore_desc', name : 'recommandées' }, { id : 'byrating_desc', name : 'les meilleures notes' }, { id : 'byrating_asc', name : 'les moins bonnes notes' }]">
+		</reviewslist>
+	    </div>
+	</div>
+
+	<div class="col-sm-12 col-lg-3 order-1 order-lg-2">
+	    
+	    {% if user.is_authenticated %}
+	    
+	    <div style="max-width : 300px">
+		<p class="text-center">Moyenne de mes abonnements</p>
+		{% if followees_avg %}
+		<p class="h1 text-center"><strong><font class="teal">{{ followees_avg|floatformat:'-2' }}</font></strong></p>
+		{% render_chart 'reviews:followees_chart' album.id user.username %}
+		{% else %}
+		<p class="h3 text-center"><strong><font class="teal">-</font></strong></p>
+		{% endif %}
+	    </div>
+
+	    <br>
+
+	    <div style="max-height : 300px; overflow-y: scroll;">
+		{% for rating in followees_ratings %}
+		<p class="h5"><span class="w3-tag color-teal">{{ rating.score }}</span> &ensp; <a href="{% url 'profile' rating.user.username %}">{{ rating.user.username}}</a> {% if rating.review_id %} <span class="badge badge-light"> <a href="{% url 'albums:review' album.mbid rating.review_id %}">critique</a> </span> {% endif %} </p>
+		{% endfor %}
+	    </div>
+	    {% endif %}
+
+	    <br>
+	    
+	    <div>
+
+		{% if same_artist|length > 0 %}
+		<h3>Du même artiste</h3>
+		<ul class="list-group">
+		    {% for album in same_artist %}
+		    <li class="list-group-item">
+			<img src="{% static 'images/loading.gif' %}" data-src="{{ album.get_cover }}" style="height : 50px"> &nbsp <a href="{% url 'albums:album' album.mbid %}">{{ album }}</a>
+		    </li>
+		    {% endfor %}
+		</ul>
+		{% endif %}
+	    </div>
+
+	    
+	</div>
+	
+    </div>
+    
+</div>
+
+{% endblock %}
+
+
+{% block scripts %}
+
+<script type="text/javascript" src="{% static 'star-ratings/js/dist/star-ratings.min.js' %}"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.bundle.min.js"></script>
+
+<!-- Editor dependency-->
+<script src="{% static 'js/jquery.min.js' %}"></script>
+
+<!-- Editor itself -->
+<script src="https://unpkg.com/trumbowyg@2/dist/trumbowyg.min.js"></script>
+
+<script src="{% static 'js/vue.min.js' %}"></script>
+<script src="{% static 'js/axios.js' %}"></script>
+
+<script src="https://unpkg.com/vue-trumbowyg"></script>
+<script src="{% static 'js/trumbowyg/fr.min.js' %}"></script>
+
+<script src="{% static 'js/utilities.js' %}"></script>
+<script src="https://unpkg.com/vuejs-paginate@latest"></script>
+<script src="{% static 'js/modal.js' %}"></script>
+<script src="{% static 'ratings/js/reviewTab.js' %}"></script>
+<script src="{% static 'lists/js/listsTab.js' %}"></script>
+<script src="{% static 'ratings/js/reviewModal.js' %}"></script>
+<script src="{% static 'ratings/js/reviewList.js' %}"></script>
+
+
+
+<script>
+ var template_data = {
+     rated : {% if rated %}true{% else %}false{% endif %},
+     reviewed :  {% if review %}true{% else %}false{% endif %},
+     //Modal
+     reviewlink : {% if review %}"{% url 'albums:review' mbid review.pk %}"{% else %}""{% endif %},
+     review_url : "{% url 'reviews:user_review' mbid %}",
+     lists_url : "{% url 'lists:get_lists_for_user_and_album' %}",
+     set_item_url : "{% url 'lists:ajax_set_item' %}",
+     delete_item_url : "{% url 'lists:ajax_delete_item' %}",
+     mbid : "{{mbid}}",
+ }
+ 
+ 
+</script>
+    
+    <script>
+
+     axios.defaults.xsrfHeaderName = "X-CSRFToken"; 
+     
+     let vm_modal = new Vue({
+	 el: '#app-modal',
+	 delimiters : ['[[', ']]'],
+	 data : {
+ 	     rated : template_data.rated,
+	     reviewed :  template_data.reviewed,
+	     //Modal
+	     reviewlink : template_data.reviewlink,
+	     review_url : template_data.review_url,
+	     showModal : false,
+	     modalView : 'none',
+	     lists_url : template_data.lists_url,
+	     set_item_url : template_data.set_item_url,
+	     delete_item_url : template_data.delete_item_url,
+	     mbid : template_data.mbid,
+	 },
+	 components : {reviewmodal, modal},
+	 computed : {
+	     modalHandlers : function(){
+		 return {
+		     'close' : this.closeReview,
+		     'successReview' : this.updateReview,
+		     'failReview' : (() => {alert('Une erreur est survenue')})
+		 }
+	     }
+
+	 },
+	 methods : {
+	     loadReview: function(){
+		 this.modalView = 'reviewtab';
+		 this.showModal = true;
+	     },
+	     loadLists: function(){
+		 this.modalView = 'liststab';
+		 this.showModal = true;
+	     },
+	     closeReview: function(){
+		 this.showModal = false;
+		 this.modalView = 'none';
+	     },
+	     updateReview: function(data){
+		 console.log('success');
+		 this.reviewlink = data.review_url;
+		 if (!this.reviewed){
+		     this.reviewed = true;
+		     alert('Votre critique a bien été créée !');
+		 }
+		 else {
+		     alert('Votre critique a bien été modifiée.');
+		 }
+	     }
+	 },
+	 watch : {
+	     showModal: function (newVal){
+		 if (newVal) {
+		     document.body.classList.add("modal-open");
+		 }
+		 else {
+		     document.body.classList.remove("modal-open");
+		 }
+	     },
+	 },
+     });
+
+
+     let vm_review_list = new Vue({
+	 el : '#app-review-list',
+	 data : {
+	     prev_component : reviewpreview,
+	 },
+	 components : {reviewslist, reviewpreview},
+	 
+     });
+
+     
+    </script>
+
+
+    {% endblock %}

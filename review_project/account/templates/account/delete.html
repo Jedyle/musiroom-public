@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% load bootstrap_tags %}
+
+{% block title %} Supprimer mon compte
+{% endblock %}
+
+{% block content %}
+<div class="col-8 offset-2">
+    <p>ATTENTION ! Cette action est irréversible !
+	Voulez vous vraiment supprimer votre compte ?</p>
+
+    {% if delete_success == False %}
+
+    <p><font color="red"> Les mots de passe ne correspondent pas</font></p>
+
+    {% endif %}
+
+    <form action="{% url 'delete_account' %}" method="POST">
+
+	{% csrf_token %}
+	
+	{{form|as_bootstrap}}
+
+	<button class="btn" type="submit">Supprimer définitivement mon compte</button>
+	
+    </form>
+</div>
+
+
+{% endblock %}
+

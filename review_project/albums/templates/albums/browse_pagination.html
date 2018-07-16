@@ -1,0 +1,47 @@
+{% load album_tags %}
+
+{% if page_list|last > 1 %}
+<nav aria-label="...">
+    <ul class="pagination">
+
+	{% if page > 1 %}
+	<li class="page-item">
+	    <a class="page-link sanguine" href="{{request.path}}?genre={{slug}}&recherche={{query}}&annee={{year}}&page={{page|add:'-1'}}">Précédent</a>
+	</li>
+	{% else %}
+	<li class="page-item disabled">
+	    <span class="page-link sanguine">Précédent</span>
+	</li>
+	{% endif %}
+	
+	{% for elt in page_list %}
+	{% if elt|is_numeric %}
+	{% if elt == page %}
+	<li class="page-item active">
+	    <a class="page-link sanguine" href="{{request.path}}?genre={{slug}}&recherche={{query}}&annee={{year}}">{{ elt }}</a>
+	</li>
+	{% else %}
+	<li class="page-item">
+	    <a class="page-link sanguine" href="{{request.path}}?genre={{slug}}&recherche={{query}}&annee={{year}}&page={{elt}}">{{ elt }}</a>
+	</li>
+        {% endif %}
+	{% else %}
+	<li class="page-item disabled">
+	    <span class="page-link sanguine">...</span>
+	</li>
+	{% endif %}
+	{% endfor %}
+
+	{% if page < page_list|last %}
+	<li class="page-item">
+	    <a class="page-link sanguine" href="{{request.path}}?genre={{slug}}&recherche={{query}}&annee={{year}}&page={{page|add:'1'}}">Suivant</a>
+	</li>
+	{% else %}
+	<li class="page-item disabled">
+	    <span class="page-link sanguine">Suivant</span>
+	</li>
+	{% endif %}
+	
+    </ul>
+</nav>
+{% endif %}

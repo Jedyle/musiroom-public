@@ -1,0 +1,64 @@
+{% extends 'account/profile_base.html' %}
+
+{% load staticfiles %}
+
+{% load bootstrap_tags %}
+
+{% block title %} 
+Modifier votre profil
+{% endblock %}
+
+{% block profile_sidebar %}
+
+	{% include 'account/profile_sidebar.html' with profile=user.account %}
+{% endblock %}
+
+{% block profile_content %}
+<h2>Modifier votre profil</h2>
+
+{% if success == True %}
+<font color="green">Vos modifications ont été enregistrées</font>
+{% elif success == False %}
+<font color="red"> Un ou plusieurs champs sont erronés</font>
+{% endif %}
+
+<form enctype="multipart/form-data" action="{% url 'edit_profile' %}" method="post">
+    
+    {% csrf_token %}
+
+    {{ user_form|as_bootstrap }}
+
+    {{ account_form|as_bootstrap }}
+
+    {% if user.account.avatar %}
+    <img id="preview" src="{{ user.account.avatar.url }}" width="150px" />
+    {% else %}
+    <img id="preview" src="" width="150px" />
+    {% endif %}
+
+    <br><br>
+    
+    <input class="form-control" type="submit" value="Valider les modifications" />
+
+</form>
+{% endblock %}
+
+
+{% block scripts %}
+
+<script>
+ document.getElementById("{{account_form.avatar.auto_id}}").onchange = function () {
+     var reader = new FileReader();
+
+     reader.onload = function (e) {
+	 // get loaded data and render thumbnail.
+	 document.getElementById("preview").src = e.target.result;
+     };
+
+     // read the image file as a data URL.
+     reader.readAsDataURL(this.files[0]);
+ };
+</script>
+
+{% endblock %}
+

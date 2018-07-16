@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{{ genre.name }}
+{% endblock %}
+
+{% block content %}
+
+<div class="col-sm-12 col-md-6 offset-md-3">
+
+    <h1>{{genre.name}}</h1>
+    <p>{{ genre.description }}</p>
+
+    {% if children %}
+    <h2>Sous-genres</h2>
+    <ul>
+	{% for child in children %}
+	<li>
+	    <a href="{% url 'albums:genre' child.slug %}">{{child.name}}</a>
+	</li>
+	{% endfor %}
+    </ul>
+    {% endif %}
+
+    <p><a href="{% url 'albums:submit_genre' %}">Ajouter un genre</a> </br>
+	<a href="{% url 'albums:genres' %}">Tous les genres</a></p>
+
+</div>
+{% endblock %}

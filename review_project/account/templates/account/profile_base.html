@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% load staticfiles %}
+
+{% block content %}
+
+<div class="col-sm-12 col-md-4 col-lg-2" id="sidebar-profile-app">
+    {% block profile_sidebar %}
+
+    {% endblock %}
+</div>
+
+<div class="col-sm-12 col-md-8 col-lg-10" id="content-profile-app">
+    {% block profile_content %}
+
+    {% endblock %}
+</div>
+
+{% endblock %}

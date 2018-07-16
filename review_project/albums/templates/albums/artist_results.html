@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}
+
+Résultats pour la requete : {{ query }}
+
+{% endblock %}
+
+{% block content %}
+
+<div class="col-sm-12 col-md-8 offset-md-2">
+    <h1>Résultats pour la requete : {{ query }}</h1>
+
+    {% include 'albums/search_pagination.html' with page=page page_list=page_list %}
+
+    <table class="table">
+	<tr>
+	    <th scope="col">Artiste</th>
+	</tr>
+	{% for elt in artists %}
+	<tr>
+	    <td> <a href="{% url 'albums:artist' elt.mbid %}">{{ elt.name }}</a></td>
+	</tr> 
+	{% endfor %}
+    </table>
+</div>
+
+{% endblock %}

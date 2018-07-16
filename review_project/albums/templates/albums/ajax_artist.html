@@ -1,0 +1,41 @@
+<h1 class="text-center" id="artiste">{{ artist_name }}</h1>
+
+<form class="form-inline" method="get" action="{{path}}">
+
+    <input type="text" class="form-control" name="nom" placeholder="Filtrer par nom exact...">
+
+    <input type="hidden" name="page" value="1">
+
+    <button type="submit" class="btn color-sanguine">Filtrer</button>
+    
+</form>
+
+<br>
+
+{% include 'albums/artist_pagination.html' with page=page page_list=page_list %}
+
+{% for table in albums %}
+
+<h2>{{ table.0 }}</h2>
+<table class="table">
+    <tr>
+	<th>Année</th>
+	<th>Titre</th>
+    </tr>
+    {% for r in table.1 %}
+    <tr>
+	<td> {{ r.year }}</td>
+	<td> <a href="{% url 'albums:album' r.mbid %}">{{ r.title }}</a>
+	    {% if r.feat %}
+	    ( avec 
+	    {% for collab in r.feat %}
+	    {% if not forloop.first %}, {% endif %}
+	    <a href="{% url 'albums:artist' collab.mbid %}">{{ collab.name }}</a>
+	    {% endfor %})
+	    {% endif %}
+	</td>
+    </tr> 
+    {% endfor %}
+</table>
+
+{% endfor %}

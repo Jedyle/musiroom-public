@@ -1,0 +1,240 @@
+{% extends 'base.html' %}
+
+{% load staticfiles %}
+{% load ratings %}
+{% load comments %}
+
+{% block title %}
+{{ album.title }} : critique de {{review.rating.user}}
+{% endblock %}
+
+{% block extrahead %}
+<link rel="stylesheet" href="{% static 'albums/css/style.css' %}">
+<link rel="stylesheet" href="{% static 'css/css-loader.css' %}">
+<link rel="stylesheet" href="{% static 'css/modal.css' %}">
+
+<link href="{% static 'css/trumbowyg.min.css' %}" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="{% static 'fluent_comments/css/ajaxcomments.css' %}" />
+{% endblock %}
+
+{% block body_title %}
+
+<div class="jumbotron jumbotron-fluid color-light-gray">
+    <div class="container-fluid">
+	<h1 class="display-3 text-center">{{review.title }}</h1>
+	<p class="lead text-center">Critique sur {{ album.title }}</p>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block content %}
+
+<div class="col-12">
+    <div class="row" id="app">
+
+	<div class="col-sm-12 col-md-3 col-lg-3">
+	    {% include 'albums/album_sidebar.html' with album=album artists=artists genres=genres mbid=mbid %}
+	</div>
+
+	<div class="col-sm-12 col-md-9 col-lg-6 color-pale">
+
+	    <br>
+
+	    <a href="{% url 'albums:album' mbid %}">< Retourner à la page album</a>
+	    <p class="text-muted text-right">Écrite par <a href="{% url 'profile' r_user.username %}">{{ r_user.username }}</a> le {{ review.date_publication }}.
+		Dernière modification : {{ review.date_last_change }}</p>
+
+	    {% if user == r_user %}
+	    <p class="text-right"> <a id="changeReview" href="#" @click.prevent="loadReview">Modifier ma critique</a> &ensp;<a id="deleteReview" href="{% url 'albums:album' mbid %}" @click.prevent="deleteReview">Supprimer ma critique</a> </p>
+
+	    
+	    <reviewmodal :show="showModal" :view="modalView" :lists_url="lists_url" :set_item_url="set_item_url" :delete_item_url="delete_item_url" :mbid="mbid"  :review_url="review_url" v-on="modalHandlers"></reviewmodal>
+	    
+	    {% endif %}
+
+	    {% autoescape off %}
+	    
+		{{ review.content|linebreaks }}
+
+	    {% endautoescape %} 
+
+
+	    <!-- Author box -->
+	    <div class="jumbotron p-5 text-center text-md-left author-box">
+		<!-- Name -->
+		<div class="row">
+		    <!-- Avatar -->
+		    <div class="col-12 col-md-2 mb-md-0 mb-4">
+			<circlethumb url="{{ r_user.account.get_avatar }}" size="70px"></circlethumb>
+		    </div>
+		    <!-- Author Data -->
+		    <div class="col-12 col-md-10">
+			<h5 class="font-weight-bold dark-grey-text mb-3">
+			    <strong><a href="{% url 'profile' r_user.username %}">{{ r_user.username }}</a></strong>
+			</h5>
+			<p>{{ r_user.account.description|linebreaks  }}
+			</p>
+		    </div>
+		</div>
+	    </div>
+	    <!-- Author box -->
+
+	    <vote type="{{ user_vote }}" :upvotes="{{ review.num_vote_up }}" :downvotes="{{ review.num_vote_down }}" url_votes="{% url 'reviews:ajax_vote' %}" element_id="{{ review.id }}" :can_vote="{% if user.is_authenticated and user != r_user %}true{% else %}false{% endif %}"></vote>
+
+
+	    <h3>Commentaires</h3>
+	    
+	    <div>
+		<div id="comments" style="max-height : 600px; overflow-y : scroll;">
+		    {% render_comment_list for review %}
+		</div>
+		{% if user.is_authenticated %}
+		{% render_comment_form for review %}
+		{% endif %}
+		
+	    </div>
+	    
+	</div>
+    </div>
+</div>
+
+
+
+{% endblock %}
+
+
+
+{% block scripts %}
+
+<script src="{% static 'js/jquery.min.js' %}"></script>
+
+<script type="text/javascript" src="{% static 'fluent_comments/js/ajaxcomments.js' %}"></script>
+
+<script src="https://unpkg.com/trumbowyg@2/dist/trumbowyg.min.js"></script>
+
+<script src="{% static 'js/vue.min.js' %}"></script>
+<script src="{% static 'js/axios.js' %}"></script>
+
+<script src="https://unpkg.com/vue-trumbowyg"></script>
+<script src="{% static 'js/trumbowyg/fr.min.js' %}"></script>
+
+
+<script src="{% static 'js/utilities.js' %}"></script>
+<script src="{% static 'js/circle_thumbnail.js' %}"></script>
+<script src="{% static 'js/modal.js' %}"></script>
+<script src="{% static 'ratings/js/reviewTab.js' %}"></script>
+<script src="{% static 'lists/js/listsTab.js' %}"></script>
+<script src="{% static 'ratings/js/reviewModal.js' %}"></script>
+<script src="{% static 'ratings/js/vote.js' %}"></script>
+
+<script>
+
+ window.addEventListener('load', function(){
+     var objDiv = document.getElementById("comments");
+     objDiv.scrollTop = objDiv.scrollHeight;
+ }, false)
+     
+     
+</script>
+
+
+<script>
+ var template_data = {
+     rated : {% if rated %}true{% else %}false{% endif %},
+     reviewed :  {% if review %}true{% else %}false{% endif %},
+     //Modal
+     reviewlink : {% if review %}"{% url 'albums:review' mbid review.pk %}"{% else %}""{% endif %},
+     review_url : "{% url 'reviews:user_review' mbid %}",
+     lists_url : "{% url 'lists:get_lists_for_user_and_album' %}",
+     set_item_url : "{% url 'lists:ajax_set_item' %}",
+     delete_item_url : "{% url 'lists:ajax_delete_item' %}",
+     mbid : "{{mbid}}",
+ }
+ 
+</script>
+
+
+
+<script>
+
+ axios.defaults.xsrfHeaderName = "X-CSRFToken"; 
+ 
+ let vm = new Vue({
+     el: '#app',
+     delimiters : ['[[', ']]'],
+     data : {
+ 	 rated : template_data.rated,
+	 reviewed :  template_data.reviewed,
+	 //Modal
+	 reviewlink : template_data.reviewlink,
+	 review_url : template_data.review_url,
+	 showModal : false,
+	 modalView : 'none',
+	 lists_url : template_data.lists_url,
+	 set_item_url : template_data.set_item_url,
+	 delete_item_url : template_data.delete_item_url,
+	 mbid : template_data.mbid,
+	 
+     },
+     computed : {
+	 modalHandlers : function(){
+	     return {
+		 'close' : this.closeReview,
+		 'successReview' : (() => {alert('Votre critique a bien été modififée')}),
+		 'failReview' : (() => {alert('Une erreur est survenue')})
+	     }
+	 }
+
+     },
+     components : {reviewmodal, vote, circlethumb},
+     methods : {
+	 loadReview: function(){
+	     this.modalView = 'reviewtab';
+	     this.showModal = true;
+	 },
+	 loadLists: function(){
+	     this.modalView = 'liststab';
+	     this.showModal = true;
+	 },
+	 closeReview: function(){
+	     this.showModal = false;
+	     this.modalView = 'none';
+	 },
+	 deleteReview: function(){
+	     var conf = confirm("Êtes-vous sûr de vouloir supprimer votre critique ?");
+	     if (conf){
+		 axios({
+		     method:'delete',
+		     url: this.review_url,
+		 }
+		 ).then(response => {
+		     alert("Votre critique a bien été supprimée");
+		     window.location.href = document.getElementById("deleteReview").href;
+		 }
+		 ).catch(error => {
+		     alert("Une erreur est survenue");
+		     console.log(error);
+		 });
+	     }
+	 }
+     },
+     watch : {
+	 showModal: function (newVal){
+	     if (newVal) {
+		 document.body.classList.add("modal-open");
+	     }
+	     else {
+		 document.body.classList.remove("modal-open");
+	     }
+	 },
+     },
+     mounted : function(){
+     }
+ });
+
+
+</script>
+
+
+{% endblock %}

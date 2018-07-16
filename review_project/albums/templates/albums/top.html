@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% load staticfiles %}
+
+{% load album_tags %}
+{% load cache %}
+
+{% block title %}
+
+Top 100 albums
+
+{% endblock %}
+
+{% block content %}
+
+<div class="col-sm-12 col-md-10 offset-md-1 col-lg-6 offset-lg-3 bg-light">
+
+    <h1 class="text-center">Top 100 Albums </h1>
+
+    <form action="{% url 'albums:top_album_get' %}" method="get">
+	<div class="form-group">
+	    <label for="genre">Genre :</label>
+	    <select name="genre" id="genre" class="form-control">
+		<optgroup>
+		    <option value="tout">Tous les genres</option>
+		</optgroup>
+		<optgroup label="______________________">
+		    {% for genre in genres_parents %}
+		    <option value="{{genre.slug}}" {% if current_slug == genre.slug %}selected{% endif %}>{{genre.name}}</option>
+		    {% endfor %}
+		</optgroup>
+		<optgroup label="______________________">
+		    {% for genre in genres_children %}
+		    <option value="{{genre.slug}}" {% if current_slug == genre.slug %}selected{% endif %}>{{genre.name}}</option>
+		    {% endfor %}	    
+		</optgroup>
+	    </select>
+	</div>
+	<div class="form-group">
+	    <label for="annee">Année :</label>
+	    <select name="annee" id="annee" class="form-control">
+		
+		<optgroup>
+		    <option value="tout">Tous les temps</option>
+		</optgroup>
+		<optgroup>
+		    <option value="1950s" {% if selected_year == '1950s' %}selected{% endif %}>Années 1950</option>
+		    <option value="1960s" {% if selected_year == '1960s' %}selected{% endif %}>Années 1960</option>
+		    <option value="1970s" {% if selected_year == '1970s' %}selected{% endif %}>Années 1970</option>
+		    <option value="1980s" {% if selected_year == '1980s' %}selected{% endif %}>Années 1980</option>
+		    <option value="1990s" {% if selected_year == '1990s' %}selected{% endif %}>Années 1990</option>
+		    <option value="2000s" {% if selected_year == '2000s' %}selected{% endif %}>Années 2000</option>
+		    <option value="2010s" {% if selected_year == '2010s' %}selected{% endif %}>Années 2010</option>
+		</optgroup>
+		<optgroup label="______________________">
+		    {% now "Y" as current_year %}
+
+		    {% for val in "x"|ljust:'60' %}
+
+		    <option value="{{ current_year|subtract:forloop.counter0  }}" {% if selected_year == current_year|subtract:forloop.counter0 %}selected{% endif %}>{{ current_year|subtract:forloop.counter0  }}</option>
+		    
+		    {% endfor %}
+		</optgroup>
+	    </select>
+	    
+	</div>
+	<button class="btn btn-default" type="submit" value="Valider">Valider</button>
+    </form>
+    
+    {% for item in list %}
+    <p>
+	<div class="row">
+	    <div class='col-sm-3'>
+		<div class="card">
+		    <img class="card-img-top" src="{% static 'images/loading.gif' %}" data-src="{{ item.album.get_cover}}" alt="{{item.album.title}}">
+		</div>
+	    </div>
+	    <div class='col-sm-9 bg-white'>
+		<h3 style='font-weight: bold;'> {{ forloop.counter }}.
+		    <a href="{% url 'albums:album' item.album.mbid %}">{{ item.album.title }}</a>
+		    {% cache 60 average item.album.mbid %}
+		    <span title="Note moyenne" class="w3-tag rounded avg-rating w3-xlarge" style="float : right; color:black;"> {{ item.avg_rating.ratings__average|floatformat:'1' }}</span>
+		    {% endcache %}
+		    <span style="float : right;">&nbsp; &nbsp;</span>
+		    {% if user.is_authenticated %}
+		    <span title="Moyenne de mes éclaireurs" class="w3-tag w3-xlarge rounded follow-rating" style="float : right;"> {% if item.followees_rating >= 1.0 %}{{ item.followees_rating|floatformat:'1' }}{% else %}-{% endif %} </span>
+		    {% endif %}
+		</h3>
+		<p>
+		    {% autoescape off %}
+
+		    Album de {{ item.artists }}
+		    
+		    {% endautoescape %}
+		</p>
+		{% if user.is_authenticated %}
+		<p>	Ma note : <span title="Ma note" class="w3-tag rounded user-rating">{% if item.user_rating %}{{ item.user_rating.score }}{% else %}-{% endif %}</span>
+		</p>
+		{% endif %}
+		<br>
+	    </div>
+	</div>
+	<hr>	
+    </p>
+    {% endfor %}
+</div>
+
+{% endblock %}

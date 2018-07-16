@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% load bootstrap_tags %}
+
+{% block title %}
+Feedback
+{% endblock %}
+{% block content %}
+
+<div class="col-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3">
+
+    <h1 class="text-center">Feedback</h1>
+
+    <p class="text-center">Une suggestion, un bug à signaler ? Envoyez-nous un message et nous le traiterons le plus vite possible.</p>
+
+    {% if user.is_anonymous %}
+    <p class="text-center">Notez que votre message sera traité plus rapidement si vous vous connectez.</p>
+    {% endif %}
+
+    
+    {% if messages %}
+    <ul class="messages">
+	{% for message in messages %}
+	{% if message.extra_tags == 'feedback' %}
+        <li{% if message.tags %} class="{{message.tags}}"{% endif %}>{{ message }}</li>
+	{% endif %}
+	{% endfor %}
+    </ul>
+    {% endif %}
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ feedback_form|as_bootstrap }}
+        <input class="form-control" type="submit" value="Envoyer" />
+    </form>
+</div>
+
+
+{% endblock %}
+

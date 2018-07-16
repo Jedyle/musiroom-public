@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% load bootstrap_tags %}
+
+{% block title %} 
+Inscription
+{% endblock %}
+
+{% block content %}
+
+<div class="col-md-12 col-lg-6 offset-lg-3">
+<h1 class="text-center">Inscrivez-vous</h1>
+
+<form action="{% url 'register' %}" method="post">
+    {% csrf_token %}
+    {{form.as_p}}
+    <input class="form-control" type="submit" value="Valider" />
+
+</form>
+</div>
+
+{% endblock %}

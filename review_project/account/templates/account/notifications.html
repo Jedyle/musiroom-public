@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% load staticfiles %}
+
+{% block title %}
+Notifications
+{% endblock %}
+
+{% block content %}
+
+<div class="col-sm-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3">
+
+    <h1 class="text-center">Notifications</h1>
+
+    <br>
+    
+    <div class="infinite-container">
+	<ul class="list-group">
+	    {% for notif in notifications %}
+	    <li class="list-group-item infinite-item bg-light">
+		{% if notif.unread %}
+		<strong><font color="green"> &#9679</font></strong>
+		{% else %}
+		&nbsp
+		{% endif %}
+		&nbsp
+		<small>{{ notif.timestamp }}</small> - 
+		{% autoescape off %}
+		{{ notif.data.to_str }}
+		{% endautoescape %}
+	    </li>
+	    {% endfor %}
+	</ul>
+</div>
+
+{% if notifications.has_next %}
+<a class="infinite-more-link" href="?page={{ notifications.next_page_number }}">Plus...</a>
+{% endif %}
+
+<div class="loading" style="display: none;">
+    Chargement...
+</div>
+
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+
+<script src="{% static 'js/jquery.min.js' %}"></script>
+<script src="{% static 'js/jquery.waypoints.min.js' %}"></script>
+<script src="{% static 'js/infinite.min.js' %}"></script>
+
+<script>
+ 
+ var infinite = new Waypoint.Infinite({
+     element: $('.infinite-container')[0],
+     onBeforePageLoad: function () {
+         $('.loading').show();
+     },
+     onAfterPageLoad: function ($items) {
+         $('.loading').hide();
+     }
+ });
+ 
+</script>
+
+{% endblock %}

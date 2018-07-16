@@ -1,0 +1,217 @@
+{% extends 'base.html' %}
+
+{% load staticfiles %}
+{% load cache %}
+
+{% block body_title %}
+{% if not user.is_authenticated %}
+<div class="jumbotron jumbotron-fluid" style="background-image : url({% static 'images/home-vinyl.jpg' %}); background-size : cover;">
+    <div class="container">
+	<h1 class="display-4 text-center" style="color : white">"La musique donne une âme à nos coeurs et des ailes à la pensée"</h1>
+	<p class="lead text-center" style="color : white">Découvrez, notez, critiquez.</p>
+	<p class="lead text-center"><a href="{% url 'register' %}" class="btn btn-lg btn-light">Inscrivez-vous</a></p>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+
+<div class="col-sm-12 col-md-8 offset-md-2">
+    <h1 class="text-center">Nouveautés</h1>
+
+    {% cache 3600 new_albums %}
+    <div class="row">
+    {% for album in albums %}
+
+    {% if album.cover != "" %}
+
+
+    <div class="col-sm-4 col-md-3 col-lg-2 regular-gutter">
+	<a title="{{album.title}}" href="{% url 'albums:album' album.mbid %}" class="thumbnail"><img class="responsive" src="{% static 'images/loading.gif' %}" data-src="{{ album.get_cover }}"></a>
+    </div>
+    
+    
+    {% endif %}
+    
+    {% endfor %}
+    {% endcache %}
+    </div>
+</div>
+
+<div class="col-sm-12 col-md-8 offset-md-2">
+
+    <div class="row" id="app">
+
+	<div class="col-sm-12 col-lg-6">
+
+	    <h2>Dernières critiques</h2>
+
+	    {% if user.is_authenticated %}
+
+	    <ul class="nav nav-tabs">
+		<li class="nav-item">
+		    <a class="nav-link" :class="{ 'active' : (currentView === 'all_reviews') }" href="#" @click.prevent="currentView = 'all_reviews'">Toutes</a>
+		</li>
+		<li class="nav-item">
+		    <a class="nav-link" :class="{ 'active' : (currentView === 'followees_reviews') }" href="#" @click.prevent="currentView = 'followees_reviews'">Mes abonnements</a>
+		</li>
+	    </ul>
+
+	    {% endif %}
+	    
+	    {% if user.is_authenticated %}
+	    <div v-show="currentView === 'all_reviews'">
+		{% endif %}
+
+		<ul class="list-group">
+
+		    {% cache 300 new_reviews %}
+		    {% for review in reviews %}
+		    <li class="list-group-item">
+			<a href="{% url 'albums:album' review.rating.rating.albums.get.mbid %}"><img title="{{review.rating.rating.albums.get.title}}" src="{% static 'images/loading.gif' %}" data-src="{{ review.rating.rating.albums.get.get_cover }}" style="height : 50px"></a> &nbsp <a href="{% url 'albums:review' review.rating.rating.albums.get.mbid review.id %}">{{ review.title }}</a> par <a href="{% url 'profile' review.rating.user.username %}">{{review.rating.user}}</a> sur l'album <a href="{% url 'albums:album' review.rating.rating.albums.get.mbid %}">{{review.rating.rating.albums.get.title}}</a> ({{review.rating.score}}/10)
+		    </li>	    
+		    {% endfor %}
+		    {% endcache %}
+		</ul>
+		
+
+		<p class="text-right"><a href="{% url 'reviews:latest_reviews' %}">Voir plus</a></p>
+
+		{% if user.is_authenticated %}
+	    </div>
+	    {% endif %}
+
+	    {% if user.is_authenticated %}
+	    <keep-alive>
+		<component :is="currentView" v-bind="currentProperties"></component>
+	    </keep-alive>
+	    {% endif %}
+	    
+	</div>
+
+	<div class="col-sm-12 col-lg-6">
+
+	    <h2>Dernières notes</h2>
+
+	    {% if user.is_authenticated %}
+
+	    <ul class="nav nav-tabs">
+		<li class="nav-item">
+		    <a class="nav-link" :class="{ 'active' : (currentViewRating === 'all_ratings') }" href="#" @click.prevent="currentViewRating = 'all_ratings'">Toutes</a>
+		</li>
+		<li class="nav-item">
+		    <a class="nav-link" :class="{ 'active' : (currentViewRating === 'followees_reviews') }" href="#" @click.prevent="currentViewRating = 'followees_reviews'">Mes abonnements</a>
+		</li>
+	    </ul>
+
+	    {% endif %}
+	    
+	    {% if user.is_authenticated %}
+	    <div v-show="currentViewRating === 'all_ratings'">
+		{% endif %}
+
+		<ul class="list-group">
+
+		    {% cache 300 new_ratings %}
+		    {% for rating in ratings %}
+		    <li class="list-group-item">
+			<a href="{% url 'albums:album' rating.rating.albums.get.mbid %}"><img title="{{rating.rating.albums.get.title}}" src="{% static 'images/loading.gif' %}" data-src="{{ rating.rating.albums.get.get_cover }}" style="height : 50px"></a> &nbsp <a href="{% url 'profile' rating.user.username %}">{{rating.user}}</a> à donné la note de <strong>{{rating.score}}</strong> à l'album <a href="{% url 'albums:album' rating.rating.albums.get.mbid %}">{{rating.rating.albums.get.title}}</a>
+			
+		    </li>	    
+		    {% endfor %}
+		    {% endcache %}
+		</ul>
+
+		{% if user.is_authenticated %}
+	    </div>
+	    {% endif %}
+
+	    {% if user.is_authenticated %}
+	    <keep-alive>
+		<component :is="currentViewRating" v-bind="currentPropertiesRating"></component>
+	    </keep-alive>
+	    {% endif %}
+	    
+	</div>
+	
+    </div>
+    
+</div>
+
+
+{% endblock content %}
+
+{% block scripts %}
+
+{% if user.is_authenticated %}
+<script src="{% static 'js/vue.min.js' %}"></script>
+<script src="{% static 'js/axios.js' %}"></script>
+
+<script>
+
+ var followees_reviews = {
+     delimiters : ['[[', ']]'],
+     props : {
+	 'url' : String,
+     },
+     data : function(){
+	 return {
+	     html : ``,
+	     loading : true,
+	 }
+     },
+     template : `
+	 <div>
+	     <div v-html="html">
+	     </div>
+	     <div v-show="loading"><br><br><div class="spinner" style="position:relative"></div></div>
+	 </div>
+     `,
+     mounted : function(){
+	 this.loading = true;
+	 axios.get(this.url 
+	 ).then(response => {
+	     this.html = response.data;
+	     this.loading = false;
+	 }
+	 ).catch(error => {
+	     console.log(error)
+	     this.loading = false;
+	 })
+     }
+ }
+ 
+ var vm = new Vue({
+     delimiters : ['[[', ']]'],
+     el : '#app',
+     data : {
+	 currentView : 'all_reviews',
+	 currentViewRating : 'all_ratings',
+     },
+     components : {
+	 followees_reviews,
+     },
+     computed : {
+	 currentProperties : function(){
+	     if (this.currentView === 'followees_reviews'){
+		 return {
+		     url : "{% url 'home_followees_reviews' %}",
+		 }
+	     }
+	 },
+	 currentPropertiesRating : function(){
+	     if (this.currentViewRating === 'followees_reviews'){
+		 return {
+		     url : "{% url 'home_followees_ratings' %}",
+		 }
+	     }
+	 }
+     }
+ })
+ 
+</script>
+
+{% endif %}
+
+{% endblock %}

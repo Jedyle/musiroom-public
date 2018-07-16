@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}
+Inscription terminée
+{% endblock %}
+
+{% block content %}
+
+<div class="col-sm-12 col-md-6 offset-md-3">
+
+    <h2>Votre inscription est terminée ! </h2>
+    <p>Vous pouvez dès à présent vous connecter et remplir votre profil.</p>
+    <p><a href="{% url 'login' %}" class="button big fit">Se connecter</a></p>
+
+</div>
+
+{% endblock %}

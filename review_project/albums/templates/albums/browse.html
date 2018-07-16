@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% load staticfiles %}
+
+{% load album_tags %}
+
+{% block title %}
+
+Toute la musique
+
+{% endblock %}
+
+{% block content %}
+
+<div class="col-sm-12 col-md-10 offset-md-1 col-lg-8 offset-lg-2 bg-light">
+
+    <h1 class="text-center">Tous les albums notés</h1>
+
+    <form action="{% url 'albums:browse_albums' %}" method="get">
+	<div class="form-group">
+	    <label for="genre">Genre :</label>
+	    <select name="genre" id="genre" class="form-control">
+		<optgroup>
+		    <option value="tout">Tous les genres</option>
+		</optgroup>
+		<optgroup label="______________________">
+		    {% for genre in genres_parents %}
+		    <option value="{{genre.slug}}" {% if current_slug == genre.slug %}selected{% endif %}>{{genre.name}}</option>
+		    {% endfor %}
+		</optgroup>
+		<optgroup label="______________________">
+		    {% for genre in genres_children %}
+		    <option value="{{genre.slug}}" {% if current_slug == genre.slug %}selected{% endif %}>{{genre.name}}</option>
+		    {% endfor %}	    
+		</optgroup>
+	    </select>
+	</div>
+	<div class="form-group">
+	    <label for="annee">Année :</label>
+	    <select name="annee" id="annee" class="form-control">
+		
+		<optgroup>
+		    <option value="tout">Tous les temps</option>
+		</optgroup>
+		<optgroup>
+		    <option value="1950s" {% if selected_year == '1950s' %}selected{% endif %}>Années 1950</option>
+		    <option value="1960s" {% if selected_year == '1960s' %}selected{% endif %}>Années 1960</option>
+		    <option value="1970s" {% if selected_year == '1970s' %}selected{% endif %}>Années 1970</option>
+		    <option value="1980s" {% if selected_year == '1980s' %}selected{% endif %}>Années 1980</option>
+		    <option value="1990s" {% if selected_year == '1990s' %}selected{% endif %}>Années 1990</option>
+		    <option value="2000s" {% if selected_year == '2000s' %}selected{% endif %}>Années 2000</option>
+		    <option value="2010s" {% if selected_year == '2010s' %}selected{% endif %}>Années 2010</option>
+		</optgroup>
+		<optgroup label="______________________">
+		    {% now "Y" as current_year %}
+
+		    {% for val in "x"|ljust:'60' %}
+
+		    <option value="{{ current_year|subtract:forloop.counter0  }}" {% if selected_year == current_year|subtract:forloop.counter0|stringformat:"i" %}selected{% endif %}>{{ current_year|subtract:forloop.counter0  }}</option>
+		    
+		    {% endfor %}
+		</optgroup>
+	    </select>
+	    
+	</div>
+	<div class="form-group">
+	    <label for="rechercher">Filtrer :</label>
+	    <input class="form-control" id="rechercher" type="text" name="recherche" value="{{query}}" placeholder="Rechercher par artiste ou album..">
+	</div>
+	<button class="btn btn-default" type="submit" value="Valider">Valider</button>
+    </form>
+
+    <br>
+    
+    <p>Vous ne trouvez pas un album ? Essayez la recherche via la barre de menu, ou envoyez nous votre <a href="{% url 'feedback:feedback' %}">feedback</a></p>
+
+    {% include 'albums/browse_pagination.html' %}
+    
+    <br>
+    
+    <ul class="row">
+	{% for item in list %}
+	<li class="list-group-item col-12 col-sm-6 col-lg-4 bg-light">
+	    <p>
+		<img style="width : 40px" src="{% static 'images/loading.gif' %}" data-src="{{ item.album.get_cover}}" alt="{{item.album.title}}"> &nbsp;
+		<a href="{% url 'albums:album' item.album.mbid %}">{{ item.album.title }}</a> de
+		{% autoescape off %} {{ item.artists }}	{% endautoescape %}
+	    </p>
+	    <p>
+		{% with album_average=item.album.ratings.get.average %}
+		<span title="Note moyenne" class="w3-tag rounded avg-rating w3-large" style="float : right;"> {% if album_average > 0 %}{{ album_average|floatformat:'1' }}{% else %}-{% endif %}</span>
+		{% endwith %}
+		<span style="float : right;">&nbsp;</span>
+		{% if user.is_authenticated %}
+		<span title="Moyenne de mes éclaireurs" class="w3-tag rounded follow-rating" style="float : right;"> {% if item.followees_rating >= 1.0 %}{{ item.followees_rating|floatformat:'1' }}{% else %}-{% endif %} </span>
+		{% endif %}
+		{% if user.is_authenticated %}
+		<span style="float : right;">&nbsp;</span>
+		<span style="float : right;" title="Ma note" class="w3-tag rounded user-rating">{% if item.user_rating %}{{ item.user_rating.score }}{% else %}-{% endif %}</span>
+		{% endif %}
+	    </p>
+	</li>
+	{% endfor %}
+    </ul>
+
+    {% include 'albums/browse_pagination.html' %}
+    
+</div>
+
+{% endblock %}
