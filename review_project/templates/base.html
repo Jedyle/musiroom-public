@@ -8,7 +8,7 @@
 
 {% load notifications_tags %}
 
-{% postman_unread as unread_count %}
+{% postman_unread as message_unread_count %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -103,13 +103,13 @@
 			    
 			</li>
 			{% endif %}
-			<li class="nav-item dropdown">
+			<li class="nav-item dropdown"  {% if message_unread_count > 0 %}data-badge="{{message_unread_count}}"{% endif %}>
 			    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-				{% if user.is_authenticated %}{{ user.username }}{% else %}Compte{% endif %}
+				{% if user.is_authenticated %}<span {% if message_unread_count > 0 %}class="notif-badge" data-badge="{{message_unread_count}}"{% endif %}>{{ user.username }}</span>{% else %}Compte{% endif %}
 			    </a>
 			    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
 				{% if user.is_authenticated %}
-				<a class="dropdown-item" href="{% url 'postman:inbox' %}">Messagerie</a>
+				<a class="dropdown-item" href="{% url 'postman:inbox' %}">Messagerie {% if message_unread_count > 0 %}({{message_unread_count}}){% endif %}</a>
 				<a class="dropdown-item" href="{% url 'profile' user.username %}">Profil</a>
 				<a class="dropdown-item" href="{% url 'logout' %}">Déconnexion</a>
 				{% else %}

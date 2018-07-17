@@ -33,11 +33,9 @@ def user_review(request, mbid):
             review_form = ReviewForm(request.POST)
             if review_form.is_valid():
                 title = review_form.cleaned_data.get('title')
-                print(title)
                 if title == 'undefined':
                     title = "Critique de " + request.user.username + " sur " + instance.title
                 content = review_form.cleaned_data.get('content')
-                print(title, content)
                 try:
                     old_review = user_rating.review
                     old_review.title = title
@@ -52,10 +50,8 @@ def user_review(request, mbid):
                 url = reverse('albums:review', args=[mbid, user_rating.review.pk])
                 return JsonResponse({'url' : url})
             else:
-                print("form invalide")
                 return HttpResponseNotFound()
         except UserRating.DoesNotExist:
-            print("no instance")
             return HttpResponseNotFound()
     elif method == 'GET': #get review from logged in user
         try:
@@ -106,8 +102,6 @@ def review(request, mbid, review_id):
         user = User.objects.get(id = request.user.id)
         context['user_vote'] = get_vote(review, user)
 
-    print(review.rating.user.username)
-
     return render(request, 'ratings/review.html', context)
 
 def search_review_by_user(result, query):
@@ -157,7 +151,6 @@ def review_list(request, mbid):
                 'url_profile' : reverse('profile', args=[review.rating.user.username]),
                 'url_review' : reverse('albums:review', args=[album.mbid, review.id]),                
                 })
-        print(response)
         return JsonResponse({'data' : response, 'nbpages' : nb_pages})
 
 def search_review(result, query):
@@ -333,7 +326,6 @@ def review_notification(user, review):
 def ajax_vote(request):
     if request.method == 'POST':
         review_id = request.POST['element_id']
-        print('rev', review_id)
         review = get_object_or_404(Review, pk = review_id)
         user = User.objects.get(id = request.user.id)
         if request.POST['type'] == 'up':
