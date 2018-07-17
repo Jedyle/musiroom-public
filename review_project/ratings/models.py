@@ -17,8 +17,8 @@ from django.urls import reverse
 class Review(VoteModel, models.Model):
     title = models.CharField("Titre", max_length = 200, blank = True)
     content = models.TextField("Critique")
-    date_publication = models.DateField("Date publication", auto_now_add = True)
-    date_last_change = models.DateField("Dernière modification", auto_now = True)
+    date_publication = models.DateTimeField("Date publication", auto_now_add = True)
+    date_last_change = models.DateTimeField("Dernière modification", auto_now = True)
     rating = models.OneToOneField(UserRating, on_delete= models.CASCADE, related_name='review')
     
     def __str__(self):
