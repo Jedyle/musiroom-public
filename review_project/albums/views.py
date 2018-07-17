@@ -370,7 +370,7 @@ def search(request):
 def genre(request, slug):
     gen = get_object_or_404(Genre, slug=slug)
     children = gen.children
-    top_10 = Album.objects.filter(Q(albumgenre__genre__slug = slug) & Q(albumgenre__is_genre = True) & Q(ratings__isnull=False) & Q(ratings__average__gt = 1.0)).order_by('-ratings__average')[:10]
+    top_10 = Album.objects.filter(Q(albumgenre__genre__slug = slug) & Q(albumgenre__is_genre = True) & Q(ratings__isnull=False) & Q(ratings__average__gt = 1.0) & Q(ratings__count__gt = 2)).order_by('-ratings__average')[:10]
     context = {
         'genre' : gen,
         'children' : children,
@@ -412,7 +412,7 @@ def top_album(request, slug, year):
                 year = "tout"
     if slug and slug != "tout":
         albums = albums.filter(Q(albumgenre__genre__slug = slug) & Q(albumgenre__is_genre = True))
-    albums = albums.filter(Q(ratings__isnull=False) & Q(ratings__average__gt = 1.0)).order_by('-ratings__average')
+    albums = albums.filter(Q(ratings__isnull=False) & Q(ratings__average__gt = 1.0) & Q(ratings__count__gt = 2)).order_by('-ratings__average')
 
     cache_albums = cache.get('top_album_albums_{}_{}'.format(slug, year))
     if cache_albums is None:
