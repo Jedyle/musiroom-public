@@ -241,9 +241,11 @@ def album_genres(request, mbid):
             try:
                 genre = Genre.objects.get(name = add_genre_form.cleaned_data['genre_list'])
                 added_album_genre = AlbumGenre.objects.get_or_create(genre = genre, album = album)[0]
+                print(added_album_genre.user)
                 if added_album_genre.user == None:
-                    added_album_genre.user == user
+                    added_album_genre.user = user
                     added_album_genre.save()
+                    added_album_genre.votes.up(user.id)
                 return redirect('albums:album_genres', mbid=mbid)
             except Genre.DoesNotExist:
                 add_genre_form.add_error('genre_list', "Ce genre n'existe pas")
@@ -368,9 +370,11 @@ def search(request):
 def genre(request, slug):
     gen = get_object_or_404(Genre, slug=slug)
     children = gen.children
+    top_10 = Album.objects.filter(Q(albumgenre__genre__slug = slug) & Q(albumgenre__is_genre = True) & Q(ratings__isnull=False) & Q(ratings__average__gt = 1.0)).order_by('-ratings__average')[:10]
     context = {
         'genre' : gen,
         'children' : children,
+        'top' : top_10,
         }
     return render(request, 'albums/genre.html', context)
 

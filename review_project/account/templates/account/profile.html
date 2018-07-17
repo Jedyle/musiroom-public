@@ -57,7 +57,7 @@ Profil de {{profile.user.username}}
 		    {% for album in profile.top_albums.albums.all|slice:":10" %}
 		    <li class="list-group-item">
 			<img src="{% static 'images/loading.gif' %}" data-src="{{ album.get_cover }}" style="height : 50px"> &nbsp <a href="{% url 'albums:album' album.mbid %}">{{ album }}</a>
-		</li>
+		    </li>
 		{% endfor %}
 		</ul>
 

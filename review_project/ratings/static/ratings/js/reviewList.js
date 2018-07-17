@@ -157,6 +157,7 @@ let reviewslist = {
     :prev-text="'Précédent'"
     :next-text="'Suivant'"
     :container-class="'pagination'"
+    
     :page-class="'page-item'"
     :prev-class="'page-item'"
     :next-class="'page-item'"
