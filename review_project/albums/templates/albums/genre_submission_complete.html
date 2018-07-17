@@ -6,6 +6,13 @@ Confirmation
 
 {% block content %}
 
-Votre demande a été enregistrée. La modération traitera votre suggestion dans les plus brefs délais.
+<div class="col-8 offset-2">
+<p>
+    Votre demande a été enregistrée. La modération traitera votre suggestion dans les plus brefs délais.
+</p>
 
+<p>
+    <a href="{% url 'albums:genres' %}">Retour aux genres</a>
+</p>
+</div>
 {% endblock %}

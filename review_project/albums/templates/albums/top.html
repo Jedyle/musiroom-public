@@ -83,7 +83,7 @@ Top 100 albums
 		    {% endcache %}
 		    <span style="float : right;">&nbsp; &nbsp;</span>
 		    {% if user.is_authenticated %}
-		    <span title="Moyenne de mes éclaireurs" class="w3-tag w3-xlarge rounded follow-rating" style="float : right;"> {% if item.followees_rating >= 1.0 %}{{ item.followees_rating|floatformat:'1' }}{% else %}-{% endif %} </span>
+		    <span title="Moyenne de mes abonnements" class="w3-tag w3-xlarge rounded follow-rating" style="float : right;"> {% if item.followees_rating >= 1.0 %}{{ item.followees_rating|floatformat:'1' }}{% else %}-{% endif %} </span>
 		    {% endif %}
 		</h3>
 		<p>

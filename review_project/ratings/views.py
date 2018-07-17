@@ -33,6 +33,9 @@ def user_review(request, mbid):
             review_form = ReviewForm(request.POST)
             if review_form.is_valid():
                 title = review_form.cleaned_data.get('title')
+                print(title)
+                if title == 'undefined':
+                    title = "Critique de " + request.user.username + " sur " + instance.title
                 content = review_form.cleaned_data.get('content')
                 print(title, content)
                 try:
