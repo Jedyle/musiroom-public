@@ -92,13 +92,19 @@
 
 	<div class="col-sm-12 col-lg-3">
 
-	    <div style="max-width : 300px" class="border">
+	    <div style="max-width : 300px">
+		<div class="border">
 		{% if average %}		
 		<div class="h1 text-center"> <strong>{{ average|floatformat:'-1' }}</strong></div>
 		{% render_chart 'reviews:ratings_chart' album.id %}
 		{% else %}
 		<p class="h1 text-center">Aucune note</p>
 		{% endif %}
+		</div>
+		<br>
+		<div id="app_buttons">
+		    <a style="color:white" target="_blank" type="button" :href="ytb_link" class="btn btn-block color-sanguine" ref="ytb" v-cloak><i class="fas fa-play-circle"></i> &nbsp; Écouter un extrait</a>
+		</div>
 	    </div>
 	    
 	    
@@ -180,6 +186,7 @@
 <script type="text/javascript" src="{% static 'star-ratings/js/dist/star-ratings.min.js' %}"></script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.bundle.min.js"></script>
+<script src="https://apis.google.com/js/client.js"></script>
 
 <!-- Editor dependency-->
 <script src="{% static 'js/jquery.min.js' %}"></script>
@@ -218,87 +225,145 @@
  
  
 </script>
-    
-    <script>
 
-     axios.defaults.xsrfHeaderName = "X-CSRFToken"; 
+<script>
+
+ axios.defaults.xsrfHeaderName = "X-CSRFToken"; 
+ 
+ let vm_modal = new Vue({
+     el: '#app-modal',
+     delimiters : ['[[', ']]'],
+     data : {
+ 	 rated : template_data.rated,
+	 reviewed :  template_data.reviewed,
+	 //Modal
+	 reviewlink : template_data.reviewlink,
+	 review_url : template_data.review_url,
+	 showModal : false,
+	 modalView : 'none',
+	 lists_url : template_data.lists_url,
+	 set_item_url : template_data.set_item_url,
+	 delete_item_url : template_data.delete_item_url,
+	 mbid : template_data.mbid,
+     },
+     components : {reviewmodal, modal},
+     computed : {
+	 modalHandlers : function(){
+	     return {
+		 'close' : this.closeReview,
+		 'successReview' : this.updateReview,
+		 'failReview' : (() => {alert('Une erreur est survenue')})
+	     }
+	 }
+
+     },
+     methods : {
+	 loadReview: function(){
+	     this.modalView = 'reviewtab';
+	     this.showModal = true;
+	 },
+	 loadLists: function(){
+	     this.modalView = 'liststab';
+	     this.showModal = true;
+	 },
+	 closeReview: function(){
+	     this.showModal = false;
+	     this.modalView = 'none';
+	 },
+	 updateReview: function(data){
+	     console.log('success');
+	     this.reviewlink = data.review_url;
+	     if (!this.reviewed){
+		 this.reviewed = true;
+		 alert('Votre critique a bien été créée !');
+	     }
+	     else {
+		 alert('Votre critique a bien été modifiée.');
+	     }
+	 }
+     },
+     watch : {
+	 showModal: function (newVal){
+	     if (newVal) {
+		 document.body.classList.add("modal-open");
+	     }
+	     else {
+		 document.body.classList.remove("modal-open");
+	     }
+	 },
+     },
+ });
+
+
+ let vm_review_list = new Vue({
+     el : '#app-review-list',
+     data : {
+	 prev_component : reviewpreview,
+     },
+     components : {reviewslist, reviewpreview},
      
-     let vm_modal = new Vue({
-	 el: '#app-modal',
-	 delimiters : ['[[', ']]'],
-	 data : {
- 	     rated : template_data.rated,
-	     reviewed :  template_data.reviewed,
-	     //Modal
-	     reviewlink : template_data.reviewlink,
-	     review_url : template_data.review_url,
-	     showModal : false,
-	     modalView : 'none',
-	     lists_url : template_data.lists_url,
-	     set_item_url : template_data.set_item_url,
-	     delete_item_url : template_data.delete_item_url,
-	     mbid : template_data.mbid,
-	 },
-	 components : {reviewmodal, modal},
-	 computed : {
-	     modalHandlers : function(){
-		 return {
-		     'close' : this.closeReview,
-		     'successReview' : this.updateReview,
-		     'failReview' : (() => {alert('Une erreur est survenue')})
-		 }
-	     }
+ });
 
+
+ var raw_artists =  "{{album.artists.all.0}}";
+
+ window.addEventListener("load", function(event) {
+
+     let vm_buttons = new Vue({
+	 el : '#app_buttons',
+	 data : {
+	     query : raw_artists + ' {{album.title}} ',
+	     ytb_link : '',
 	 },
-	 methods : {
-	     loadReview: function(){
-		 this.modalView = 'reviewtab';
-		 this.showModal = true;
-	     },
-	     loadLists: function(){
-		 this.modalView = 'liststab';
-		 this.showModal = true;
-	     },
-	     closeReview: function(){
-		 this.showModal = false;
-		 this.modalView = 'none';
-	     },
-	     updateReview: function(data){
-		 console.log('success');
-		 this.reviewlink = data.review_url;
-		 if (!this.reviewed){
-		     this.reviewed = true;
-		     alert('Votre critique a bien été créée !');
+	 methods :{
+	     load_ytb : function(){
+		 if (this.ytb_link === ''){
+		     event.preventDefault()
+		     console.log(this.query.replace(" ", "+"));
+		     var request = gapi.client.youtube.search.list({
+			 part : 'snippet',
+			 type : 'video',
+			 q : this.query.replace(" ", "+"),
+			 maxResults: 1,
+		     });
+		     request.execute(response => {
+			 console.log(response);
+			 var id = response.result.items[0].id.videoId;
+			 var url = "https://www.youtube.com/watch?v=" + id;
+			 this.ytb_link = url;
+			 var win = window.open(url, '_blank');
+		     });
 		 }
-		 else {
-		     alert('Votre critique a bien été modifiée.');
+		 else{
+		     var win = window.open(this.ytb_link, '_blank');
 		 }
 	     }
 	 },
-	 watch : {
-	     showModal: function (newVal){
-		 if (newVal) {
-		     document.body.classList.add("modal-open");
-		 }
-		 else {
-		     document.body.classList.remove("modal-open");
-		 }
-	     },
-	 },
-     });
-
-
-     let vm_review_list = new Vue({
-	 el : '#app-review-list',
-	 data : {
-	     prev_component : reviewpreview,
-	 },
-	 components : {reviewslist, reviewpreview},
+	 mounted : function(){
+	     console.log(gapi.client)
+	     window.onload = 
+		 gapi.client.setApiKey("AIzaSyBM0SEUpFmTac-GeSigQeyoL1jeDD7chxI");
+	     gapi.client.load("youtube", "v3", () => {
+		 // yt api is ready
+		 var request = gapi.client.youtube.search.list({
+		     part : 'snippet',
+		     type : 'video',
+		     q : this.query.replace(" ", "+"),
+		     maxResults: 1,
+		 });
+		 request.execute(response => {
+		     var id = response.result.items[0].id.videoId;
+		     var url = "https://www.youtube.com/watch?v=" + id;
+		     this.ytb_link = url;
+		 });
+	     });
+	 }
 	 
-     });
-
-     
-    </script>
+     })
+     // here is the Vue code
+ });
+ 
+</script>
 
 
     {% endblock %}
