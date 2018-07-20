@@ -73,7 +73,10 @@ def activate(request, uidb64, token):
         login(request, user)
         return redirect('registration_complete')
     else:
-        return HttpResponse('Lien d\'activation invalide ou expiré.')
+        if not user.is_active:
+            return HttpResponse('Lien d\'activation invalide ou expiré.')
+        else:
+            return redirect('registration_complete')
 
 def registration_complete(request):
     return render(request, 'account/registration_complete.html')
