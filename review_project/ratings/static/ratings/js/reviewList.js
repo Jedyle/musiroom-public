@@ -43,7 +43,7 @@ let reviewpreviewuser = {
     template : `
  <div>
     <div class="row">
-	<div class='col-3'>
+	<div class='col-12 col-sm-3'>
 	    <div class="card">
 		<img class="card-img-top" :src="review.album_cover" alt="review.album_title">
 		<div class="card-body">
@@ -53,7 +53,7 @@ let reviewpreviewuser = {
 		</div>
 	    </div>
 	</div>
-	<div class='col-9'>
+	<div class='col-12 col-sm-9'>
 	    <h3 style='font-weight: bold;'> [[ review.title ]] </h3>
 	    <p> [[ cleanContent ]]... </p>
 	    <p class="text-right"><a target="_blank" :href="review.url_review">Lire la critique</a></p>
@@ -92,12 +92,12 @@ let ratingpreview = {
     template : `
 	<div>
 	<div class="row">
-	<div class='col-2'>
+	<div class='col-4 col-sm-2'>
 	    <div class="card">
 	<img class="card-img-top" :src="review.album_cover" alt="review.album_title">
 	    </div>
 	</div>
-	<div class='col-10'>
+	<div class='col-8 col-sm-10'>
 	<h5><a :href="review.url_album">[[ review.album_title ]]</a> <span title="Note moyenne" class="w3-tag bg-secondary w3-xlarge" style="float : right;"> [[ displayRating(review.average) ]]</span> <span style="float : right;">&ensp;&ensp;</span>  <span title="Moyenne de mes abonnements" class="w3-tag color-teal w3-xlarge" style="float : right;"> [[ displayRating(review.followees_avg) ]]</span> </h5>
 	<p v-html="review.artists"></p>
 	<p class='text-right'> Ma note : <span title="Ma note" class="w3-tag w3-khaki">[[ displayRating(review.user_rating) ]]</span></p>
