@@ -43,7 +43,7 @@ let reviewpreviewuser = {
     template : `
  <div>
     <div class="row">
-	<div class='col-12 col-sm-3'>
+	<div class='col-3'>
 	    <div class="card">
 		<img class="card-img-top" :src="review.album_cover" alt="review.album_title">
 		<div class="card-body">
@@ -53,7 +53,7 @@ let reviewpreviewuser = {
 		</div>
 	    </div>
 	</div>
-	<div class='col-12 col-sm-9'>
+	<div class='col-9'>
 	    <h3 style='font-weight: bold;'> [[ review.title ]] </h3>
 	    <p> [[ cleanContent ]]... </p>
 	    <p class="text-right"><a target="_blank" :href="review.url_review">Lire la critique</a></p>
@@ -77,7 +77,6 @@ let ratingpreview = {
     },
     methods : {
 	displayRating : function(rating){
-	    console.log('rating', typeof rating, rating)
 	    var zero = 0.01
 	    if (parseFloat(rating) < zero){
 		return '-'
@@ -92,12 +91,12 @@ let ratingpreview = {
     template : `
 	<div>
 	<div class="row">
-	<div class='col-4 col-sm-2'>
+	<div class='col-2'>
 	    <div class="card">
 	<img class="card-img-top" :src="review.album_cover" alt="review.album_title">
 	    </div>
 	</div>
-	<div class='col-8 col-sm-10'>
+	<div class='col-10'>
 	<h5><a :href="review.url_album">[[ review.album_title ]]</a> <span title="Note moyenne" class="w3-tag bg-secondary w3-xlarge" style="float : right;"> [[ displayRating(review.average) ]]</span> <span style="float : right;">&ensp;&ensp;</span>  <span title="Moyenne de mes abonnements" class="w3-tag color-teal w3-xlarge" style="float : right;"> [[ displayRating(review.followees_avg) ]]</span> </h5>
 	<p v-html="review.artists"></p>
 	<p class='text-right'> Ma note : <span title="Ma note" class="w3-tag w3-khaki">[[ displayRating(review.user_rating) ]]</span></p>
@@ -150,14 +149,14 @@ let reviewslist = {
 	
 	<br>
 	
-	<paginate key="page1"
+	<paginate
     ref="paginate1"
+    v-model="current_page"
     :page-count="nb_pages"
     :click-handler="changePage"
     :prev-text="'Précédent'"
     :next-text="'Suivant'"
     :container-class="'pagination'"
-    
     :page-class="'page-item'"
     :prev-class="'page-item'"
     :next-class="'page-item'"
@@ -179,8 +178,9 @@ let reviewslist = {
 	</template>
 
     
-	<paginate class="mx-auto" key="page2"
+	<paginate class="mx-auto"
     ref="paginate2"
+    v-model="current_page"
     :page-count="nb_pages"
     :click-handler="changeAndScroll"
     :prev-text="'Précédent'"
@@ -208,6 +208,7 @@ let reviewslist = {
 	    }
 	},
 	changePage : function(numPage){
+	    console.log('change', numPage, this.current_page);
 	    this.loadReviewList(this.current_sort_method, numPage);
 	},
 	changeAndScroll : function(page){
@@ -227,15 +228,15 @@ let reviewslist = {
 		}).then(response => {
 		    this.reviewList = response.data.data;
 		    this.nb_pages = parseInt(response.data.nbpages);
-		    this.last_query = query
+		    this.last_query = query;
 		    this.loading = false;
 		}).catch(error => {
 		    console.log(error);
 		    this.loading = false;
 		});
 	    }
-	    else if (page != this.current_page){
-		this.current_page = page
+	    else if (method === this.current_sort_method){
+		console.log("change page", page)
 		this.loading = true;
 		axios.get(this.reviewlisturl, {
 		    params : {
@@ -259,10 +260,6 @@ let reviewslist = {
     mounted : function(){
 	this.$el.querySelector('a').click();
     },
-    watch : {
-	current_page : function(numPage){
-	    this.$refs.paginate1.selected=numPage-1;
-	    this.$refs.paginate2.selected=numPage-1;
-	}
+    watch : {	
     }
 };
