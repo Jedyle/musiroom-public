@@ -10,6 +10,11 @@ Tous les genres
 
     <h1 class="text-center">Tous les genres</h1>
 
+    <div class="alert alert-danger">
+	<h2 class="text-center"><strong>Attention !</strong></h2>
+	<p class="text-center">Ce site est tout neuf et encore un peu vide ! Votre contribution est très appréciée. Il manque un genre musical ? N'oubliez pas de consulter les sous genres des genres affichés (vous trouverez par exemple 'Death Metal' en cliquant sur le genre 'Metal'). Vous ne trouvez toujours pas un genre ? <a href="{% url 'albums:submit_genre' %}">Proposez-le</a> ! </p>
+    </div>
+
     <p class="text-center">
     <ul style="list-style-type:none">
 	{% for genre in genres %}
@@ -22,5 +27,7 @@ Tous les genres
     </p>
 
     <p class="text-center"><a href="{% url 'albums:submit_genre' %}">Ajouter un genre</a></p>
+
+    
 </div>
 {% endblock %}
