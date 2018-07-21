@@ -79,7 +79,7 @@ Top 100 albums
 		<h3 style='font-weight: bold;'> {{ forloop.counter }}.
 		    <a href="{% url 'albums:album' item.album.mbid %}">{{ item.album.title }}</a>
 		    {% cache 60 average item.album.mbid %}
-		    <span title="Note moyenne" class="w3-tag rounded avg-rating w3-xlarge" style="float : right; color:black;"> {{ item.avg_rating.ratings__average|floatformat:'1' }}</span>
+		    <span title="Note moyenne ({{ item.avg_rating.ratings__count }} notes)" class="w3-tag rounded avg-rating w3-xlarge" style="float : right; color:black;"> {{ item.avg_rating.ratings__average|floatformat:'1' }}</span>
 		    {% endcache %}
 		    <span style="float : right;">&nbsp; &nbsp;</span>
 		    {% if user.is_authenticated %}

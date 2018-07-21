@@ -87,8 +87,8 @@ Toute la musique
 		{% autoescape off %} {{ item.artists }}	{% endautoescape %}
 	    </p>
 	    <p>
-		{% with album_average=item.album.ratings.get.average %}
-		<span title="Note moyenne" class="w3-tag rounded avg-rating w3-large" style="float : right;"> {% if album_average > 0 %}{{ album_average|floatformat:'1' }}{% else %}-{% endif %}</span>
+		{% with album_rating=item.album.ratings.get %}
+		<span title="Note moyenne ({{album_rating.count}} notes)" class="w3-tag rounded avg-rating w3-large" style="float : right;"> {% if album_rating.average > 0 %}{{ album_rating.average|floatformat:'1' }}{% else %}-{% endif %}</span>
 		{% endwith %}
 		<span style="float : right;">&nbsp;</span>
 		{% if user.is_authenticated %}

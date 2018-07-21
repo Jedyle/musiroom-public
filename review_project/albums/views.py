@@ -86,6 +86,7 @@ def album(request, mbid):
         context['same_artist'] = same_artist
         try:
             context['average'] = album.ratings.get().average
+            context['average_count'] = album.ratings.get().count
         except Rating.DoesNotExist:
             context['average'] = 0
         if not request.user.is_anonymous:
@@ -102,7 +103,7 @@ def album(request, mbid):
             context['review'] = review
             followees_ratings = all_followees_ratings(request.user, album)
             context['followees_avg'] = followees_ratings['avg']
-            context['followees_ratings'] = followees_ratings['ratings'] 
+            context['followees_ratings'] = followees_ratings['ratings']
         return render(request, 'albums/album.html', context)
     except Album.DoesNotExist:
         parser = ParseAlbum(mbid)
@@ -421,7 +422,7 @@ def top_album(request, slug, year):
     else:
         albums = cache_albums
 
-    ratings = list(albums.values('ratings__average'))
+    ratings = list(albums.values('ratings__average', 'ratings__count'))
         
     if request.user.is_authenticated :
         user_ratings = UserRating.objects.for_instance_list_by_user(albums, request.user)
@@ -432,7 +433,7 @@ def top_album(request, slug, year):
         item = {
             'album' : album,
             'artists' : compute_artists_links(album),
-            'avg_rating' : ratings[i]
+            'avg_rating' : ratings[i],
             }
         if request.user.is_authenticated :
             item['user_rating'] = user_ratings[i]

@@ -95,7 +95,8 @@
 	    <div style="max-width : 300px">
 		<div class="border">
 		{% if average %}		
-		<div class="h1 text-center"> <strong>{{ average|floatformat:'-1' }}</strong></div>
+		    <div class="h1 text-center"> <strong>{{ average|floatformat:'-1' }}</strong></div>
+		    <p class="text-center">{% if average_count == 1 %}1 note{% else %}{{average_count}} notes{% endif %}</p>
 		{% render_chart 'reviews:ratings_chart' album.id %}
 		{% else %}
 		<p class="h1 text-center">Aucune note</p>
@@ -140,6 +141,7 @@
 		<p class="text-center">Moyenne de mes abonnements</p>
 		{% if followees_avg %}
 		<p class="h1 text-center"><strong><font class="teal">{{ followees_avg|floatformat:'-2' }}</font></strong></p>
+		<p class="text-center">{% if followees_ratings|length == 1 %}1 note{% else %}{{ followees_ratings|length }} notes{% endif %}</p>
 		{% render_chart 'reviews:followees_chart' album.id user.username %}
 		{% else %}
 		<p class="h3 text-center"><strong><font class="teal">-</font></strong></p>
