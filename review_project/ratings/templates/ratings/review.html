@@ -71,7 +71,7 @@
 		    <!-- Author Data -->
 		    <div class="col-12 col-md-10">
 			<h5 class="font-weight-bold dark-grey-text mb-3">
-			    <strong><a href="{% url 'profile' r_user.username %}">{{ r_user.username }}</a></strong>
+			    <strong><a href="{% url 'profile' r_user.username %}">{{ r_user.username }}</a></strong> &nbsp; <span class="w3-tag bg-secondary">{{ review.rating.score }}</span>
 			</h5>
 			<p>{{ r_user.account.description|linebreaks  }}
 			</p>
