@@ -140,7 +140,7 @@
 	    <div style="max-width : 300px">
 		<p class="text-center">Moyenne de mes abonnements</p>
 		{% if followees_avg %}
-		<p class="h1 text-center"><strong><font class="teal">{{ followees_avg|floatformat:'-2' }}</font></strong></p>
+		<p class="h1 text-center"><strong><font class="teal">{{ followees_avg|floatformat:'-1' }}</font></strong></p>
 		<p class="text-center">{% if followees_ratings|length == 1 %}1 note{% else %}{{ followees_ratings|length }} notes{% endif %}</p>
 		{% render_chart 'reviews:followees_chart' album.id user.username %}
 		{% else %}
