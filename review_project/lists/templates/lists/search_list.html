@@ -6,18 +6,30 @@ Résultats de votre recherche
 
 {% endblock %}
 
+{% block search_value %}
+
+{{ query }}
+
+{% endblock %}
+
+{% block list_search_selected %}
+selected
+{% endblock %}
+
 {% block content %}
 
 <div class="col-sm-12 col-md-8 offset-md-2">
 
     <h1>Résultats de la recherche : {{ query }}</h1>
     
-{% if lists|length_is:"0" %}
+    {% if lists|length_is:"0" %}
     <div class="text-center">
 	Aucun résultat n'a été trouvé
     </div>
 
-{% else %}
+    {% else %}
+
+    
 
 {% if paginate %}
 <nav aria-label="...">

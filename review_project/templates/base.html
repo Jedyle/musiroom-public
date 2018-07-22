@@ -82,18 +82,19 @@
 			<form class="form-inline" method="get" action="{% url 'albums:search' %}">
 
 			    <div class="form-group">
+				{% url 'albums:search' as search_url %}
 				<div class="input-group">
 				    <span class="input-group-btn">
-					<input type="text" class="form-control" name="query" placeholder="Rechercher...">
+					<input type="text" class="form-control" name="query" placeholder="Rechercher..." value="{% block search_value %}{% endblock %}">
 				    </span>
 				    <span class="input-group-btn">
 					&nbsp;
 				    </span>
 				    <span class="input-group-btn">
 					<select class="form-control" name="type" style="height : 100%">
-					    <option value="album" selected>Album</option>
-					    <option value="artiste">Artiste</option>
-					    <option value="liste">Liste</option>
+					    <option value="album" {% block album_search_selected %}{% endblock %}>Album</option>
+					    <option value="artiste" {% block artist_search_selected %}{% endblock %}>Artiste</option>
+					    <option value="liste" {% block list_search_selected %}{% endblock %}>Liste</option>
 					</select>
 				    </span>
 				    <input type="submit" 
@@ -165,7 +166,7 @@
 		    <div class="col-12">
 
 			<!--Copyright-->
-			<p class="text-center text-md-left">© 2018 <a href="mailto:postmaster@lamusitheque.com">Jedyle</a> -  <a href="{% url 'feedback:feedback' %}">Feedback</a></p>
+			<p class="text-center text-md-left">© 2018 <a href="mailto:contact.lamusitheque@gmail.com">Jedyle</a> -  <a href="{% url 'feedback:feedback' %}">Feedback</a></p>
 
 		    </div>
 

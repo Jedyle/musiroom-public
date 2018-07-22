@@ -9,14 +9,20 @@ Inscription
 {% block content %}
 
 <div class="col-md-12 col-lg-6 offset-lg-3">
-<h1 class="text-center">Inscrivez-vous</h1>
+    <h1 class="text-center">Inscrivez-vous</h1>
 
-<form action="{% url 'register' %}" method="post">
-    {% csrf_token %}
-    {{form.as_p}}
-    <input class="form-control" type="submit" value="Valider" />
+    {% if error == True %}
+    <div class="alert alert-danger">
+	Un ou plusieurs champs sont incorrects.
+    </div>
+    {% endif %}
 
-</form>
+    <form action="{% url 'register' %}" method="post">
+	{% csrf_token %}
+	{{form|as_bootstrap}}
+	<input class="form-control" type="submit" value="Valider" />
+	
+    </form>
 </div>
 
 {% endblock %}

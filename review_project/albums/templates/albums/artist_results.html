@@ -2,8 +2,16 @@
 
 {% block title %}
 
-Résultats pour la requete : {{ query }}
+Résultats d'artistes pour la requete : {{ query }}
 
+{% endblock %}
+
+{% block search_value %}
+{{ query }}
+{% endblock %}
+
+{% block artist_search_selected %}
+selected
 {% endblock %}
 
 {% block content %}

@@ -57,7 +57,7 @@ def register(request):
             email.send()
             return render(request, 'account/confirm_email.html', {'email': addr})
         else:
-            return render(request, 'account/registration_form.html',{'form': form})
+            return render(request, 'account/registration_form.html',{'form': form, 'error' : True})
     else:
         return render(request, 'account/registration_form.html',{'form': RegistrationForm()})
 
@@ -83,7 +83,7 @@ def registration_complete(request):
 
 @login_required
 def loggedin(request):
-    return render(request, 'account/loggedin.html')
+    return redirect('/')
 
 def profile(request, username):
     user = get_object_or_404(User, username = username)
