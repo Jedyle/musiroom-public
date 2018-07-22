@@ -35,14 +35,14 @@ selected
 <nav aria-label="...">
     <ul class="pagination">
 	{% if lists.has_previous %}
-        <li class="page-item"><a class="page-link" href="{{request.path}}?query={{query}}&type={{m_type}}&page={{lists.previous_page_number}}&tri={{tri}}">Précédent</a></li>
+        <li class="page-item"><a class="page-link sanguine" href="{{request.path}}?query={{query}}&type={{m_type}}&page={{lists.previous_page_number}}&tri={{tri}}">Précédent</a></li>
 	{% else %}
-	<li class="page-item disabled"><span class="page-link">Précédent</span></li>
+	<li class="page-item disabled"><span class="page-link sanguine">Précédent</span></li>
 	{% endif %}
 	{% if lists.has_next %}
-        <li><a class="page-link" href="{{request.path}}?query={{query}}&type={{m_type}}&page={{lists.next_page_number}}&tri={{tri}}">Suivant</a></li>
+        <li><a class="page-link sanguine" href="{{request.path}}?query={{query}}&type={{m_type}}&page={{lists.next_page_number}}&tri={{tri}}">Suivant</a></li>
 	{% else %}
-	<li class="page-item disabled"><span class="page-link">Suivant</span></li>
+	<li class="page-item disabled"><span class="page-link sanguine">Suivant</span></li>
 	{% endif %}
     </ul>
 </nav>

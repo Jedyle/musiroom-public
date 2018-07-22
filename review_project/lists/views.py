@@ -93,7 +93,7 @@ def search_list_in_db(query, sort, page):
     elif sort == 'votes':
         list_list = list_list.annotate(nb_votes = F('num_vote_up') + F('num_vote_down')).order_by('-nb_votes')
     
-    paginator = Paginator(list_list, 2)
+    paginator = Paginator(list_list, 10)
     try:
         list_filtered = paginator.page(page)
     except PageNotAnInteger:
@@ -107,7 +107,6 @@ def search_list(request):
     query = request.GET.get('query')
     page = request.GET.get('page')
     tri = request.GET.get('tri')
-    print('liste !', m_type, query, tri)
     if not query or (m_type != 'liste') :
         return redirect('/')
     else :
