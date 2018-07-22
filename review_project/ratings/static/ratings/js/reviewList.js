@@ -208,7 +208,6 @@ let reviewslist = {
 	    }
 	},
 	changePage : function(numPage){
-	    console.log('change', numPage, this.current_page);
 	    this.loadReviewList(this.current_sort_method, numPage);
 	},
 	changeAndScroll : function(page){
@@ -236,7 +235,6 @@ let reviewslist = {
 		});
 	    }
 	    else if (method === this.current_sort_method){
-		console.log("change page", page)
 		this.loading = true;
 		axios.get(this.reviewlisturl, {
 		    params : {

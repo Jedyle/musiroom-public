@@ -51,6 +51,7 @@
 	    
 	    <div class="row">
 		<paginate class="mx-auto" key="page"
+			  v-model="page"
 			  ref="paginate1"
 			  :page-count="infos.nb_pages"
 			  :click-handler="changePage"
@@ -156,6 +157,7 @@
 	    <div class="row" v-show="!loading">
 		<paginate class="mx-auto" key="page"
 			  ref="paginate2"
+			  v-model="page"
 			  :page-count="infos.nb_pages"
 			  :click-handler="changeAndScroll"
 			  :prev-text="'Précédent'"
@@ -379,8 +381,6 @@
 	     window.scrollTo(0,0);
 	 },
 	 changePage : function(page){
-	     this.$refs.paginate1.selected=page-1;
-	     this.$refs.paginate2.selected=page-1;
 	     this.loading = true;
 	     axios.get(this.infos.list_url, {
 		 params : {
@@ -394,8 +394,7 @@
 	     }).catch(error => {
 		 console.log(error);
 		 this.loading = false;
-	     })
-	     this.page = page;	     
+	     })	     
 	 },
 	 displayRating : function(rating){
 	     var zero = 0.01
