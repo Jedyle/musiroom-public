@@ -40,7 +40,7 @@ selected
 	<li class="page-item disabled"><span class="page-link sanguine">Précédent</span></li>
 	{% endif %}
 	{% if lists.has_next %}
-        <li><a class="page-link sanguine" href="{{request.path}}?query={{query}}&type={{m_type}}&page={{lists.next_page_number}}&tri={{tri}}">Suivant</a></li>
+        <li class="page-item"><a class="page-link sanguine" href="{{request.path}}?query={{query}}&type={{m_type}}&page={{lists.next_page_number}}&tri={{tri}}">Suivant</a></li>
 	{% else %}
 	<li class="page-item disabled"><span class="page-link sanguine">Suivant</span></li>
 	{% endif %}
