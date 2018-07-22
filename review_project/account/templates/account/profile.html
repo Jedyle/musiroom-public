@@ -38,9 +38,16 @@ Profil de {{profile.user.username}}
 	<div v-show="currentView === 'profile'">
 	    <br>
 	    <div class="bg-light">
-		    {{ profile.description|linebreaks }}
+		{{ profile.description|linebreaks }}
 	    </div>
+
+	    {% if profile.user == user %}
+	    <a class="btn btn-success" href="{% url 'lists:create_list' %}">Nouvelle liste</a>
+
 	    <br>
+	    {% endif %}
+	    <br>
+
 
 	    <ul>
 	    <li>{{ nb_ratings }} albums notés</li>
@@ -65,7 +72,7 @@ Profil de {{profile.user.username}}
 
 		{% endif %}
 		
-	    </div>
+	   </div>
 	    
 	</div>
 
@@ -163,6 +170,8 @@ Profil de {{profile.user.username}}
 	     else if (this.currentView === 'lists'){
 		 return {
 		     url : "{% url 'lists:ajax_user_lists' %}",
+		     user_is_profile : {% if profile.user == user %}true{% else %}false{% endif %},
+		     create_url : "{% url 'lists:create_list' %}",
 		     username : "{{ profile.user.username}}",
 		 }
 	     }

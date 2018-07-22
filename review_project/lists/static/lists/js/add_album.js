@@ -70,6 +70,7 @@ var addalbum = {
 	},
 	loadSearch : function(){
 	    if (this.query.length > 1){
+		console.log(this.search_url)
 		axios({
 		    method : 'get',
 		    url : this.search_url,

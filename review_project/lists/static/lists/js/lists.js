@@ -6,6 +6,12 @@ var lists = {
 	},
 	username : {
 	    type : String,
+	},
+	user_is_profile: {
+	    type : Boolean,
+	},
+	create_url : {
+	    type : String,
 	}
     },
     data : function(){
@@ -18,6 +24,12 @@ var lists = {
 	<div class="container-fluid">
 
 	<br>
+
+	<div v-if='user_is_profile'>
+	<a class="btn btn-success" :href="create_url">Nouvelle liste</a>
+	<br><br>
+	
+	</div>
 
 	<div class="search-wrapper">
 	<label>Filtrer : </label>
@@ -43,7 +55,6 @@ var lists = {
 	}
     },
     mounted : function(){
-	console.log('mounted')
 	axios({
 	    method : 'get',
 	    url : this.url,
@@ -52,7 +63,6 @@ var lists = {
 	    }
 	}).then(response => {
 	    this.lists = JSON.parse(JSON.stringify(response.data.lists))
-	    console.log(this.lists)
 	}).catch(error => {
 	    console.log(error)
 	});

@@ -65,6 +65,8 @@ def display_list(request, list_id):
     else :
         user_vote = "none"
 
+    print(reverse('albums:ajax_search_in_db'))
+
     context = {
         'list' : res_items,
         'infos' : itemlist,

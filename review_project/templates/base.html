@@ -82,7 +82,7 @@
 			<form class="form-inline" method="get" action="{% url 'albums:search' %}">
 
 			    <div class="form-group">
-				{% url 'albums:search' as search_url %}
+				{% url 'albums:search' as nav_search_url %}
 				<div class="input-group">
 				    <span class="input-group-btn">
 					<input type="text" class="form-control" name="query" placeholder="Rechercher..." value="{% block search_value %}{% endblock %}">

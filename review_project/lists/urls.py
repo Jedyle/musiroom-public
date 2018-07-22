@@ -18,5 +18,5 @@ urlpatterns = [
     url(r'^ajax/vote/$', views.ajax_vote, name='ajax_vote'),
     url(r'^ajax/get_lists_for_album/$', views.get_lists_for_user_and_album, name='get_lists_for_user_and_album'),
     url(r'^edit/comment/$', views.ajax_set_item, name='ajax_set_item'),
-    url(r'^create/$', views.create_list, name='create_list'),    
+    url(r'^creer/$', views.create_list, name='create_list'),    
 ]

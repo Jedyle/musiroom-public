@@ -9,4 +9,4 @@ class ItemListForm(forms.ModelForm):
         
     class Meta:
         model = ItemList
-        exclude = ['user', 'albums']
+        exclude = ['user', 'albums', 'vote_score', 'num_vote_up', 'num_vote_down']
