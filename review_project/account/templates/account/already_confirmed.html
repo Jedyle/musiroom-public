@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Inscription confirmée
+{% endblock %}
+
+{% block content %}
+<div class="col-sm-12 col-md-6 offset-md-3">
+    <h1>Votre inscription est déjà confirmée.</h1>
+    <p>Vous pouvez maintenant vous <a href="{% url 'login' %}">connecter</a></p>
+</div>
+{% endblock %}
