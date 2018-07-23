@@ -22,11 +22,33 @@ from friendship.models import Follow
 from star_ratings.models import UserRating
 from ratings.models import Review
 from ratings.charts import UserRatingsBarChart
-from lists.models import ItemList
+from lists.models import ItemList, ListObject
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
 # Create your views here.
+
+def send_email(request, user):
+    current_site = get_current_site(request)
+    mail_subject = 'Activez votre compte.'
+    message = render_to_string('account/acc_active_email.html', {
+        'user': user,
+        'domain': current_site.domain,
+        'uid':urlsafe_base64_encode(force_bytes(user.pk)).decode(),
+        'token':account_activation_token.make_token(user),
+        })
+    to_email = user.email
+    email = EmailMessage(mail_subject, message, to=[to_email])
+    email.send()
+
+def resend_email(request,username):
+    user = User.objects.get(username = username)
+    if request.user.is_authenticated and request.user != user:
+        return redirect('/')
+    if user.is_active:
+        return render(request, 'account/already_confirmed.html', {})
+    send_email(request, user)
+    return render(request, 'account/confirm_email.html', {'email': user.email, 'user' : user})
 
 @transaction.atomic
 def register(request):
@@ -44,18 +66,19 @@ def register(request):
             top_albums.save()
             profil.top_albums = top_albums
             profil.save()
-            current_site = get_current_site(request)
-            mail_subject = 'Activez votre compte.'
-            message = render_to_string('account/acc_active_email.html', {
-                'user': user,
-                'domain': current_site.domain,
-                'uid':urlsafe_base64_encode(force_bytes(user.pk)).decode(),
-                'token':account_activation_token.make_token(user),
-            })
-            to_email = addr
-            email = EmailMessage(mail_subject, message, to=[to_email])
-            email.send()
-            return render(request, 'account/confirm_email.html', {'email': addr})
+            # current_site = get_current_site(request)
+            # mail_subject = 'Activez votre compte.'
+            # message = render_to_string('account/acc_active_email.html', {
+            #     'user': user,
+            #     'domain': current_site.domain,
+            #     'uid':urlsafe_base64_encode(force_bytes(user.pk)).decode(),
+            #     'token':account_activation_token.make_token(user),
+            # })
+            # to_email = addr
+            # email = EmailMessage(mail_subject, message, to=[to_email])
+            # email.send()
+            send_email(request, user)
+            return render(request, 'account/confirm_email.html', {'email': addr, 'user' : user})
         else:
             return render(request, 'account/registration_form.html',{'form': form, 'error' : True})
     else:
@@ -94,8 +117,11 @@ def profile(request, username):
     else:
         is_followed = None
         follows = None
+    
+    top_10 = ListObject.objects.filter(item_list = profile.top_albums).select_related('album')[:10]
     context = {
         'profile': profile,
+        'top_10' : top_10,
         'is_followed' : is_followed,
         'follows' : follows,
         'nb_reviews' : Review.objects.filter(rating__user = user).count(),

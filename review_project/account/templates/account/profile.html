@@ -56,14 +56,14 @@ Profil de {{profile.user.username}}
 
 	   <div class="col-xs-12 col-sm-6">
 
-		{% if profile.top_albums.albums.all|length != 0 %}
+		{% if top_10|length != 0 %}
 
 		<h3 class="text-center">Ses albums préférés</h3>
 
 		<ul class="list-group">
-		    {% for album in profile.top_albums.albums.all|slice:":10" %}
+		    {% for item in top_10 %}
 		    <li class="list-group-item">
-			<img src="{% static 'images/loading.gif' %}" data-src="{{ album.get_cover }}" style="height : 50px"> &nbsp <a href="{% url 'albums:album' album.mbid %}">{{ album }}</a>
+			<img src="{% static 'images/loading.gif' %}" data-src="{{ item.album.get_cover }}" style="height : 50px"> &nbsp <a href="{% url 'albums:album' item.album.mbid %}">{{ item.album }}</a>
 		    </li>
 		{% endfor %}
 		</ul>

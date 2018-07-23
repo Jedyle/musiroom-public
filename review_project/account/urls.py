@@ -9,6 +9,7 @@ from . import views # import views so we can use them in urls.
 
 urlpatterns = [
     url(r'^inscription/$', views.register, name='register'),
+    url(r'^inscription/renvoyer/(?P<username>[\w_-]{3,})/$', views.resend_email, name='resend_email'),
     url(r'^inscription_complete/$', views.registration_complete, name='registration_complete'),
     url(r'^connexion/$', LoginView.as_view(template_name='account/login.html', redirect_authenticated_user=True), name='login'),
     url(r'^deconnexion/$', LogoutView.as_view(), name='logout'),
