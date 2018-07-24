@@ -178,7 +178,8 @@ def browse_albums(request):
         albums_filtered = paginate.page(paginate.num_pages)
 
     if request.user.is_authenticated :
-        user_ratings = UserRating.objects.for_instance_list_by_user(albums_filtered.object_list, request.user)
+        ct = ContentType.objects.get_for_model(Album)
+        user_ratings = UserRating.objects.for_instance_list_by_user(albums_filtered.object_list, ct, request.user)
         followees_ratings = rating_for_followees_list(request.user, albums_filtered.object_list)
     
     itemlist = []
@@ -425,7 +426,8 @@ def top_album(request, slug, year):
     ratings = list(albums.values('ratings__average', 'ratings__count'))
         
     if request.user.is_authenticated :
-        user_ratings = UserRating.objects.for_instance_list_by_user(albums, request.user)
+        ct = ContentType.objects.get_for_model(Album)
+        user_ratings = UserRating.objects.for_instance_list_by_user(albums, ct, request.user)
         followees_ratings = rating_for_followees_list(request.user, albums)
         
     itemlist = []            

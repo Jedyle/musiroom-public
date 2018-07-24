@@ -118,12 +118,11 @@ class UserRatingManager(models.Manager):
         else:
             return None
 
-    def for_instance_list_by_user(self, instance_list, user):
+    def for_instance_list_by_user(self, instance_list, ct, user):
         if instance_list :
-            ct = ContentType.objects.get_for_model(instance_list[0])
             user = _clean_user(user)
-            queryset = self.filter(user = user, rating__content_type=ct, rating__object_id__in = instance_list).select_related('rating')
             list_pk = [instance.pk for instance in instance_list]
+            queryset = self.filter(user = user, rating__content_type=ct, rating__object_id__in = instance_list).select_related('rating')
             user_rating_list = sorted(queryset, key=lambda r: list_pk.index(r.rating.object_id))
             user_pk = [l.rating.object_id for l in user_rating_list]
             i = 0
