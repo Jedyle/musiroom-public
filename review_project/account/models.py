@@ -53,6 +53,8 @@ class Account(models.Model):
         if self.avatar:
             im = Image.open(self.avatar)
             output = BytesIO()
+            # converts to jpg
+            im = im.convert('RGB')
             #Resize/modify the image
             im.thumbnail((300,300))
             #after modifications, save it to the output
