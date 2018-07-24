@@ -13,5 +13,8 @@ def active_url(context, url):
     except NoReverseMatch:
         pattern = url
 
-    path = context['request'].path
+    try:
+        path = context['request'].path
+    except KeyError:
+        return ''
     return 'active' if re.search(pattern, path) else ''

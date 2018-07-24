@@ -120,12 +120,13 @@ class LoginRequiredTest(TestCase):
 
     #/profil/connexion renvoie connecté si user déjà connecté
 
-    def test_login_page_when_logged(self):
+    def test_home_page_when_logged(self):
         c = Client()
         url = reverse('login')
         c.post(url, {'username' : 'Toto', 'password': 'pass12345'})
         request = c.get(url)
-        self.assertRedirects(request, reverse('loggedin'))
+        print(request)
+        self.assertRedirects(request, '/')
 
     def status_code_login(self):
         c = Client()
