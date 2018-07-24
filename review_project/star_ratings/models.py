@@ -122,7 +122,7 @@ class UserRatingManager(models.Manager):
         if instance_list :
             user = _clean_user(user)
             list_pk = [instance.pk for instance in instance_list]
-            queryset = self.filter(user = user, rating__content_type=ct, rating__object_id__in = instance_list).select_related('rating')
+            queryset = self.filter(user = user, rating__content_type=ct, rating__object_id__in = list_pk).select_related('rating')
             user_rating_list = sorted(queryset, key=lambda r: list_pk.index(r.rating.object_id))
             user_pk = [l.rating.object_id for l in user_rating_list]
             i = 0
