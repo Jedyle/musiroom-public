@@ -58,13 +58,6 @@ class Genre(models.Model):
     def children(self):
         return self.genre_set.all().order_by("name")
 
-    # @property
-    # def tags(self):
-    #     return Tag.objects.filter(categories__in=[self]).order_by("name")
-
-    # def get_absolute_url(self):
-    #     return reverse("category_object_list", kwargs={"category_slug": self.slug})
-
 
 class Album(models.Model):
     mbid = models.CharField(db_index=True,max_length = 36, unique = True)

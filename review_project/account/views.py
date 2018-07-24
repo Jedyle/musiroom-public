@@ -66,17 +66,6 @@ def register(request):
             top_albums.save()
             profil.top_albums = top_albums
             profil.save()
-            # current_site = get_current_site(request)
-            # mail_subject = 'Activez votre compte.'
-            # message = render_to_string('account/acc_active_email.html', {
-            #     'user': user,
-            #     'domain': current_site.domain,
-            #     'uid':urlsafe_base64_encode(force_bytes(user.pk)).decode(),
-            #     'token':account_activation_token.make_token(user),
-            # })
-            # to_email = addr
-            # email = EmailMessage(mail_subject, message, to=[to_email])
-            # email.send()
             send_email(request, user)
             return render(request, 'account/confirm_email.html', {'email': addr, 'user' : user})
         else:

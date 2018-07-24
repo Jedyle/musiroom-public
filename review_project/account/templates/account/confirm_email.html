@@ -6,7 +6,7 @@ Confirmez votre adresse e-mail
 
 {% block content %}
 <div class="col-sm-12 col-md-6 offset-md-3">
-    <p>Un mail de confirmation vous a été envoyé à {{ email }}. Veuillez cliquer sur son lien pour activer votre compte.</p>
+    <p>Un mail de confirmation vous a été envoyé à l'adresse indiquée. Veuillez cliquer sur son lien pour activer votre compte.</p>
     <p>L'envoi de ce mail peut prendre quelques minutes. Pensez également à vérifier votre dossier spam.</p>
     <p>Vous n'avez rien reçu ? <a href="{% url 'resend_email' user.username %}">Renvoyer le mail</a></p>
 </div>
