@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 import datetime
 import json
 
-PROTOCOL = "http://"
+PROTOCOL = "https://"
 MUSICBRAINZ_URL = "musicbrainz.org/"
 COVER_URL = 'coverartarchive.org/'
 ARTIST = "artist/"
