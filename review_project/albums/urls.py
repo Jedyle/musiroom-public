@@ -15,6 +15,7 @@ urlpatterns = [
     url(r'^album/report_genre/$', views.report_genre, name='report_genre'),
     url(r'^artiste/(?P<mbid>[0-9a-z-]{36})/$', views.artist, name='artist'),
     url(r'^ajax_artiste/(?P<mbid>[0-9a-z-]{36})/$', views.ajax_artist, name='ajax_artist'),
+    url(r'^ajax_artiste_notes_page/$', views.ajax_artist_page_ratings, name='ajax_artist_page_ratings'),
     url(r'^rechercher$', views.search, name='search'),
     url(r'^recherche_avancee/$', views.ajax_search_in_db, name='ajax_search_in_db'),
     url(r'^genres/$', views.genres, name='genres'),

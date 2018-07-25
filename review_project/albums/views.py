@@ -19,6 +19,7 @@ from lists.models import ItemList
 import re
 from django.core.cache import cache
 from django.contrib.contenttypes.models import ContentType
+from django.template.defaultfilters import floatformat
 
 # Create your views here.
 
@@ -328,9 +329,44 @@ def ajax_artist(request, mbid):
         'page' : page,
         'search' : search,
         'path' : reverse('albums:artist', args=[mbid]),
+        'user' : request.user,
         }
     html = render_to_string('albums/ajax_artist.html', context)
-    return HttpResponse(html)
+    return JsonResponse({'html' : html, 'albums' : discog})
+
+def ajax_artist_page_ratings(request):
+    albums = request.GET.get('albums')
+    album_array = albums.split(' ')
+    albums_data = {}
+    albums = Album.objects.filter(mbid__in = album_array)
+    avg_ratings = list(Rating.objects.filter(albums__in = albums).values('albums__mbid', 'average', 'count'))
+    avg_ratings = dict((elt['albums__mbid'], {'avg' : elt['average'], 'count' : elt['count']}) for elt in avg_ratings)
+    if request.user.is_authenticated :
+        followees_ratings = rating_for_followees_list(request.user, albums)
+        user_ratings = list(UserRating.objects.filter(user = request.user, rating__albums__in = albums).values('score', 'rating__albums__mbid'))
+        user_ratings = dict((elt['rating__albums__mbid'], elt['score']) for elt in user_ratings)
+        print(followees_ratings, user_ratings, avg_ratings)
+        for album in albums:
+            mbid = album.mbid
+            avg = avg_ratings.get(mbid, 0)
+            followees = followees_ratings.get(mbid, 0)
+            user = user_ratings.get(mbid, 0)
+            albums_data[mbid] = {
+                'avg' : floatformat(avg['avg'], 1),
+                'count' : avg['count'],
+                'followees' : floatformat(followees,1),
+                'user' : user,
+                }
+    else:
+        for album in albums:
+            mbid = album.mbid
+            avg = avg_ratings.get(mbid, 0)
+            albums_data[mbid] = {
+                'avg' : floatformat(avg['avg'],1),
+                'count' : avg['count'],
+                }
+            print(albums_data)
+    return JsonResponse({'albums' : albums_data})
 
 
 def search(request):

@@ -44,6 +44,7 @@ Artiste
 
 {% block scripts %}
 
+<script src="{% static 'js/vue.min.js' %}"></script>
 <script src="{% static 'js/axios.js' %}"></script>
 
 <script>
@@ -61,16 +62,83 @@ Artiste
      ).then(response => {
 	 console.log(response)
 	 var data = document.getElementById('data');
-	 data.innerHTML = response.data;
-	 var artist = document.getElementById('artiste')
-	 var artiste_bar = document.getElementById('artiste_bar')
-	 artiste_bar.innerText = artist.innerText
+	 data.innerHTML = response.data.html;
+	 var artist = document.getElementById('artiste');
+	 var artiste_bar = document.getElementById('artiste_bar');
+	 artiste_bar.innerText = artist.innerText;
+
+	 var albums = extractMBID(response.data.albums);
+	 loadRatings(albums);
 	 
      }
      ).catch(error => {
 	 console.log(error)
      })
- })  
+ });
+
+ function extractMBID(albums){
+     var mbids = []
+     albums.forEach(function(e){
+	 var data = e[1]
+	 data.forEach(function(alb){
+	     mbids.push(alb.mbid)
+	 })     
+     })
+     return mbids
+ }
+
+ function scoreOrZero(score){
+     if (parseFloat(score) == 0)
+	 return '-';
+     return score;
+ }
+
+ function loadRatings(albums){
+     axios({
+	 method: 'get',
+	 url : "{% url 'albums:ajax_artist_page_ratings' %}",
+	 params: {
+	     albums : albums.join(' '),
+	 }
+     }
+     ).then(response => {
+	 var data = response.data.albums;
+	 console.log(data);
+	 
+	 var alb_id = document.getElementsByClassName('rating_area');
+	 console.log(alb_id);
+
+	 Array.from(alb_id).forEach(function(item) {
+	     var mbid = item.id;
+	     console.log(item.getElementsByClassName('user-rating')[0])
+	     if (data.hasOwnProperty(mbid)){
+
+		 item.getElementsByClassName('avg-rating')[0].innerText = scoreOrZero(data[mbid]['avg'])
+		 item.getElementsByClassName('avg-rating')[0].title = 'Note moyenne (' + data[mbid]['count'] + ' notes)';
+		 {% if user.is_authenticated %}
+		 item.getElementsByClassName('user-rating')[0].innerText = scoreOrZero(data[mbid]['user'])
+		 item.getElementsByClassName('follow-rating')[0].innerText = scoreOrZero(data[mbid]['followees'])
+		 {% endif %}
+	     }
+	     else {
+		 item.getElementsByClassName('avg-rating')[0].innerText = '-'
+		 item.getElementsByClassName('avg-rating')[0].title = 'Note moyenne (0 notes)';
+		 {% if user.is_authenticated %}
+		 item.getElementsByClassName('user-rating')[0].innerText = '-'
+		 item.getElementsByClassName('follow-rating')[0].innerText = '-'
+		 {% endif %}
+	     }
+	 });
+	 
+     }
+     ).catch(error => {console.log(error)})
+     
+ }
+ 
+</script>
+
+<script>
+
 </script>
 
 {% endblock %}
