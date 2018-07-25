@@ -229,3 +229,8 @@ body {
     border : solid;
     border-width : 1px;
 }
+
+.const-span {
+    width : 48px;
+
+}

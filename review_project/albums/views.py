@@ -244,7 +244,6 @@ def album_genres(request, mbid):
             try:
                 genre = Genre.objects.get(name = add_genre_form.cleaned_data['genre_list'])
                 added_album_genre = AlbumGenre.objects.get_or_create(genre = genre, album = album)[0]
-                print(added_album_genre.user)
                 if added_album_genre.user == None:
                     added_album_genre.user = user
                     added_album_genre.save()
@@ -345,7 +344,6 @@ def ajax_artist_page_ratings(request):
         followees_ratings = rating_for_followees_list(request.user, albums)
         user_ratings = list(UserRating.objects.filter(user = request.user, rating__albums__in = albums).values('score', 'rating__albums__mbid'))
         user_ratings = dict((elt['rating__albums__mbid'], elt['score']) for elt in user_ratings)
-        print(followees_ratings, user_ratings, avg_ratings)
         for album in albums:
             mbid = album.mbid
             avg = avg_ratings.get(mbid, 0)
@@ -365,7 +363,6 @@ def ajax_artist_page_ratings(request):
                 'avg' : floatformat(avg['avg'],1),
                 'count' : avg['count'],
                 }
-            print(albums_data)
     return JsonResponse({'albums' : albums_data})
 
 

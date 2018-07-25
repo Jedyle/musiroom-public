@@ -36,7 +36,7 @@
 	    {% endif %}
 	</td>
 	<td class="col-8 offset-4 col-sm-3 offset-sm-0 rating_area" id="{{r.mbid}}">
-	    {% if user.is_authenticated %}<span title="Ma note" class="w3-tag rounded user-rating">...</span> <span title="Note de mes abonnements" class="w3-tag rounded follow-rating">...</span>{% endif %} <span title="Note moyenne" class="w3-tag rounded avg-rating">...</span>
+	    {% if user.is_authenticated %}<span title="Ma note" class="w3-tag const-span rounded user-rating">...</span> <span title="Note de mes abonnements" class="w3-tag const-span rounded follow-rating">...</span>{% endif %} <span title="Note moyenne" class="w3-tag const-span rounded avg-rating">...</span>
 	</td>
     </tr> 
     {% endfor %}
