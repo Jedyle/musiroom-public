@@ -19,13 +19,13 @@
 <h2>{{ table.0 }}</h2>
 <table class="table" id="artist_ratings">
     <tr class="row">
-	<th class="col-4 col-sm-2">Année</th>
+	<th class="col-4 col-sm-1">Année</th>
 	<th class="col-8 col-sm-7">Titre</th>
-	<th class="col-8 offset-4 col-sm-3 offset-sm-0">Notes</th>
+	<th class="col-8 offset-4 col-sm-4 offset-sm-0">Notes</th>
     </tr>
     {% for r in table.1 %}
     <tr class="row">
-	<td class="col-4 col-sm-2"> {{ r.year }}</td>
+	<td class="col-4 col-sm-1"> {{ r.year }}</td>
 	<td class="col-8 col-sm-7"> <a href="{% url 'albums:album' r.mbid %}">{{ r.title }}</a>
 	    {% if r.feat %}
 	    ( avec 
@@ -35,7 +35,7 @@
 	    {% endfor %})
 	    {% endif %}
 	</td>
-	<td class="col-8 offset-4 col-sm-3 offset-sm-0 rating_area" id="{{r.mbid}}">
+	<td class="col-8 offset-4 col-sm-4 offset-sm-0 rating_area" id="{{r.mbid}}">
 	    {% if user.is_authenticated %}<span title="Ma note" class="w3-tag const-span rounded user-rating">...</span> <span title="Note de mes abonnements" class="w3-tag const-span rounded follow-rating">...</span>{% endif %} <span title="Note moyenne" class="w3-tag const-span rounded avg-rating">...</span>
 	</td>
     </tr> 
