@@ -15,9 +15,11 @@
 	
     </div>
     <ul class="list-group list-group-flush">
+	{% if album.get_release_date %}
 	<li class="list-group-item">
 	    Date de parution : {{ album.get_release_date }}
 	</li>
+	{% endif %}
 	<li class="list-group-item">
 	    Type : {{ album.get_album_type_display }}
 	</li>

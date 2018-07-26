@@ -82,7 +82,6 @@ class ParseSearchAlbums(ParseSearch):
                     artist = cols[2].text
                     artist_mbid = cols[2].a['href'].split('/')[-1]
                     release_type = cols[3].getText()
-                    print(release_type)
                     result = {
                         'title' : title,
                         'album_mbid' : album_mbid ,
@@ -198,18 +197,21 @@ class ParseAlbum:
         pass
 
     def get_type(self):
-        album_type = self.soup.find('dl', {'class' : 'properties'}).find('dd', {'class' : 'type'}).text
-        return {
-            'Single' : 'SI',
-            'Album' : 'LP',
-            'EP' : 'EP',
-            'Album + Live' : 'LI',
-            'Album + Compilation' : 'CP',
-            'Album + Remix' : 'RE',
-            'Single + Live' : 'LI',
-            'Album + Compilation + Live' : 'LI',            
-            }.get(album_type, 'LP')
-
+        album_type = self.soup.find('dl', {'class' : 'properties'}).find('dd', {'class' : 'type'})
+        if album_type:
+            album_type = album_type.text
+            return {
+                'Single' : 'SI',
+                'Album' : 'LP',
+                'EP' : 'EP',
+                'Album + Live' : 'LI',
+                'Album + Compilation' : 'CP',
+                'Album + Remix' : 'RE',
+                'Single + Live' : 'LI',
+                'Album + Compilation + Live' : 'LI',            
+                }.get(album_type, 'UK')
+        return "UK"
+        
 def merge_identical(discog):
     n = len(discog)
     merged = []
