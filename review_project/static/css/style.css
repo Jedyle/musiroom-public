@@ -238,3 +238,15 @@ body {
 table {
     word-wrap : break-word;
 }
+
+.treeview-item {
+  cursor: pointer;
+}
+.bold {
+  font-weight: bold;
+}
+.treeview-ul {
+  padding-left: 1em;
+  line-height: 1.5em;
+  list-style-type: dot;
+}
