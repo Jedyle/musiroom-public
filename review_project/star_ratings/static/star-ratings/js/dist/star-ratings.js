@@ -14,6 +14,7 @@ function init () {
 
     // Add click events to stars
     for (i = 0; i < ratingActions.length; i += 1) {
+	ratingActions[i].href = ratingActions[i].getAttribute('_href');
         bindRatings(ratingActions[i]);
     }
 }
@@ -181,11 +182,9 @@ function updateRating(rating, sender) {
     parent.querySelector(".star-ratings-rating-foreground").style.width = percentage + '%';
 
     var ratedCheckbox = document.getElementById('rated');
-    console.log('test');
     if (ratedCheckbox.checked == false){
 	ratedCheckbox.click();
     }
-    console.log(ratedCheckbox);
     
 }
 
@@ -278,6 +277,7 @@ var djangoRemarkRest = {
     post: function (url, data, success, fail) {
         var req = this.makeRequest(url, 'POST', success, fail);
         req.setRequestHeader("X-CSRFToken", this.getCookie('XSRF-TOKEN'));
+	console.log(url, JSON.stringify(data))
         req.send(JSON.stringify(data));
     },
 

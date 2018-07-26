@@ -10,7 +10,7 @@
             {% for star in stars %}
             <li>
                 {% if editable %}
-                <a href="{% url 'ratings:rate' rating.content_type_id rating.object_id %}?return={{ request.path }}" data-score="{{ star }}" class="star-ratings-rate-action">
+                <a href="{% url 'ratings:rate' rating.content_type_id rating.object_id %}?return={{ request.path }}" data-score="{{ star }}" class="star-ratings-rate-action disabled">
                     <span class="star-ratings-rating-empty"></span>
                 </a>
                 {% elif user.is_authenticated %}
