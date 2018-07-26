@@ -27,7 +27,7 @@
     {% if album.cover != "" %}
 
 
-    <div class="col-sm-4 col-md-3 col-lg-2 regular-gutter">
+    <div class="col-4 col-sm-4 col-md-3 col-lg-2 regular-gutter">
 	<a title="{{album.title}}" href="{% url 'albums:album' album.mbid %}" class="thumbnail"><img class="responsive" src="{% static 'images/loading.gif' %}" data-src="{{ album.get_cover }}"></a>
     </div>
     
