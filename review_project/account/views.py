@@ -82,7 +82,6 @@ def activate(request, uidb64, token):
     if user is not None and account_activation_token.check_token(user, token):
         user.is_active = True
         user.save()
-        login(request, user)
         return redirect('registration_complete')
     else:
         if not user.is_active:
@@ -125,7 +124,6 @@ def edit_profile(request):
     if request.method == 'POST':
         user_form = EditUserForm(request.POST, instance = request.user)
         account_form = EditAccountForm(request.POST, request.FILES, instance = request.user.account)
-        print(account_form.has_changed())
         if user_form.is_valid() and account_form.is_valid():
             user_form.save()
             account_form.save()
@@ -163,13 +161,13 @@ def edit_settings(request):
 @login_required
 @transaction.atomic
 def delete_account(request):
-    """doesn't actually delete, but clears all fields and sets is_active to False"""
     if request.method == "POST":
         password_confirm = PasswordConfirmForm(request.POST)
         if password_confirm.is_valid():
             password = password_confirm.cleaned_data.get('password')
             if request.user.check_password(password):
                 request.user.account.top_albums = None #prevents models.PROTECT to be triggered
+                request.user.account.save()
                 request.user.delete()
                 return render(request, 'account/deleted.html')
             else:

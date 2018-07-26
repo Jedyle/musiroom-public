@@ -5,6 +5,7 @@ from .forms import EditAccountForm, RegistrationForm
 from lists.models import ItemList
 from datetime import datetime, date, timedelta
 from django.urls import clear_url_caches, get_resolver, get_urlconf, resolve, reverse
+from django.core import mail
 
 # Create your tests here.
 
@@ -125,11 +126,77 @@ class LoginRequiredTest(TestCase):
         url = reverse('login')
         c.post(url, {'username' : 'Toto', 'password': 'pass12345'})
         request = c.get(url)
-        print(request)
-        self.assertRedirects(request, '/')
+        self.assertRedirects(request, '/profil/connecte/', status_code = 302, target_status_code = 302)
 
     def status_code_login(self):
         c = Client()
         url = 'profil/connexion/'
         request = c.get(url, secure=(scheme == 'https'))
         self.assertEquals(request.status_code, 200)
+
+    #chaque account a un top albums impossible à supprimer
+
+"""
+Register :
+- test formulaire register (confirm password)
+"""
+
+
+"""
+Send email :
+- resend et send donnent le même token
+- click sur le lien => utilisateur devient actif
+- click sur le lien deux fois => ne change rien
+"""
+
+class ConfirmationEmailTest(TestCase):
+
+    def test_same_token_register_and_resend(self):
+        c = Client()
+        url = reverse('register')
+        response = c.post(url, {'username' : 'Toto', 'email' : 'test@example.com', 'password' : 'pass12345', 'confirm_password' : 'pass12345'})
+        self.assertEquals(response.status_code, 200)
+        confirm_mail = mail.outbox[0]
+        resend_url = reverse('resend_email', args=['Toto'])
+        response = c.get(resend_url)
+        self.assertEquals(response.status_code, 200)
+        resent_mail = mail.outbox[1]
+        self.assertEquals(confirm_mail.body, resent_mail.body)    
+
+"""
+Delete user :
+- verif que la view delete fonctionne et supprime bien l'utilisateur
+- delete ne fonctionne que si utilisateur connecte
+"""
+
+class DeleteUserTest(TestCase):
+
+    def setUp(self):
+        user = User.objects.create_user(username = 'Toto', password = 'pass12345', email = 'toto@test.fr')
+
+        itemlist = ItemList(user = user, title='Top albums de Toto')
+        itemlist.save()
+        account = Account(user = user, top_albums = itemlist)        
+        account.save()
+
+    def test_delete_user(self):
+        c = Client()
+        url = reverse('login')
+        login = c.post(url, {'username' : 'Toto', 'password': 'pass12345'})
+        delete_url = reverse('delete_account')
+        response = c.post(delete_url, {'password': 'pass12345'})
+        self.assertEquals(response.status_code, 200)
+        res = True
+        try :
+            user = User.objects.get(username = 'Toto')
+            res = False
+        except User.DoesNotExist:
+            res = True
+        self.assertEquals(res, True)
+
+    def test_delete_not_logged(self):
+        c = Client()
+        delete_url = reverse('delete_account')
+        response = c.post(delete_url, {'password': 'pass12345'})
+        self.assertEquals(response.status_code, 302)  
+        
