@@ -234,3 +234,7 @@ body {
     width : 48px;
 
 }
+
+table {
+    word-wrap : break-word;
+}

@@ -81,11 +81,14 @@ class ParseSearchAlbums(ParseSearch):
                     album_mbid = cols[1].a['href'].split('/')[-1]
                     artist = cols[2].text
                     artist_mbid = cols[2].a['href'].split('/')[-1]
+                    release_type = cols[3].getText()
+                    print(release_type)
                     result = {
                         'title' : title,
                         'album_mbid' : album_mbid ,
                         'artist' : artist,
                         'artist_mbid' : artist_mbid,
+                        'type' : release_type,
                         }
                     result_list.append(result)
                 except:
