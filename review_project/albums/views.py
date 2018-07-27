@@ -451,7 +451,6 @@ def top_album(request, slug, year):
     if slug and slug != "tout":
         genre = Genre.objects.get(slug = slug)
         associated_genres = genre.get_all_children()
-        print(associated_genres)
         albums = albums.filter(Q(albumgenre__genre__in = associated_genres) & Q(albumgenre__is_genre = True))
     albums = albums.filter(Q(ratings__isnull=False) & Q(ratings__average__gt = 1.0) & Q(ratings__count__gt = 2)).order_by('-ratings__average')
 
