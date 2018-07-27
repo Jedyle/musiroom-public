@@ -461,7 +461,7 @@ def top_album(request, slug, year):
     else:
         albums = cache_albums
 
-    ratings = list(albums.values('ratings__average', 'ratings__count'))
+    ratings = list(albums.values('mbid','ratings__average', 'ratings__count'))
         
     if request.user.is_authenticated :
         ct = ContentType.objects.get_for_model(Album)
@@ -470,7 +470,6 @@ def top_album(request, slug, year):
         
     itemlist = []
     for i,album in enumerate(albums):
-        print("i", i)
         item = {
             'album' : album,
             'artists' : compute_artists_links(album),
