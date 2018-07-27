@@ -11,6 +11,10 @@
 
 <div class="col-sm-12 col-md-6 offset-md-3">
 
+    {% if genre.parent %}
+    <p><a href="{% url 'albums:genre' genre.parent.slug %}">< {{genre.parent.name}}</a></p>
+    {% endif %}
+    
     <h1>{{genre.name}}</h1>
     <p>{{ genre.description|linebreaks }}</p>
 
@@ -33,8 +37,8 @@
 	</div>
 	{% endif %}
 
-	{% if children %}
 	<div class="col-12 col-lg-6">
+	    {% if children %}
 	    <h4>Sous-genres</h4>
 	    <ul>
 		{% for child in children %}
@@ -43,8 +47,8 @@
 		</li>
 		{% endfor %}
 	    </ul>
+	    {% endif %}
 	</div>
-	{% endif %}
 
 	
     </div>    

@@ -14,7 +14,7 @@ Tous les genres
 
     <div class="alert alert-danger">
 	<h2 class="text-center"><strong>Attention !</strong></h2>
-	<p class="text-center">Ce site est tout neuf et encore un peu vide ! Votre contribution est très appréciée. Il manque un genre musical ? N'oubliez pas de consulter les sous genres des genres affichés (vous trouverez par exemple 'Death Metal' en cliquant sur le genre 'Metal'). Vous ne trouvez toujours pas un genre ? <a href="{% url 'albums:submit_genre' %}">Proposez-le</a> ! </p>
+	<p class="text-center">Ce site est tout neuf et encore un peu vide ! Votre contribution est très appréciée. Il manque un genre musical ? <a href="{% url 'albums:submit_genre' %}">Proposez-le</a> ! </p>
     </div>
 
     <p class="text-center"><a href="{% url 'albums:submit_genre' %}">Ajouter un genre</a></p>
@@ -46,7 +46,7 @@ Tous les genres
      template: `
 	 <li>
 	     <div :class="{bold: isFolder}" @click="toggle" @dblclick="changeType">
-		 <a :href="model.url">[[ model.name ]]</a>
+		 <a @click.stop :href="model.url">[[ model.name ]]</a>
 		 <span v-if="isFolder">[ [[ open ? '-' : '+' ]] ]</span>
 	     </div>
 		     <ul class="treeview-ul" v-show="open" v-if="isFolder">
