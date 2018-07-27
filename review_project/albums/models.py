@@ -66,6 +66,14 @@ class Genre(models.Model):
         verbose_name = "genre"
         verbose_name_plural = "genres"
 
+    def get_all_children(self):
+        children = self.children
+        children_list = [self]
+        if children.count() > 0:
+            for child in children:
+                children_list.extend(child.get_all_children())
+        return children_list
+
     def save(self, *args, **kwargs):
         # Raise on circular reference
         parent = self.parent
