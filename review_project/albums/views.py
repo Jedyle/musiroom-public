@@ -408,7 +408,8 @@ def search(request):
 def genre(request, slug):
     gen = get_object_or_404(Genre, slug=slug)
     children = gen.children
-    top_10 = Album.objects.filter(Q(albumgenre__genre__slug = slug) & Q(albumgenre__is_genre = True) & Q(ratings__isnull=False) & Q(ratings__average__gt = 1.0) & Q(ratings__count__gt = 2)).order_by('-ratings__average')[:10]
+    all_children = gen.get_all_children()
+    top_10 = Album.objects.filter(Q(albumgenre__genre__in = all_children) & Q(albumgenre__is_genre = True) & Q(ratings__isnull=False) & Q(ratings__average__gt = 1.0) & Q(ratings__count__gt = 2)).distinct().order_by('-ratings__average')[:10]
     context = {
         'genre' : gen,
         'children' : children,
