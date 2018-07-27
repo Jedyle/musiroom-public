@@ -470,7 +470,6 @@ def top_album(request, slug, year):
         followees_ratings = rating_for_followees_list(request.user, albums)
         
     itemlist = []
-    print(albums)
     for i,album in enumerate(albums):
         print("i", i)
         item = {
