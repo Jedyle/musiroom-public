@@ -9,9 +9,28 @@ from star_ratings.models import Rating
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.dispatch import receiver
+from django.urls import reverse
 
 
 # Create your models here.
+
+class GenreManager(models.Manager):
+    def generate_tree(self):
+        roots = self.filter(parent__isnull = True)
+        genre_tree = [{'name' : root.name, 'slug' : root.slug, 'url' : reverse('albums:genre', args = [root.slug])} for root in roots]
+        for i in range(len(genre_tree)):
+            self.gen_child_tree(genre_tree[i])
+        return {'tree' : genre_tree}
+
+    def gen_child_tree(self,genre_dict):
+        slug = genre_dict['slug']
+        genre = Genre.objects.get(slug = slug)
+        children = genre.children
+        children_tree = [{'name' : child.name, 'slug' : child.slug, 'url' : reverse('albums:genre', args = [child.slug])} for child in children]
+        if len(children_tree) > 0:
+            genre_dict['children'] = children_tree
+            for i in range(len(children_tree)) :
+                self.gen_child_tree(children_tree[i])
 
 class Genre(models.Model):
     name = models.CharField('Nom',
@@ -35,6 +54,8 @@ class Genre(models.Model):
     parent = models.ForeignKey("self", null=True, blank=True, on_delete=models.CASCADE
     )
 
+    objects = GenreManager()
+
     def __unicode__(self):
         return self.name
 
@@ -57,7 +78,6 @@ class Genre(models.Model):
     @property
     def children(self):
         return self.genre_set.all().order_by("name")
-
 
 class Album(models.Model):
     mbid = models.CharField(db_index=True,max_length = 36, unique = True)

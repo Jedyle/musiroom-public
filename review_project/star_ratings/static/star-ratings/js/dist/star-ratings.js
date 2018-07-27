@@ -277,7 +277,6 @@ var djangoRemarkRest = {
     post: function (url, data, success, fail) {
         var req = this.makeRequest(url, 'POST', success, fail);
         req.setRequestHeader("X-CSRFToken", this.getCookie('XSRF-TOKEN'));
-	console.log(url, JSON.stringify(data))
         req.send(JSON.stringify(data));
     },
 

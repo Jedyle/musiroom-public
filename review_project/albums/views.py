@@ -20,6 +20,7 @@ import re
 from django.core.cache import cache
 from django.contrib.contenttypes.models import ContentType
 from django.template.defaultfilters import floatformat
+import json
 
 # Create your views here.
 
@@ -415,9 +416,9 @@ def genre(request, slug):
 
 
 def genres(request):
-    general_genres = Genre.objects.filter(parent__isnull=True)
+    genres_tree = Genre.objects.generate_tree()
     context = {
-        'genres' : general_genres,
+        'tree' : json.dumps(genres_tree),
         }
     return render(request, 'albums/genres.html', context)
 
