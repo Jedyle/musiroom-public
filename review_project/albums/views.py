@@ -453,7 +453,7 @@ def top_album(request, slug, year):
         associated_genres = genre.get_all_children()
         print(associated_genres)
         albums = albums.filter(Q(albumgenre__genre__in = associated_genres) & Q(albumgenre__is_genre = True))
-    albums = albums.filter(Q(ratings__isnull=False) & Q(ratings__average__gt = 1.0) & Q(ratings__count__gt = 2)).distinct().order_by('-ratings__average')
+    albums = albums.filter(Q(ratings__isnull=False) & Q(ratings__average__gt = 1.0) & Q(ratings__count__gt = 2)).order_by('-ratings__average')
 
     cache_albums = cache.get('top_album_albums_{}_{}'.format(slug, year))
     if cache_albums is None:
@@ -469,8 +469,10 @@ def top_album(request, slug, year):
         user_ratings = UserRating.objects.for_instance_list_by_user(albums, ct, request.user)
         followees_ratings = rating_for_followees_list(request.user, albums)
         
-    itemlist = []            
+    itemlist = []
+    print(albums)
     for i,album in enumerate(albums):
+        print("i", i)
         item = {
             'album' : album,
             'artists' : compute_artists_links(album),
