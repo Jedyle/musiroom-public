@@ -15,7 +15,7 @@ Top 100 albums
 
 <div class="col-sm-12 col-md-10 offset-md-1 col-lg-6 offset-lg-3 bg-light">
 
-    <h1 class="text-center">Top 100 Albums </h1>
+    <h1 class="text-center">Top 100 Albums</h1>
 
     <form action="{% url 'albums:top_album_get' %}" method="get">
 	<div class="form-group">
@@ -94,7 +94,7 @@ Top 100 albums
 		    {% endautoescape %}
 		</p>
 		{% if user.is_authenticated %}
-		<p>	Ma note : <span title="Ma note" class="w3-tag rounded user-rating">{% if item.user_rating %}{{ item.user_rating.score }}{% else %}-{% endif %}</span>
+		<p class="item-user-rating" id="ID{{item.album.mbid}}" rating="{% if item.user_rating %}{{item.user_rating.score}}{% else %}0{% endif %}">	Ma note : <album_popover mbid="{{item.album.mbid}}" :rating="displayRating(user_rating)" @rate="user_rating = $event"></album_popover>
 		</p>
 		{% endif %}
 		<br>
@@ -105,4 +105,20 @@ Top 100 albums
     {% endfor %}
 </div>
 
+{% endblock %}
+
+
+{% block scripts %}
+
+<script> 
+ var album_data_url = "{% url 'albums:album_data' %}"
+</script>
+
+<script src="{% static 'js/vue.min.js' %}"></script>
+<script src="{% static 'js/axios.js' %}"></script>
+<script src="{% static 'star-ratings/js/star-rating-popover.min.js' %}"></script>
+<script src="{% static 'js/popover.js' %}"></script>
+<script src="{% static 'albums/js/album_popover.js' %}"></script>
+
+<script src="{% static 'ratings/js/assign_popover.js' %}">
 {% endblock %}

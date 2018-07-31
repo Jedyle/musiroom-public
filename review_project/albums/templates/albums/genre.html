@@ -28,7 +28,7 @@
 		{% for album in top %}
 
 		<li class="list-group-item">
-		    <img src="{% static 'images/loading.gif' %}" data-src="{{ album.get_cover }}" style="height : 40px"> &nbsp {{forloop.counter}}. <a href="{% url 'albums:album' album.mbid %}">{{ album }}</a> <span title="moyenne" class="float-right w3-tag rounded avg-rating w3-xlarge">{{ album.ratings.get.average|floatformat:'1' }}</span>
+		    <img src="{% static 'images/loading.gif' %}" data-src="{{ album.get_cover }}" style="height : 40px"> &nbsp {{forloop.counter}}. <a href="{% url 'albums:album' album.mbid %}">{{ album }}</a> <span title="Moyenne" class="float-right w3-tag rounded avg-rating w3-xlarge">{{ album.ratings.get.average|floatformat:'1' }}</span>
 		</li>
 		
 		{% endfor %}

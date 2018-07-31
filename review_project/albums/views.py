@@ -579,3 +579,25 @@ def ajax_search_in_db(request):
                 })
         return JsonResponse({'albums' : albums_list})
     return HttpResponseNotFound()
+
+@login_required
+def album_data(request):
+    if request.method == 'GET':
+        mbid = request.GET.get('mbid')
+        album = Album.objects.get(mbid = mbid)
+        content_type_id = ContentType.objects.get_for_model(Album).id
+        try:
+            user_rating = UserRating.objects.get(user=request.user, rating__content_type__id = content_type_id, rating__object_id = album.id).score
+        except UserRating.DoesNotExist:
+            user_rating = 0
+        data = {
+            'title' : album.title,
+            'artists' : compute_artists_links(album),
+            'cover' : album.get_cover(),
+            'content_type_id' : content_type_id,
+            'object_id' : album.id,
+            'rate_url' : reverse('star_ratings:rate', args=[content_type_id, album.id]),
+            'user_rating' : user_rating,
+            }
+        return JsonResponse(data)
+    return HttpResponseNotFound()

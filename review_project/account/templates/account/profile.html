@@ -91,13 +91,25 @@ Profil de {{profile.user.username}}
 
 {% block scripts %}
 
+<script>
+ //variables
+
+ var album_data_url = "{% url 'albums:album_data' %}"
+ 
+</script>
+
 <script src="{% static 'js/vue.min.js' %}"></script>
 <script src="{% static 'js/axios.js' %}"></script>
 <script src="https://unpkg.com/vuejs-paginate@latest"></script>
 <script src="{% static 'js/circle_thumbnail.js' %}"></script>
 <script src="{% static 'ajax_follower/js/toggleFollowButton.js' %}"></script>
+<script src="{% static 'star-ratings/js/star-rating-popover.min.js' %}"></script>
+<script src="{% static 'js/popover.js' %}"></script>
+<script src="{% static 'albums/js/album_popover.js' %}"></script>
 <script src="{% static 'ajax_follower/js/contacts.js' %}"></script>
 <script src="{% static 'lists/js/lists.js' %}"></script>
+<script src="{% static 'ratings/js/reviewPreviewUser.js' %}"></script>
+<script src="{% static 'ratings/js/ratingPreview.js' %}"></script>
 <script src="{% static 'ratings/js/reviewList.js' %}"></script>
 
 <script>
@@ -183,6 +195,8 @@ Profil de {{profile.user.username}}
 	 lists,
 	 contacts,
 	 lists,
+	 album_popover,
+	 popover,
      }
  })
  

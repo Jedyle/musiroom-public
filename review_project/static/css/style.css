@@ -245,3 +245,37 @@ table {
 .bold {
   font-weight: bold;
 }
+
+
+.popover-wrapper {
+    position: relative;
+    margin-top: 1.5rem;
+    display: inline-block;
+}
+
+.popover-content {
+    position: absolute;
+    margin-left: auto;
+    margin-right: auto;
+    left: 50%;
+    background-color: #f2f2f2;
+    padding: 0.1rem;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
+    z-index : 1000 ;
+}
+
+.popover-content:before {
+    position: absolute;
+    z-index: -1;
+    content: '';
+    right: calc(50% - 10px);
+    top: -8px;
+    border-style: solid;
+    border-width: 0 10px 10px 10px;
+    border-color: transparent transparent #f2f2f2 transparent;
+}
+
+.rating-span-popover {
+    text-decoration : none;
+    font-weight : normal;
+}

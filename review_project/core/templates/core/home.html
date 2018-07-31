@@ -17,26 +17,32 @@
 
 {% block content %}
 
-<div class="col-sm-12 col-md-8 offset-md-2">
+<div class="col-sm-12 col-md-8 offset-md-2">    
+    
     <h1 class="text-center">Nouveautés</h1>
 
-    {% cache 3600 new_albums %}
+    {% cache 3600 new_albums user.is_authenticated %}
     <div class="row">
-    {% for album in albums %}
+	{% for album in albums %}
 
-    {% if album.cover != "" %}
+	{% if album.cover != "" %}
 
+	{% if user.is_authenticated %}
+	<div class="col-4 col-sm-4 col-md-3 col-lg-2 regular-gutter item-user-rating" id="ID{{album.mbid}}">
+	    <album_popover mbid="{{album.mbid}}"><a slot="preview" href="{% url 'albums:album' album.mbid %}" class="thumbnail"><img class="responsive" src="{% static 'images/loading.gif' %}" data_src="{{ album.get_cover }}" ref="popover"></a></album_popover>
 
-    <div class="col-4 col-sm-4 col-md-3 col-lg-2 regular-gutter">
-	<a title="{{album.title}}" href="{% url 'albums:album' album.mbid %}" class="thumbnail"><img class="responsive" src="{% static 'images/loading.gif' %}" data-src="{{ album.get_cover }}"></a>
-    </div>
-    
-    
+	</div>
+	{% else %}
+	<div class="col-4 col-sm-4 col-md-3 col-lg-2 regular-gutter">
+	    <a title="{{album.title}}" href="{% url 'albums:album' album.mbid %}" class="thumbnail"><img class="responsive" src="{% static 'images/loading.gif' %}" data-src="{{ album.get_cover }}"></a>
+	</div>
+	{% endif %}    
+	
     {% endif %}
     
     {% endfor %}
-    {% endcache %}
     </div>
+    {% endcache %}
 </div>
 
 <div class="col-sm-12 col-md-8 offset-md-2">
@@ -167,50 +173,79 @@
 	     </div>
 	     <div v-show="loading"><br><br><div class="spinner" style="position:relative"></div></div>
 	 </div>
-     `,
-     mounted : function(){
+	 `,
+	 mounted : function(){
 	 this.loading = true;
 	 axios.get(this.url 
 	 ).then(response => {
-	     this.html = response.data;
-	     this.loading = false;
+	 this.html = response.data;
+	 this.loading = false;
 	 }
 	 ).catch(error => {
-	     console.log(error)
-	     this.loading = false;
+	 console.log(error)
+	 this.loading = false;
 	 })
-     }
- }
- 
- var vm = new Vue({
-     delimiters : ['[[', ']]'],
-     el : '#app',
-     data : {
+	 }
+	 }
+	 
+	 var vm = new Vue({
+	 delimiters : ['[[', ']]'],
+	 el : '#app',
+	 data : {
 	 currentView : 'all_reviews',
 	 currentViewRating : 'all_ratings',
-     },
-     components : {
+	 },
+	 components : {
 	 followees_reviews,
-     },
-     computed : {
+	 },
+	 computed : {
 	 currentProperties : function(){
-	     if (this.currentView === 'followees_reviews'){
-		 return {
-		     url : "{% url 'home_followees_reviews' %}",
-		 }
-	     }
+	 if (this.currentView === 'followees_reviews'){
+	 return {
+	 url : "{% url 'home_followees_reviews' %}",
+	 }
+	 }
 	 },
 	 currentPropertiesRating : function(){
-	     if (this.currentViewRating === 'followees_reviews'){
-		 return {
-		     url : "{% url 'home_followees_ratings' %}",
-		 }
-	     }
+	 if (this.currentViewRating === 'followees_reviews'){
+	 return {
+	 url : "{% url 'home_followees_ratings' %}",
 	 }
-     }
- })
- 
+	 }
+	 }
+	 }
+	 })
+	 
 </script>
+
+<script> 
+ var album_data_url = "{% url 'albums:album_data' %}"
+</script>
+
+<script src="{% static 'star-ratings/js/star-rating-popover.min.js' %}"></script>
+<script src="{% static 'js/popover.js' %}"></script>
+<script src="{% static 'albums/js/album_popover.js' %}"></script>
+
+<script>
+
+ var albums_ratings = document.getElementsByClassName('item-user-rating')
+
+ Array.prototype.forEach.call(albums_ratings, function(el) {
+     var mbid = el.id;
+     new Vue({
+	 el : '#' + mbid,
+	 delimiters : ['[[', ']]'],
+	 components : {
+	     album_popover,
+	 },
+	 mounted : function(){
+	     this.$refs.popover.src = this.$refs.popover.getAttribute('data_src');
+	 }
+     });
+ });
+
+</script>
+
 
 {% endif %}
 

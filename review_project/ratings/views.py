@@ -151,7 +151,7 @@ def review_list(request, mbid):
                 'url_profile' : reverse('profile', args=[review.rating.user.username]),
                 'url_review' : reverse('albums:review', args=[album.mbid, review.id]),                
                 })
-        return JsonResponse({'data' : response, 'nbpages' : nb_pages})
+        return JsonResponse({'data' : response, 'nbpages' : nb_pages, 'is_anonymous' : request.user.is_anonymous})
 
 def search_review(result, query):
     words = query.split(' ')
@@ -209,7 +209,7 @@ def user_review_list(request, username):
                 }
             item_data = {**album_data, **review_data}
             response.append(item_data)
-        return JsonResponse({'data' : response, 'nbpages' : nb_pages})
+        return JsonResponse({'data' : response, 'nbpages' : nb_pages, 'is_anonymous' : request.user.is_anonymous, 'is_user' : (request.user == user)})
     return HttpResponseNotFound()
 
 
@@ -280,7 +280,7 @@ def user_rating_list(request, username):
                 rating_data['url_review'] = None
             item_data = {**album_data, **rating_data}
             response.append(item_data)
-        return JsonResponse({'data' : response, 'nbpages' : nb_pages})
+        return JsonResponse({'data' : response, 'nbpages' : nb_pages, 'is_anonymous' : request.user.is_anonymous, 'is_user' : (request.user == user)})
     return HttpResponseNotFound()
 
 

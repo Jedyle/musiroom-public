@@ -194,6 +194,8 @@
 		     allimages[i].setAttribute('src', allimages[i].getAttribute('data-src'));
 		 }
 	     }
+	     var event = new Event('imgLoaded');
+	     window.dispatchEvent(event);
 	 }, false)
 	 
 	</script>

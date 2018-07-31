@@ -1,116 +1,3 @@
-let reviewpreview = {
-    props : {
-	'review' : Object,
-    },
-    delimiters : ['[[', ']]'],
-    computed : {
-	cleanContent : function(){
-	    var html = this.review.content;
-	    var div = document.createElement("div");
-	    div.innerHTML = html;
-	    return div.innerText;
-	}
-    },
-    template : `
-	<div>
-	<h3 style='font-weight: bold;'> [[ review.title ]] </h3>
-	<p> [[ cleanContent ]]... </p>
-	<p class="text-right"><a :href="review.url_review">Lire la critique</a></p>
-	<div class="d-flex bd-highlight mb-3">
-	<div class="h5 p-2 bd-highlight"><span class="w3-tag bg-secondary">[[ review.rating ]]</span> &ensp; <a :href="review.url_profile"> [[ review.username ]] </a></div>
-	<div class="ml-auto p-2 bd-highlight"> <i class="fas fa-heart"></i> <span>[[ review.num_up ]]</span> </div>
-	</div>
-	<hr>
-	</div>
-	`,
-    mounted : function(){
-    }
-};
-
-let reviewpreviewuser = {
-    props : {
-	'review' : Object,
-    },
-    delimiters : ['[[', ']]'],
-    computed : {
-	cleanContent : function(){
-	    var html = this.review.content;
-	    var div = document.createElement("div");
-	    div.innerHTML = html;
-	    return div.innerText;
-	}
-    },
-    template : `
- <div>
-    <div class="row">
-	<div class='col-3'>
-	    <div class="card">
-		<img class="card-img-top" :src="review.album_cover" alt="review.album_title">
-		<div class="card-body">
-		    <h5 class="card-title"><a :href="review.url_album">[[ review.album_title ]]</a></h5>
-		    <p class="card-text" v-html="review.artists">
-		    </p>
-		</div>
-	    </div>
-	</div>
-	<div class='col-9'>
-	    <h3 style='font-weight: bold;'> [[ review.title ]] </h3>
-	    <p> [[ cleanContent ]]... </p>
-	    <p class="text-right"><a target="_blank" :href="review.url_review">Lire la critique</a></p>
-	    <div class="d-flex bd-highlight mb-3">
-		<div class="h5 p-2 bd-highlight"><span class="w3-tag bg-secondary">[[ review.rating ]]</span> &ensp; <a target="_blank" :href="review.url_profile"> [[ review.username ]] </a></div>
-		<div class="ml-auto p-2 bd-highlight"> <i class="fas fa-heart"></i> <span>[[ review.num_up ]]</span> </div>
-	    </div>
-	</div>
-    </div>
-    <hr>
-</div>
-	`,
-    mounted : function(){
-    }
-};
-
-
-let ratingpreview = {
-    props : {
-	'review' : Object,
-    },
-    methods : {
-	displayRating : function(rating){
-	    var zero = 0.01
-	    if (parseFloat(rating) < zero){
-		return '-'
-	    }
-	    else{
-		return rating.toString().replace(',', '.')
-	    }
-	},
-	
-    },
-    delimiters : ['[[', ']]'],
-    template : `
-	<div>
-	<div class="row">
-	<div class='col-2'>
-	    <div class="card">
-	<img class="card-img-top" :src="review.album_cover" alt="review.album_title">
-	    </div>
-	</div>
-	<div class='col-10'>
-	<h5><a :href="review.url_album">[[ review.album_title ]]</a> <span title="Note moyenne" class="w3-tag bg-secondary w3-xlarge" style="float : right;"> [[ displayRating(review.average) ]]</span> <span style="float : right;">&ensp;&ensp;</span>  <span title="Moyenne de mes abonnements" class="w3-tag color-teal w3-xlarge" style="float : right;"> [[ displayRating(review.followees_avg) ]]</span> </h5>
-	<p v-html="review.artists"></p>
-	<p class='text-right'> Ma note : <span title="Ma note" class="w3-tag w3-khaki">[[ displayRating(review.user_rating) ]]</span></p>
-    
-	    <div class="bd-highlight mb-3">
-		<div class="h5 p-2 bd-highlight"><span class="w3-tag bg-secondary">[[ review.rating ]]</span> &ensp; <a target="_blank" :href="review.url_profile"> [[ review.username ]] </a></div>
-	    </div>
-	</div>
-    </div>
-    <hr>
-</div>
-	`,
-}
-
 let reviewslist = {
     delimiters : ['[[', ']]'],
     props : {
@@ -120,7 +7,6 @@ let reviewslist = {
 	    },
     components : {
 	'paginate' : VuejsPaginate,
-	reviewpreview,
     },
     data : function (){
 	return {
@@ -131,6 +17,8 @@ let reviewslist = {
 	    query : "",
 	    last_query : "",
 	    loading : true,
+	    is_anonymous : false,
+	    is_user : false,
 	}
     },
     template :`	<div>
@@ -173,7 +61,7 @@ let reviewslist = {
 	<template v-else>
 	<p v-if="nb_pages < 1">Aucun résultat trouvé</p>
 	<template v-for="review in reviewList">
-	<component :is="component" v-bind="{ review : review }"></component>
+	<component :is="component" v-bind="{ review : review, is_anonymous : is_anonymous, is_user : is_user }"></component>
 	</template>
 	</template>
 
@@ -227,6 +115,12 @@ let reviewslist = {
 		}).then(response => {
 		    this.reviewList = response.data.data;
 		    this.nb_pages = parseInt(response.data.nbpages);
+		    if(response.data.hasOwnProperty('is_anonymous')){
+			this.is_anonymous = response.data.is_anonymous;
+		    }
+		    if(response.data.hasOwnProperty('is_user')){
+			this.is_user = response.data.is_user;
+		    }
 		    this.last_query = query;
 		    this.loading = false;
 		}).catch(error => {

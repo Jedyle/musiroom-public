@@ -22,5 +22,6 @@ urlpatterns = [
     url(r'genres/ajouter/$', views.submit_genre, name='submit_genre'),
     url('^genre/(?P<slug>[0-9a-zA-Z_-]+)/$', views.genre, name='genre'),
     url(r'^top/$', views.top_album_get, name='top_album_get'),
-    url(r'^top/(?P<slug>([a-zA-Z-_]+))/(?P<year>([0-9]{4}s?|tout))/$', views.top_album, name='top_album'),    
+    url(r'^top/(?P<slug>([a-zA-Z-_]+))/(?P<year>([0-9]{4}s?|tout))/$', views.top_album, name='top_album'),
+    url(r'album/donnees/$', views.album_data, name='album_data'),
         ]
