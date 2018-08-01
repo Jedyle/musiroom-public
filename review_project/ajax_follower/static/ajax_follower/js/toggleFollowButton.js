@@ -17,8 +17,8 @@ var toggleFollowButton = {
 	}
     },
     template : `
-    	<a class="btn btn-success" href="#" @click.prevent="toggleValue" v-if="d_followed">Suivi</a>
-	<a class="btn btn-light" href="#" @click.prevent="toggleValue" v-else>Suivre</a>
+    	<a class="btn btn-success btn-block" href="#" @click.prevent="toggleValue" v-if="d_followed">Suivi</a>
+	<a class="btn btn-outline-info btn-block" href="#" @click.prevent="toggleValue" v-else>Suivre</a>
 	`,
     methods : {
 	toggleValue : function(){

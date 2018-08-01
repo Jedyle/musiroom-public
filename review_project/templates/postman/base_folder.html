@@ -25,11 +25,11 @@ in the INSTALLED_APPS setting.
 	{% block pm_form_buttons %}
 	<div class="float-right">
 	    <div id="pm_buttons" >
-		{% block pm_delete_button %}<button type="submit" class="btn btn-outline-danger pm_btn pm_btn-delete" onclick="this.form.action='{% url 'postman:delete' %}'">{% trans "Delete" %}</button>{% endblock %}
-		{% block pm_archive_button %}<button type="submit" class="btn btn-outline-info pm_btn pm_btn-archive" onclick="this.form.action='{% url 'postman:archive' %}'">{% trans "Archive" %}</button>{% endblock %}
-		{% block pm_undelete_button %}<button type="submit" class="btn btn-outline-info pm_btn pm_btn-undelete" onclick="this.form.action='{% url 'postman:undelete' %}'">{% trans "Undelete" %}</button>{% endblock %}
-		{% block pm_read_button %}<button type="submit" class="btn btn-outline-success pm_btn pm_btn-read" onclick="this.form.action='{% url 'postman:mark-read' %}'">{% trans "Mark as read" %}</button>{% endblock %}
-		{% block pm_unread_button %}<button type="submit" class="btn btn-outline-dark pm_btn pm_btn-unread" onclick="this.form.action='{% url 'postman:mark-unread' %}'">{% trans "Mark as unread" %}</button>{% endblock %}
+		{% block pm_delete_button %}<button type="submit" class="btn btn-outline-danger pm_btn pm_btn-delete mb-1" onclick="this.form.action='{% url 'postman:delete' %}'">{% trans "Delete" %}</button>{% endblock %}
+		{% block pm_archive_button %}<button type="submit" class="btn btn-outline-info pm_btn pm_btn-archive mb-1" onclick="this.form.action='{% url 'postman:archive' %}'">{% trans "Archive" %}</button>{% endblock %}
+		{% block pm_undelete_button %}<button type="submit" class="btn btn-outline-info pm_btn pm_btn-undelete mb-1" onclick="this.form.action='{% url 'postman:undelete' %}'">{% trans "Undelete" %}</button>{% endblock %}
+		{% block pm_read_button %}<button type="submit" class="btn btn-outline-success pm_btn pm_btn-read mb-1" onclick="this.form.action='{% url 'postman:mark-read' %}'">{% trans "Mark as read" %}</button>{% endblock %}
+		{% block pm_unread_button %}<button type="submit" class="btn btn-outline-dark pm_btn pm_btn-unread mb-1" onclick="this.form.action='{% url 'postman:mark-unread' %}'">{% trans "Mark as unread" %}</button>{% endblock %}
 	    </div>
 	</div>
 	{% endblock %}

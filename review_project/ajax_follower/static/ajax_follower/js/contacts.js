@@ -15,7 +15,7 @@ var contactPreview = {
     template : `
 	<div class="col-xs-6 col-sm-6 col-md-4 col-lg-3 mb-md-0 mb-4">
 	<div class="row">
-	<circlethumb :url="avatar" size="72px"></circlethumb>
+	<a class='mx-auto' :href="profile_url"><circlethumb :url="avatar" size="72px"></circlethumb></a>
 	</div>
 	<div class="row">
 	<div class="col-12">
@@ -64,19 +64,23 @@ var contacts = {
 
     <br>
 
+    <p>
     Filtrer : 
 	<select class="select-style" v-model="selected">
 	<option v-for="option in options" v-bind:value="option.value">
 	[[ option.text ]]
     </option>
 	</select>
+	</p>
 
+    <p>
     Trier par :
     	<select class="select-style" v-model="sort">
 	<option v-for="option in sort_options" v-bind:value="option.value">
 	[[ option.text ]]
     </option>
 	</select>
+	</p>
 	
 	<br>
 	<br>
