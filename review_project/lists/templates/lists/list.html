@@ -46,7 +46,7 @@
     <div class="row">
 	<div class="col-sm-12 col-md-9 offset-md-1 col-lg-7 offset-lg-2">
 
-	    <p v-cloak>Liste de [[ all_items.length ]] albums</p>
+	    <p class="text-center" v-cloak>Liste de [[ all_items.length ]] albums</p>
 	    <a id="deleteList" class="float-right" href="{% if user.is_authenticated %}{% url 'profile' user.username %}{% endif %}" v-if="infos.can_edit" @click.prevent="deleteList">Supprimer ma liste</a>
 	    
 	    <div class="row">
@@ -109,28 +109,31 @@
 			    <div class='col-sm-8 bg-light'>
 				<h3 style='font-weight: bold;' v-if="infos.ordered"> [[ item.rank ]].
 				    <a :href="item.album_url">[[ item.title ]]</a>
+				    <span style="float:right">
 				    <span title="Note moyenne" class="w3-tag avg-rating rounded w3-xlarge" style="float : right;"> [[ displayRating(item.avg_rating) ]]</span>
 				    <span style="float : right;">&nbsp; &nbsp;</span>
 				    {% if user.is_authenticated %}
 				    <span title="Moyenne de mes éclaireurs" class="w3-tag rounded follow-rating w3-xlarge" style="float : right;"> [[ displayRating(item.followees_rating) ]]</span>
+				    </span>
 				    {% endif %}
 				</h3>
 				<h3 style='font-weight: bold;' v-else>
 				    <a :href="item.album_url">[[ item.title ]]</a>
+				    <span style="float:right;">
 				    <span title="Note moyenne" class="w3-tag avg-rating rounded w3-xlarge" style="float : right;"> [[ displayRating(item.avg_rating) ]]</span>
 				    <span style="float : right;">&nbsp; &nbsp;</span>
 				    {% if user.is_authenticated %}
-				    <span title="Moyenne de mes éclaireurs" class="w3-tag rounded follow-rating w3-xlarge" style="float : right;"> [[ displayRating(item.followees_rating) ]]</span>
+				    <span title="Moyenne de mes éclaireurs" class="w3-tag rounded follow-rating w3-xlarge" style="float : right;"> [[ displayRating(item.followees_rating) ]]</span></span>
 				    {% endif %}
 				</h3>
 				<p v-html="'Album de ' + item.artists"></p>
 				{% if user.is_authenticated %}
-				<p>	Ma note : <span title="Ma note" class="w3-tag rounded user-rating">[[ displayRating(item.user_rating) ]]</span>
+				<p v-if="!infos.is_anonymous">	Ma note : <album_popover @rate="item.user_rating = $event;" :rating="displayRating(item.user_rating)" :mbid="item.mbid"></album_popover>
 				</p>
 				{% endif %}
 				<circlethumb :url="infos.avatar"></circlethumb>
 				<br>
-				<div>
+				<div v-if="!infos.is_user">
 				    &nbsp; <span title="Note de l'auteur" class="w3-tag w3-light-gray w3-xlarge">[[ displayRating(item.author_rating) ]]</span>
 				</div>
 				<br>
@@ -224,7 +227,7 @@
 <script type="text/javascript" src="{% static 'fluent_comments/js/ajaxcomments.js' %}"></script>
 
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.16/vue.min.js"></script>
+<script src="{% static 'js/vue.min.js' %}"></script>
 <script src="{% static 'js/axios.js' %}"></script>
 
 <script src="{% static 'js/utilities.js' %}"></script>
@@ -233,6 +236,19 @@
 <script src="{% static 'ratings/js/vote.js' %}"></script>
 <script src="{% static 'lists/js/add_album.js' %}"></script>
 <script src="https://unpkg.com/vuejs-paginate@latest"></script>
+
+<script>
+ //variables
+
+ var album_data_url = "{% url 'albums:album_data' %}"
+ 
+</script>
+
+<script src="{% static 'star-ratings/js/star-rating-popover.min.js' %}"></script>
+<script src="{% static 'js/popover.js' %}"></script>
+<script src="{% static 'albums/js/album_popover.js' %}"></script>
+
+
 
 <script>
  window.addEventListener('load', function(){
@@ -262,6 +278,8 @@
      edit_url : "{{edit_url}}",
      delete_url : "{{delete_url}}",
      delete_list_url : "{{delete_list_url}}",
+     is_anonymous : {% if user.is_anonymous %}true{% else %}false{% endif %},
+     is_user : {% if user.username == infos.user.username %}true{% else %}false{% endif %},
  }
 
  var list = []
@@ -541,6 +559,8 @@
 	 modal,
 	 addalbum,
 	 vote,
+	 album_popover,
+	 popover,
      },
      watch : {
 	 list : function(newVal){

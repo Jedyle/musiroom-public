@@ -11,11 +11,18 @@ Top 100 albums
 
 {% endblock %}
 
+{% block body_title %}
+<div class="jumbotron jumbotron-fluid" style="background-image : url({% static 'images/top-albums-bg.jpg' %}); background-position: 70% 70%; background-size : cover;">
+    <div class="container">
+	<h1 class="text-center display-4"><span class="border rounded" style="padding : 5px; background-color : white">Top 100 Albums</span></h1>
+    </div>
+</div>
+{% endblock %}
+
+
 {% block content %}
 
 <div class="col-sm-12 col-md-10 offset-md-1 col-lg-6 offset-lg-3 bg-light">
-
-    <h1 class="text-center">Top 100 Albums</h1>
 
     <form action="{% url 'albums:top_album_get' %}" method="get">
 	<div class="form-group">

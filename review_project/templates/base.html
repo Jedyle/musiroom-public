@@ -15,6 +15,7 @@
     <head>
 	<!-- Required meta tags -->
 	<meta charset="utf-8">
+	<meta name="La Musithèque">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
 	<meta name="google-site-verification" content="c0eu5cthqqDx8Ir7CF2pysANz8kGfzyHz5znn9ddeJE" />
@@ -58,12 +59,14 @@
     <body>
 	<!-- Our application root element -->
 
+	{% notifications_unread as notif_unread_count %}
+
 	<header>
 
 	    <nav class="navbar fixed-top navbar-expand-lg navbar-dark color-sanguine">
 		<a class="navbar-brand" href="/">La Musithèque</a>
 		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-		    <span class="navbar-toggler-icon"></span>
+		    <span class="navbar-toggler-icon {% if message_unread_count > 0 or notif_unread_count > 0 %}notif-badge" data-badge="{{message_unread_count|add:notif_unread_count}}"{% else %}"{% endif %}></span>
 		</button>
 
 		<div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -79,19 +82,15 @@
 			    <a class="nav-link" href="{% url 'albums:genres' %}">Genres</a>
 			</li>
 		    </ul>
-		    <ul class="navbar-nav col-xl-3 offset-xl-3 offset-lg-2 col-lg-3">
-			<form class="form-inline" method="get" action="{% url 'albums:search' %}">
+		    <ul class="navbar-nav col-xl-3 offset-xl-4 offset-lg-3 col-lg-3">
+			<form class="form-inline" method="get" action="{% url 'albums:search' %}" role="search">
 
-			    <div class="form-group">
 				{% url 'albums:search' as nav_search_url %}
-				<div class="input-group">
-				    <span class="input-group-btn">
+				<div class="input-group row no-gutters">
+				    <span class="input-group-btn col-8">
 					<input type="text" class="form-control" name="query" placeholder="Rechercher..." value="{% block search_value %}{% endblock %}">
 				    </span>
-				    <span class="input-group-btn">
-					&nbsp;
-				    </span>
-				    <span class="input-group-btn">
+				    <span class="input-group-btn col-4">
 					<select class="form-control" name="type" style="height : 100%">
 					    <option value="album" {% block album_search_selected %}{% endblock %}>Album</option>
 					    <option value="artiste" {% block artist_search_selected %}{% endblock %}>Artiste</option>
@@ -101,8 +100,7 @@
 				    <input type="submit" 
 					   style="position: absolute; left: -9999px; width: 1px; height: 1px;"
 					   tabindex="-1" />
-				</div>	
-			    </div>	
+				</div>		
 			    
 			</form>
 		    </ul>
@@ -126,7 +124,7 @@
 			    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
 				{% if user.is_authenticated %}
 				<a class="dropdown-item" href="{% url 'postman:inbox' %}">Messagerie {% if message_unread_count > 0 %}({{message_unread_count}}){% endif %}</a>
-				<a class="dropdown-item" href="{% url 'profile' user.username %}">Profil</a>
+				<a class="dropdown-item" href="{% url 'profile' user.username %}">Profil et oeuvres</a>
 				<a class="dropdown-item" href="{% url 'logout' %}">Déconnexion</a>
 				{% else %}
 				<a class="dropdown-item" href="{% url 'login' %}?next={{request.path}}">Connexion</a>

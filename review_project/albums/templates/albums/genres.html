@@ -6,11 +6,20 @@
 Tous les genres
 {% endblock %}
 
+{% block body_title %}
+
+<div class="jumbotron jumbotron-fluid" style="background-image : url({% static 'images/genres-bg.jpg' %}); background-position: 50% 70%; background-size : cover;">
+    <div class="container">
+	<h1 class="text-center display-4" style="color:white">Tous les genres</h1>
+    </div>
+</div>
+
+{% endblock %}
+
 {% block content %}
 
 <div class="col-sm-12 col-md-6 offset-md-3 bg-light">
 
-    <h1 class="text-center">Tous les genres</h1>
 
     <div class="alert alert-danger">
 	<h2 class="text-center"><strong>Attention !</strong></h2>

@@ -235,9 +235,9 @@ body {
 
 }
 
-table {
-    word-wrap : break-word;
-}
+/* table { */
+/*     word-wrap : break-word; */
+/* } */
 
 .treeview-item {
   cursor: pointer;
@@ -248,7 +248,7 @@ table {
 
 
 .popover-wrapper {
-    position: relative;
+    /* position: relative; */
     margin-top: 1.5rem;
     display: inline-block;
 }
@@ -278,4 +278,10 @@ table {
 .rating-span-popover {
     text-decoration : none;
     font-weight : normal;
+}
+
+@media (min-width: 979px) {
+  li.dropdown:hover > .dropdown-menu {
+    display: block;
+  }
 }

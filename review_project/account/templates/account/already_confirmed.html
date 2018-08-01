@@ -4,9 +4,18 @@
 Inscription confirmée
 {% endblock %}
 
+{% block body_title %}
+
+<div class="jumbotron jumbotron-fluid">
+    <div class="container">
+	<h1 class="text-center display-4">Votre inscription est déjà confirmée.</h1>
+    </div>
+</div>
+
+{% endblock %}
+
 {% block content %}
 <div class="col-sm-12 col-md-6 offset-md-3">
-    <h1>Votre inscription est déjà confirmée.</h1>
-    <p>Vous pouvez maintenant vous <a href="{% url 'login' %}">connecter</a></p>
+    <h2 class="text-center">Vous pouvez maintenant vous <a href="{% url 'login' %}">connecter</a>.</h2>
 </div>
 {% endblock %}

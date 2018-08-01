@@ -8,7 +8,7 @@ If the real implementation is to be used, just make sure that 'pagination' is de
 in the INSTALLED_APPS setting.
 {% endcomment %}
 {% block content %}
-<div id="postman" class="col-12 col-sm-9 col-lg-6 border">
+<div id="postman" class="col-12 col-sm-12 col-md-8 col-lg-6 border">
     <h2 class="text-center">{% block pm_folder_title %}{% endblock %}</h2>
     {% autopaginate pm_messages %}
     {% if invalid_page %}
@@ -24,15 +24,17 @@ in the INSTALLED_APPS setting.
     <form action="{% block pm_form_action %}{% endblock %}" method="post">{% csrf_token %}
 	{% block pm_form_buttons %}
 	<div class="float-right">
-	    <div id="pm_buttons" class="btn-group" role="group">
-		{% block pm_delete_button %}<button type="submit" class="btn btn-light pm_btn pm_btn-delete" onclick="this.form.action='{% url 'postman:delete' %}'">{% trans "Delete" %}</button>{% endblock %}
-		{% block pm_archive_button %}<button type="submit" class="btn btn-light pm_btn pm_btn-archive" onclick="this.form.action='{% url 'postman:archive' %}'">{% trans "Archive" %}</button>{% endblock %}
-		{% block pm_undelete_button %}<button type="submit" class="btn btn-light pm_btn pm_btn-undelete" onclick="this.form.action='{% url 'postman:undelete' %}'">{% trans "Undelete" %}</button>{% endblock %}
-		{% block pm_read_button %}<button type="submit" class="btn btn-light pm_btn pm_btn-read" onclick="this.form.action='{% url 'postman:mark-read' %}'">{% trans "Mark as read" %}</button>{% endblock %}
-		{% block pm_unread_button %}<button type="submit" class="btn btn-light pm_btn pm_btn-unread" onclick="this.form.action='{% url 'postman:mark-unread' %}'">{% trans "Mark as unread" %}</button>{% endblock %}
+	    <div id="pm_buttons" >
+		{% block pm_delete_button %}<button type="submit" class="btn btn-outline-danger pm_btn pm_btn-delete" onclick="this.form.action='{% url 'postman:delete' %}'">{% trans "Delete" %}</button>{% endblock %}
+		{% block pm_archive_button %}<button type="submit" class="btn btn-outline-info pm_btn pm_btn-archive" onclick="this.form.action='{% url 'postman:archive' %}'">{% trans "Archive" %}</button>{% endblock %}
+		{% block pm_undelete_button %}<button type="submit" class="btn btn-outline-info pm_btn pm_btn-undelete" onclick="this.form.action='{% url 'postman:undelete' %}'">{% trans "Undelete" %}</button>{% endblock %}
+		{% block pm_read_button %}<button type="submit" class="btn btn-outline-success pm_btn pm_btn-read" onclick="this.form.action='{% url 'postman:mark-read' %}'">{% trans "Mark as read" %}</button>{% endblock %}
+		{% block pm_unread_button %}<button type="submit" class="btn btn-outline-dark pm_btn pm_btn-unread" onclick="this.form.action='{% url 'postman:mark-unread' %}'">{% trans "Mark as unread" %}</button>{% endblock %}
 	    </div>
 	</div>
 	{% endblock %}
+
+	<div class="table-responsive-md">
 
 	<table class="table" id="pm_messages">
 	    <thead>
@@ -40,15 +42,15 @@ in the INSTALLED_APPS setting.
 		    <th>{% trans "Action" %}</th>
 		    {% block pm_sender_header %}   <th><a href="{% postman_order_by sender %}">{% trans "Sender" %}</a></th>{% endblock %}
 		    {% block pm_recipient_header %}   <th><a href="{% postman_order_by recipient %}">{% trans "Recipient" %}</a></th>{% endblock %}
-		    <th><a href="{% postman_order_by subject %}">{% trans "Subject" %}</a></th>
+		    <th style="min-width : 200px;"><a href="{% postman_order_by subject %}">{% trans "Subject" %}</a></th>
 		    <th><a href="{% postman_order_by date %}">{% block pm_date %}{% trans "Date" %}{% endblock %}</a></th>
 		</tr>
 	    </thead>
 	    <tbody>{% for message in pm_messages %}
 		<tr>
 		    <td><input type="checkbox" {% if by_conversation and message.thread_id %}name="tpks" value="{{ message.thread_id }}"{% else %}name="pks" value="{{ message.pk }}"{% endif %} /></td>
-		    {% block pm_sender_cell %}   <td>{{ message.obfuscated_sender|or_me:user }}{% if message.count %} ({{ message.count }}){% endif %}</td>{% endblock %}
-		    {% block pm_recipient_cell %}   <td>{{ message.obfuscated_recipient|or_me:user }}{% if message.count %} ({{ message.count }}){% endif %}</td>{% endblock %}
+		    {% block pm_sender_cell %}   <td><a href="{% url 'profile' message.obfuscated_sender %}">{{ message.obfuscated_sender|or_me:user }}</a>{% if message.count %} ({{ message.count }}){% endif %}</td>{% endblock %}
+		    {% block pm_recipient_cell %}   <td><a href="{% url 'profile' message.obfuscated_recipient %}">{{ message.obfuscated_recipient|or_me:user }}{% if message.count %}</a> ({{ message.count }}){% endif %}</td>{% endblock %}
 		    <td>{% if message.is_new %}<strong>{% endif %}{% if message.is_replied %}<em>{% endif %}
 			{% block pm_subject %}
 			<a href="{% if by_conversation and message.thread_id %}{% url 'postman:view_conversation' message.thread_id %}{% else %}{% url 'postman:view' message.pk %}{% endif %}?next={{ current_url|urlencode }}">
@@ -60,6 +62,7 @@ in the INSTALLED_APPS setting.
 		</tr>{% endfor %}
 	    </tbody>
 	</table>
+	</div>
     </form>
     {% paginate %}
     {% else %}

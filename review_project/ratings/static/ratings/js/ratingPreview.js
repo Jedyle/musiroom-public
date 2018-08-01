@@ -35,7 +35,7 @@ let ratingpreview = {
 	    </div>
 	</div>
 	<div class='col-10'>
-	<h5><a :href="review.url_album">[[ review.album_title ]]</a> <span title="Note moyenne" class="w3-tag bg-secondary w3-xlarge" style="float : right;"> [[ displayRating(review.average) ]]</span> <span style="float : right;">&ensp;&ensp;</span>  <span v-if='!is_anonymous' title="Moyenne de mes abonnements" class="w3-tag color-teal w3-xlarge" style="float : right;"> [[ displayRating(review.followees_avg) ]]</span> </h5>
+	<h5><a :href="review.url_album">[[ review.album_title ]]</a> <span style='float:right'><span title="Note moyenne" class="w3-tag rounded avg-rating w3-xlarge" style="float : right;"> [[ displayRating(review.average) ]]</span> <span style="float : right;">&ensp;&ensp;</span>  <span v-if='!is_anonymous' title="Moyenne de mes abonnements" class="w3-tag rounded follow-rating w3-xlarge" style="float : right;"> [[ displayRating(review.followees_avg) ]]</span></span> </h5>
 	<p v-html="review.artists"></p>
 	<p v-if='!is_anonymous' class='text-right'> Ma note : <album_popover @rate="user_rating = $event;" :rating="displayRating(user_rating)" :mbid="review.mbid"></album_popover></p>
     

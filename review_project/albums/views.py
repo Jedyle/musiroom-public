@@ -482,6 +482,7 @@ def top_album(request, slug, year):
         itemlist.append(item)
     genres_parents = Genre.objects.filter(parent__isnull = True)
     genres_children = Genre.objects.filter(parent__isnull = False).order_by('parent')
+            
     
     context = {
         'list' : itemlist,

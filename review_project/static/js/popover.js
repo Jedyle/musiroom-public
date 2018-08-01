@@ -12,6 +12,7 @@ var popover = {
             isInInfo: false,
 	    transform : "translate(-50%, 10px)",
 	    width : 300,
+	    position : 'relative',
         }
     },
     methods: {
@@ -53,21 +54,28 @@ var popover = {
         },
 	translatePop : function(){
 	    var rect = this.$refs.wrap.getBoundingClientRect()
-	    var pop_limit = rect.left + this.width/2
-	    var pop_limit_left = rect.left - this.width/2
-	    if (pop_limit > window.innerWidth){
+	    var pop_limit = rect.left + rect.width/2 + this.width/2
+	    var pop_limit_left = rect.left + rect.width/2 - this.width/2
+	    if (window.innerWidth <= 2*this.width){
+		this.position='static';
+		this.transform='translate(-50%, 10px)';
+	    }
+	    else if (pop_limit > window.innerWidth){
 	    	this.transform = "translate(-50%,10px) translate(-" + (this.width/2) + "px, 0)"
+		this.position='relative';
 	    }
 	    else if (pop_limit_left < 0){
-		this.transform = "translate(-50%,10px) translate(" + (this.width/2) + "px, 0)"
+		this.transform = "translate(-50%,10px) translate(" + (this.width/2) + "px, 0)";
+		this.position='relative';
 	    }
 	    else {
-		this.transform = "translate(-50%, 10px)"
+		this.position='relative';
+		this.transform = "translate(-50%, 10px)";
 	    }
 	}
     },
     template :    `
-        <div class="popover-wrapper" ref='wrap'>
+        <div :style="{'position' : position}" class="popover-wrapper" ref='wrap'>
         <a href="#" :class="titleClass" @mouseover="hover" @mouseout="hoverOut"><slot name='title'></slot></a>
         <div ref='popover' :style="{ 'transform' : transform, 'width': width+'px'}" class='popover-content' :class='contentClass' v-if="loadedPopup" v-show="showPopup" v-on:mouseover="hoverInfo" v-on:mouseout="hoverOutInfo">
 	<div class='container-fluid'>

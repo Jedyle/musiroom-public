@@ -3,7 +3,6 @@
  Array.prototype.forEach.call(albums_ratings, function(el) {
      var rating = el.getAttribute('rating');
      var mbid = el.id;
-     console.log(rating, mbid);
      new Vue({
 	 el : '#' + mbid,
 	 delimiters : ['[[', ']]'],

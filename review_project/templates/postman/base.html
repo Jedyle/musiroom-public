@@ -5,14 +5,14 @@
 <link type="text/css" media="all" rel="stylesheet" href="{% static 'postman/css/postman.css' %}" />
 {% endblock %}
 {% block postman_menu %}
-<div class="col-12 col-sm-3 bg-light">
+<div class="col-12 col-sm-12 col-md-4 col-lg-3 bg-light">
     <h1 class="text-center">Messagerie</h1>
-<ul class="list-group" id="postman_menu">{% postman_unread as unread_count %}
- <li class="list-group-item"><a href="{% url 'postman:inbox' %}">&raquo;&nbsp;{% trans "Inbox" %}{% if unread_count %} <strong>({{ unread_count }})</strong>{% endif %}</a></li>
- <li class="list-group-item"><a href="{% url 'postman:sent' %}">&raquo;&nbsp;{% trans "Sent Messages" %}</a></li>
- <li class="list-group-item"><a href="{% url 'postman:write' %}">&raquo;&nbsp;{% trans "Write" %}</a></li>
- <li class="list-group-item"><a href="{% url 'postman:archives' %}">&raquo;&nbsp;{% trans "Archives" %}</a></li>
- <li class="list-group-item"><a href="{% url 'postman:trash' %}">&raquo;&nbsp;{% trans "Trash" %}</a></li>
+    <ul class="list-group" id="postman_menu">{% postman_unread as unread_count %}
+	<a class="list-group-item list-group-item-action text-center" href="{% url 'postman:inbox' %}">&nbsp;{% trans "Inbox" %}{% if unread_count %} <strong>({{ unread_count }})</strong>{% endif %}</a>
+	<a class="list-group-item list-group-item-action text-center" href="{% url 'postman:sent' %}">&nbsp;{% trans "Sent Messages" %}</a>
+	<a class="list-group-item list-group-item-action text-center" href="{% url 'postman:write' %}">&nbsp;{% trans "Write" %}</a>
+	<a class="list-group-item list-group-item-action text-center" href="{% url 'postman:archives' %}">&nbsp;{% trans "Archives" %}</a>
+	<a class="list-group-item list-group-item-action text-center" href="{% url 'postman:trash' %}">&nbsp;{% trans "Trash" %}</a>
 </ul>
 </div>
 {% endblock %}
