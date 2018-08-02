@@ -298,6 +298,7 @@ def ajax_delete_list(request):
 def get_lists_for_user_and_album(request):
     if request.method == 'GET' :
         itemlists = ItemList.objects.filter(user = request.user)
+        print(request.GET)
         mbid = request.GET['mbid']
         album = get_object_or_404(Album, mbid = mbid)
         lists_contains_alb = []

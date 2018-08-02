@@ -2,7 +2,7 @@ let modal = {
     delimiters : ['[[', ']]'],
     template : `
 	<transition name="modal">
-        <div class="modal-mask" @click="close" v-show="show">
+        <div class="modal-mask text-left" @click="close" v-show="show">
         <div :class="container_class" @click.stop>
         <slot></slot>
         </div>

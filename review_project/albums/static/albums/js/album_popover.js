@@ -2,7 +2,7 @@ var album_popover_content = {
     delimiters : ['[[', ']]'],
     components : {
 	popover,
-	'star-rating' : VueStarRating.default
+	'star-rating' : VueStarRating.default,
     },
     props : {
 	mbid : {
@@ -12,6 +12,7 @@ var album_popover_content = {
 	    type : String,
 	    default : album_data_url,
 	},
+	
     },
     data : function(){
 	return {
@@ -22,20 +23,44 @@ var album_popover_content = {
 	}
     },
     template : `
-	<div class='row'
-	>
+	<div>
+	<div class='row'>
 	<div slot='content' style="position:relative" class="spinner" v-if="loading"></div>
 	<template v-else>
-	<div class='col-3' :style="{'background' : 'url(' + album_data.cover + ') 50% 50% no-repeat', 'background-size' : 'cover'}"></div>
-	<div class='col-9'>
+	<div class='col-4' :style="{'background' : 'url(' + album_data.cover + ') 50% 50% no-repeat', 'background-size' : 'cover'}"></div>
+	<div class='col-8'>
 	<h5 class='text-left'>[[album_data.title]]</h5>
 	<p class='text-left' v-html='album_data.artists'></p>
 	<star-rating :max-rating='10' :star-size='18' v-model='user_rating'></star-rating>
+	<div class='float-right'>
+	<button type="button" :style="{ 'color' : color }" class="btn btn-default" :title='displayReview' v-if='user_rating != 0' @click.prevent="$emit('show', 'review')"><i class="far fa-comment-alt"></i></button>
+	<button type="button" class="btn btn-default" title="Ajouter à une liste" @click.prevent="$emit('show', 'lists')"><i class="fas fa-list"></i></button>
 	</div>
+	</div>
+	</div>
+	
 	</template>
 	</div>
+	</div>
 	`,
-    watch : {
+    computed : {
+	displayReview : function(){
+	    if (this.album_data.review_exists){
+		return 'Modifier ma critique'
+	    }
+	    else {
+		return 'Critiquer'
+	    }
+	},
+	color : function(){
+	    if (this.album_data.review_exists){
+		return 'red'
+	    }
+	    else {
+		return ''
+	    }
+	    
+	}
     },
     methods : {
 	post_vote : function(newVal, oldVal){
@@ -50,6 +75,9 @@ var album_popover_content = {
 		}),
 		xsrfHeaderName: "X-CSRFToken",
 	    }).then(response => {
+		this.album_data.review = true;
+		this.album_data.user_rating = newVal;
+		this.$emit('loaded', this.album_data);
 	    }).catch(error => {
 		this.unwatch();
 		this.user_rating = oldVal;
@@ -71,6 +99,7 @@ var album_popover_content = {
 	    this.user_rating = response.data.user_rating;
 	    var vm = this;
 	    this.unwatch = this.$watch('user_rating', function(newVal, oldVal){vm.post_vote(newVal, oldVal)});
+	    this.$emit('loaded', this.album_data)
 	    this.loading = false;
 	}).catch(error => {
 	    console.log(error);
@@ -84,7 +113,8 @@ var album_popover = {
     components : {
 	popover,
 	album_popover_content,
-	'star-rating' : VueStarRating.default
+	reviewmodal,
+	modal,
     },
     props : {
 	rating : {
@@ -99,9 +129,66 @@ var album_popover = {
 	return {
 	    loading : true,
 	    album_data : {},
+	    modal_loaded : false,
+	    showModal : false,
+	    modalView : 'none',	    
+	}
+    },
+    watch : {
+	showModal: function (newVal){
+	    if (newVal) {
+		document.body.classList.add("modal-open");
+	    }
+	    else {
+		document.body.classList.remove("modal-open");
+	    }
+	    this.$emit('modal', newVal)
+	},
+    },
+    methods : {
+	loadReview: function(){
+	    this.modalView = 'reviewtab';
+	    this.showModal = true;
+	},
+	loadLists: function(){
+	    this.modalView = 'liststab';
+	    this.showModal = true;
+	},
+	updateReview: function(data){
+	    if (!this.album_data.review_exists){
+		alert('Votre critique a bien été créée !');
+	    }
+	    else {
+		alert('Votre critique a bien été modifiée.');
+	    }
+	    this.album_data.review_exists = true;
+	},
+	closeReview: function(){
+	    this.showModal = false;
+	    this.modalView = 'none';
+	},
+	load : function(event){
+	    if (event === 'review')
+	    {
+		this.loadReview()
+	    }
+	    else {
+		this.loadLists()
+
+	    }
+	}
+    },
+    computed : {
+	modalHandlers : function(){
+	    return {
+		'close' : this.closeReview,
+		'successReview' : this.updateReview,
+		'failReview' : (() => {alert('Une erreur est survenue')})
+	    }
 	}
     },
     template : `
+    <div>
 	<popover titleClass='rating-span-popover' contentClass=''>
 	<template slot='title'>
 	<slot name='preview'>
@@ -110,9 +197,11 @@ var album_popover = {
 	</template>
 	<template slot='content'>
 	<keep-alive>
-	<component @rate="$emit('rate', $event);" v-bind:is='album_popover_content' v-bind="{ mbid : mbid }"></component>
+	<component @rate="$emit('rate', $event);" @loaded="album_data = $event; modal_loaded = true;" @show="load($event)" v-bind:is='album_popover_content' v-bind="{ mbid : mbid }"></component>
 	</keep-alive>
 	</template>
 	</popover>
+	<reviewmodal v-if='modal_loaded' :show="showModal" :view="modalView" :lists_url="album_data.lists_url" :set_item_url="album_data.set_item_url" :delete_item_url="album_data.delete_item_url" :mbid="mbid"  :review_url="album_data.review_url" v-on="modalHandlers" :rated="album_data.user_rating != 0" ></reviewmodal>
+	</div>
 	`,
 }

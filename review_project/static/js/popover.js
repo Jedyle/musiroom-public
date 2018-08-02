@@ -4,6 +4,7 @@ var popover = {
 	titleClass : String,
 	contentClass : String,
     },
+    
     data: function () {
         return {
 	    loadedPopup : false,
@@ -11,7 +12,7 @@ var popover = {
             timer: '',
             isInInfo: false,
 	    transform : "translate(-50%, 10px)",
-	    width : 300,
+	    width : 350,
 	    position : 'relative',
         }
     },
@@ -73,7 +74,7 @@ var popover = {
 	}
     },
     template :    `
-        <div :style="{'position' : position}" class="popover-wrapper" ref='wrap'>
+        <div :style="{'position' : position}" class="popover-wrapper mt-0" ref='wrap'>
         <a href="#" :class="titleClass" @mouseover="hover" @mouseout="hoverOut"><slot name='title'></slot></a>
         <div ref='popover' :style="{ 'transform' : transform, 'width': width+'px'}" class='popover-content' :class='contentClass' v-if="loadedPopup" v-show="showPopup" v-on:mouseover="hoverInfo" v-on:mouseout="hoverOutInfo">
 	<div class='container-fluid'>
@@ -91,7 +92,5 @@ var popover = {
 	window.addEventListener('resize', function(){
 	    vm.translatePop();
 	})
-    },
-    watch : {
     },
 }

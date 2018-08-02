@@ -588,9 +588,16 @@ def album_data(request):
         album = Album.objects.get(mbid = mbid)
         content_type_id = ContentType.objects.get_for_model(Album).id
         try:
-            user_rating = UserRating.objects.get(user=request.user, rating__content_type__id = content_type_id, rating__object_id = album.id).score
+            usr_rating = UserRating.objects.get(user=request.user, rating__content_type__id = content_type_id, rating__object_id = album.id)
+            review = usr_rating.review
+            user_rating = usr_rating.score
         except UserRating.DoesNotExist:
             user_rating = 0
+            review = None
+        except Review.DoesNotExist:
+            user_rating = usr_rating.score
+            review = None
+
         data = {
             'title' : album.title,
             'artists' : compute_artists_links(album),
@@ -599,6 +606,11 @@ def album_data(request):
             'object_id' : album.id,
             'rate_url' : reverse('star_ratings:rate', args=[content_type_id, album.id]),
             'user_rating' : user_rating,
+            'review_exists' : (review != None),
+            'review_url' : reverse('reviews:user_review', args=[album.mbid]),
+            'lists_url' : reverse('lists:get_lists_for_user_and_album'),
+            'set_item_url' : reverse('lists:ajax_set_item'),
+            'delete_item_url' : reverse('lists:ajax_delete_item'),
             }
         return JsonResponse(data)
     return HttpResponseNotFound()

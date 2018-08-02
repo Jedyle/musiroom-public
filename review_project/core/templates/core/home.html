@@ -3,6 +3,9 @@
 {% load staticfiles %}
 {% load cache %}
 
+{% block extrahead %}
+{% endblock %}
+
 {% block body_title %}
 {% if not user.is_authenticated %}
 <div class="jumbotron jumbotron-fluid" style="background-image : url({% static 'images/home-vinyl.jpg' %}); background-size : cover;">
@@ -67,16 +70,42 @@
 	    {% endif %}
 	    
 	    {% if user.is_authenticated %}
-	    <div v-show="currentView === 'all_reviews'">
+	    <div v-show="currentView === 'all_reviews'" v-cloak>
 		{% endif %}
 
 		<ul class="list-group">
 
-		    {% cache 60 new_reviews %}
+		    {% cache 60 new_reviews user.is_authenticated %}
 		    {% for review in reviews %}
+		    {% with album=review.rating.rating.albums.get %} 
 		    <li class="list-group-item">
-			<a href="{% url 'albums:album' review.rating.rating.albums.get.mbid %}"><img title="{{review.rating.rating.albums.get.title}}" src="{% static 'images/loading.gif' %}" data-src="{{ review.rating.rating.albums.get.get_cover }}" style="height : 50px"></a> &nbsp <a href="{% url 'albums:review' review.rating.rating.albums.get.mbid review.id %}">{{ review.title }}</a> par <a href="{% url 'profile' review.rating.user.username %}">{{review.rating.user}}</a> sur l'album <a href="{% url 'albums:album' review.rating.rating.albums.get.mbid %}">{{review.rating.rating.albums.get.title}}</a> ({{review.rating.score}}/10)
-		    </li>	    
+			<div class="d-flex">
+			    <div style="min-width:70px">
+				<div style="width:50px; height:50px; background-image: url({{ review.rating.user.account.get_avatar }}); background-size:cover; background-position : center;"></div></div>
+				<div class="flex-grow-1">
+				    &nbsp;
+				    <a href="{% url 'albums:review' album.mbid review.id %}">
+					{{ review.title }}
+				    </a> par
+				    <a href="{% url 'profile' review.rating.user.username %}">
+					{{review.rating.user}}
+				    </a>
+				    sur l'album
+				    {% if user.is_authenticated %}
+				    <album_popover style="display:inline" class="mt-0" mbid="{{album.mbid}}">mbid : {{album.mbid}}
+					<a slot="preview" href="{% url 'albums:album' album.mbid %}">
+					    {{album.title}}
+					</a>
+				    </album_popover>
+				    {% else %}
+				    <a slot="preview" href="{% url 'albums:album' album.mbid %}">
+					{{album.title}}
+				    </a>
+				    {% endif %}
+				</div>
+			</div>
+		    </li>
+		    {% endwith %}
 		    {% endfor %}
 		    {% endcache %}
 		</ul>
@@ -107,24 +136,34 @@
 		    <a class="nav-link" :class="{ 'active' : (currentViewRating === 'all_ratings') }" href="#" @click.prevent="currentViewRating = 'all_ratings'">Toutes</a>
 		</li>
 		<li class="nav-item">
-		    <a class="nav-link" :class="{ 'active' : (currentViewRating === 'followees_reviews') }" href="#" @click.prevent="currentViewRating = 'followees_reviews'">Mes abonnements</a>
+		    <a class="nav-link" :class="{ 'active' : (currentViewRating === 'followees_ratings') }" href="#" @click.prevent="currentViewRating = 'followees_ratings'">Mes abonnements</a>
 		</li>
 	    </ul>
 
 	    {% endif %}
 	    
 	    {% if user.is_authenticated %}
-	    <div v-show="currentViewRating === 'all_ratings'">
+	    <div v-show="currentViewRating === 'all_ratings'" v-cloak>
 		{% endif %}
 
 		<ul class="list-group">
 
-		    {% cache 60 new_ratings %}
+		    {% cache 60 new_ratings user.is_authenticated %}
 		    {% for rating in ratings %}
+		    {% with album=rating.rating.albums.get %}
 		    <li class="list-group-item">
-			<a href="{% url 'albums:album' rating.rating.albums.get.mbid %}"><img title="{{rating.rating.albums.get.title}}" src="{% static 'images/loading.gif' %}" data-src="{{ rating.rating.albums.get.get_cover }}" style="height : 50px"></a> &nbsp <a href="{% url 'profile' rating.user.username %}">{{rating.user}}</a> à donné la note de <strong>{{rating.score}}</strong> à l'album <a href="{% url 'albums:album' rating.rating.albums.get.mbid %}">{{rating.rating.albums.get.title}}</a>
+			<div class="d-flex">
+			    <div style="min-width:70px">
+				<div style="width:50px; height:50px; background-image: url({{ rating.user.account.get_avatar }}); background-size:cover; background-position : center;"></div>
+			    </div>
+			    <div class="flex-grow-1">
+			 <a href="{% url 'profile' rating.user.username %}">{{rating.user}}</a> à donné la note de <strong>{{rating.score}}</strong> à l'album {% if user.is_authenticated %}<album_popover style="display:inline" class="mt-0" mbid="{{album.mbid}}"><a slot="preview" href="{% url 'albums:album' album.mbid %}">{{rating.rating.albums.get.title}}</a></album_popover>{% else %}<a href="{% url 'albums:album' album.mbid %}">{{album.title}}</a>{% endif %}
+			    </div>
+
+			</div>
 			
-		    </li>	    
+		    </li>
+		    {% endwith %}
 		    {% endfor %}
 		    {% endcache %}
 		</ul>
@@ -151,11 +190,94 @@
 {% block scripts %}
 
 {% if user.is_authenticated %}
+
+<script> 
+ var album_data_url = "{% url 'albums:album_data' %}"
+</script>
+
 <script src="{% static 'js/vue.min.js' %}"></script>
 <script src="{% static 'js/axios.js' %}"></script>
 
+<!-- Editor dependency-->
+<script src="{% static 'js/jquery.min.js' %}"></script>
+
+<!-- Editor itself -->
+<script src="https://unpkg.com/trumbowyg@2/dist/trumbowyg.min.js"></script>
+
+<script src="https://unpkg.com/vue-trumbowyg"></script>
+<script src="{% static 'js/trumbowyg/fr.min.js' %}"></script>
+
+
+<script src="{% static 'js/utilities.js' %}"></script>
+<script src="{% static 'ratings/js/reviewTab.js' %}"></script>
+<script src="{% static 'lists/js/listsTab.js' %}"></script>
+<script src="{% static 'js/modal.js' %}"></script>
+<script src="{% static 'ratings/js/reviewModal.js' %}"></script>
+
+<script src="{% static 'star-ratings/js/star-rating-popover.min.js' %}"></script>
+<script src="{% static 'js/popover.js' %}"></script>
+<script src="{% static 'albums/js/album_popover.js' %}"></script>
+
+
 <script>
 
+ var followees_ratings = {
+     delimiters : ['[[', ']]'],
+     props : {
+	 'url' : String,
+     },
+     data : function(){
+	 return {
+	     ratings : [],
+	     loading : true,
+	 }
+     },
+     components : {
+	 album_popover,
+     },
+     template : `
+	 <div v-cloak>
+	     <div v-show='!loading'>
+		 <template v-if='ratings.length > 0'>
+		     <ul class="list-group">
+			 <li v-for='rating in ratings' class="list-group-item">
+			     <div class='d-flex'>
+				 <div style='min-width:70px'>
+				     <div :style="{ 'width' : '50px',  'height' : '50px' , 'background-image' : 'url(' + rating.avatar + ')',  'background-size' : 'cover' , 'background-position' : 'center'}"></div>
+				 </div>
+					 <div class='flex-grow-1'>
+					     <a :href="rating.profile_url">[[ rating.username ]]</a> à donné la note de <strong>[[ rating.score ]]</strong> à l'album <album_popover :mbid='rating.mbid' class='mt-0' style='display:inline'><a slot='preview' :href="rating.album_url">[[ rating.title ]]</a></album_popover>	
+					 </div>
+			     </div>
+			 </li>	    
+		     </ul>
+		 </template>
+						 <template v-else>
+						     Aucun résultat trouvé
+						 </template>
+						     
+	     </div>
+						     <div v-show="loading">
+							 <br><br>
+							 <div class="spinner" style="position:relative">
+							 </div>
+						     </div>
+	 </div>
+     `,
+     mounted : function(){
+	 this.loading = true;
+	 axios.get(this.url 
+	 ).then(response => {
+	     this.ratings = JSON.parse(JSON.stringify(response.data.ratings));
+	     this.loading = false;
+	 }
+	 ).catch(error => {
+	     console.log(error)
+	     this.loading = false;
+	 })
+     }
+ }
+ 
  var followees_reviews = {
      delimiters : ['[[', ']]'],
      props : {
@@ -163,70 +285,89 @@
      },
      data : function(){
 	 return {
-	     html : ``,
+	     ratings : [],
 	     loading : true,
 	 }
      },
+     components : {
+	 album_popover,
+     },
      template : `
-	 <div>
-	     <div v-html="html">
+	 <div v-cloak>
+	     <div v-show='!loading'>
+		 <template v-if='ratings.length > 0'>
+		     <ul class="list-group">
+			 <li v-for='rating in ratings' class="list-group-item">
+			     <div class='d-flex'>
+				 <div style='min-width:70px'>
+				     <div :style="{ 'width' : '50px',  'height' : '50px' , 'background-image' : 'url(' + rating.avatar + ')',  'background-size' : 'cover' , 'background-position' : 'center'}"></div>
+				 </div>
+				<div class='flex-grow-1'>
+				    <a :href="rating.review_url">[[ rating.review_title ]]</a> 
+					par <a :href="rating.profile_url">[[ rating.username ]]</a>
+					    sur l'album <album_popover :mbid='rating.mbid' class='mt-0' style='display:inline'><a slot='preview' :href="rating.album_url">[[rating.title]]</a></album_popover> ([[rating.score]]/10)	
+						</div>
+			 </li>	    
+		     </ul>
+		 </template>
+						<template v-else>
+						    Aucun résultat trouvé
+						</template>
+						    
+			     </div>
+							     <div v-show="loading"><br><br><div class="spinner" style="position:relative"></div>
+							     </div>
 	     </div>
-	     <div v-show="loading"><br><br><div class="spinner" style="position:relative"></div></div>
-	 </div>
-	 `,
-	 mounted : function(){
+     `,
+     mounted : function(){
 	 this.loading = true;
 	 axios.get(this.url 
 	 ).then(response => {
-	 this.html = response.data;
-	 this.loading = false;
+	     this.ratings = response.data.reviews;
+	     this.loading = false;
 	 }
 	 ).catch(error => {
-	 console.log(error)
-	 this.loading = false;
+	     console.log(error);
+	     this.loading = false;
 	 })
-	 }
-	 }
-	 
-	 var vm = new Vue({
-	 delimiters : ['[[', ']]'],
-	 el : '#app',
-	 data : {
+     }
+ }
+ 
+ var vm = new Vue({
+     delimiters : ['[[', ']]'],
+     el : '#app',
+     data : {
 	 currentView : 'all_reviews',
 	 currentViewRating : 'all_ratings',
-	 },
-	 components : {
+     },
+     components : {
+	 followees_ratings,
 	 followees_reviews,
-	 },
-	 computed : {
+	 album_popover,
+     },
+     computed : {
 	 currentProperties : function(){
-	 if (this.currentView === 'followees_reviews'){
-	 return {
-	 url : "{% url 'home_followees_reviews' %}",
-	 }
-	 }
+	     if (this.currentView === 'followees_reviews'){
+		 return {
+		     url : "{% url 'home_followees_reviews' %}",
+		 }
+	     }
 	 },
 	 currentPropertiesRating : function(){
-	 if (this.currentViewRating === 'followees_reviews'){
-	 return {
-	 url : "{% url 'home_followees_ratings' %}",
+	     if (this.currentViewRating === 'followees_ratings'){
+		 return {
+		     url : "{% url 'home_followees_ratings' %}",
+		 }
+	     }
 	 }
-	 }
-	 }
-	 }
-	 })
-	 
+     }
+ })
+ 
 </script>
-
-<script> 
- var album_data_url = "{% url 'albums:album_data' %}"
-</script>
-
-<script src="{% static 'star-ratings/js/star-rating-popover.min.js' %}"></script>
-<script src="{% static 'js/popover.js' %}"></script>
-<script src="{% static 'albums/js/album_popover.js' %}"></script>
 
 <script>
+
+ axios.defaults.xsrfHeaderName = "X-CSRFToken"; 
 
  var albums_ratings = document.getElementsByClassName('item-user-rating')
 
