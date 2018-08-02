@@ -5,11 +5,11 @@
 
 	{% if page > 1 %}
 	<li class="page-item">
-	    <a class="page-link sanguine" href="{{request.path}}?query={{query}}&type={{m_type}}&page={{page|add:'-1'}}">Précédent</a>
+	    <a class="page-link sanguine" href="{{request.path}}?query={{query}}&type={{m_type}}&page={{page|add:'-1'}}"><</a>
 	</li>
 	{% else %}
 	<li class="page-item disabled">
-	    <span class="page-link sanguine">Précédent</span>
+	    <span class="page-link sanguine"><</span>
 	</li>
 	{% endif %}
 	
@@ -33,11 +33,11 @@
 
 	{% if page < page_list|last %}
 	<li class="page-item">
-	    <a class="page-link sanguine" href="{{request.path}}?query={{query}}&type={{m_type}}&page={{page|add:'1'}}">Suivant</a>
+	    <a class="page-link sanguine" href="{{request.path}}?query={{query}}&type={{m_type}}&page={{page|add:'1'}}">></a>
 	</li>
 	{% else %}
 	<li class="page-item disabled">
-	    <span class="page-link sanguine">Suivant</span>
+	    <span class="page-link sanguine">></span>
 	</li>
 	{% endif %}
 	

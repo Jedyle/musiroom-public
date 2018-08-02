@@ -23,7 +23,7 @@ def get_page_list(nb_pages, current_page):
         return page_list
     page_list.append(1)
     page_list.append(nb_pages)
-    for i in range(current_page - 3, current_page + 4):
+    for i in range(current_page - 1, current_page + 2):
         if i>1 and i<nb_pages:
             page_list.append(i)
     page_sorted = sorted(list(set(page_list)))

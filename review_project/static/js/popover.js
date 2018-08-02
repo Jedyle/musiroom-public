@@ -56,16 +56,14 @@ var popover = {
 	    var rect = this.$refs.wrap.getBoundingClientRect()
 	    var pop_limit = rect.left + rect.width/2 + this.width/2
 	    var pop_limit_left = rect.left + rect.width/2 - this.width/2
-	    if (window.innerWidth <= 2*this.width){
-		this.position='static';
-		this.transform='translate(-50%, 10px)';
-	    }
-	    else if (pop_limit > window.innerWidth){
-	    	this.transform = "translate(-50%,10px) translate(-" + (this.width/2) + "px, 0)"
+	    if (pop_limit > window.innerWidth){
+		var offset = window.innerWidth - pop_limit
+	    	this.transform = "translate(-50%,10px) translate(" + (offset-10) + "px, 0)"
 		this.position='relative';
 	    }
 	    else if (pop_limit_left < 0){
-		this.transform = "translate(-50%,10px) translate(" + (this.width/2) + "px, 0)";
+		var offset = -pop_limit_left
+		this.transform = "translate(-50%,10px) translate(" + (offset+10) + "px, 0)";
 		this.position='relative';
 	    }
 	    else {
