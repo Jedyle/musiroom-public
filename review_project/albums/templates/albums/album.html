@@ -77,7 +77,7 @@
 			<button type="button" class="btn color-sanguine" @click="loadLists" v-cloak>Ajouter à une liste</button>
 			{% endif %}
 
-			<reviewmodal :show="showModal" :view="modalView" :lists_url="lists_url" :set_item_url="set_item_url" :delete_item_url="delete_item_url" :mbid="mbid"  :review_url="review_url" v-on="modalHandlers" :rated="rated" ></reviewmodal>
+			<reviewmodal title="{{album.title}}" :show="showModal" :view="modalView" :lists_url="lists_url" :set_item_url="set_item_url" :delete_item_url="delete_item_url" :mbid="mbid"  :review_url="review_url" v-on="modalHandlers" :rated="rated" ></reviewmodal>
 		    </div>
 		</div>
 	    </div>

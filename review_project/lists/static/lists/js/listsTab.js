@@ -1,9 +1,10 @@
 var liststab = {
     delimiters : ['[[', ']]'],
-    props : ['lists_url', 'mbid', 'set_item_url', 'delete_item_url'],
+    props : ['lists_url', 'mbid', 'set_item_url', 'delete_item_url', 'title_header'],
     template :
     `
 	<div class="modal-body flex-fill d-flex flex-column">
+	<h5 class='text-center mt-0 mb-0'>Listes pour [[ title_header ]]</h5>
 	<br>
 	<div class="modal-body flex-fill d-flex flex-column" style='overflow-y : scroll'>
 

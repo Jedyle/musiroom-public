@@ -29,7 +29,7 @@ var album_popover_content = {
 	<template v-else>
 	<div class='col-4' :style="{'background' : 'url(' + album_data.cover + ') 50% 50% no-repeat', 'background-size' : 'cover'}"></div>
 	<div class='col-8'>
-	<h5 class='text-left'>[[album_data.title]]</h5>
+	<h5 class='text-left d-flex'><div class='flex-grow-1'><a :href='album_data.album_url'>[[album_data.title]]</a></div><div> <span class='w3-tag rounded avg-rating text-right'>[[album_data.avg]]</span></div></h5>
 	<p class='text-left' v-html='album_data.artists'></p>
 	<star-rating :max-rating='10' :star-size='18' v-model='user_rating'></star-rating>
 	<div class='float-right'>
@@ -192,7 +192,7 @@ var album_popover = {
 	<popover titleClass='rating-span-popover' contentClass=''>
 	<template slot='title'>
 	<slot name='preview'>
-	<span class="w3-tag rounded user-rating">[[ this.rating ]]</span>
+	<span style='cursor : pointer'  class="w3-tag rounded user-rating">[[ this.rating ]]</span>
 	</slot>
 	</template>
 	<template slot='content'>
@@ -201,7 +201,7 @@ var album_popover = {
 	</keep-alive>
 	</template>
 	</popover>
-	<reviewmodal v-if='modal_loaded' :show="showModal" :view="modalView" :lists_url="album_data.lists_url" :set_item_url="album_data.set_item_url" :delete_item_url="album_data.delete_item_url" :mbid="mbid"  :review_url="album_data.review_url" v-on="modalHandlers" :rated="album_data.user_rating != 0" ></reviewmodal>
+	<reviewmodal v-if='modal_loaded' :title='album_data.title' :show="showModal" :view="modalView" :lists_url="album_data.lists_url" :set_item_url="album_data.set_item_url" :delete_item_url="album_data.delete_item_url" :mbid="mbid"  :review_url="album_data.review_url" v-on="modalHandlers" :rated="album_data.user_rating != 0" ></reviewmodal>
 	</div>
 	`,
 }

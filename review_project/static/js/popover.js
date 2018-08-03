@@ -75,7 +75,7 @@ var popover = {
     },
     template :    `
         <div :style="{'position' : position}" class="popover-wrapper mt-0" ref='wrap'>
-        <a href="#" :class="titleClass" @mouseover="hover" @mouseout="hoverOut"><slot name='title'></slot></a>
+        <div :class="titleClass" @mouseover="hover" @mouseout="hoverOut"><slot name='title'></slot></div>
         <div ref='popover' :style="{ 'transform' : transform, 'width': width+'px'}" class='popover-content' :class='contentClass' v-if="loadedPopup" v-show="showPopup" v-on:mouseover="hoverInfo" v-on:mouseout="hoverOutInfo">
 	<div class='container-fluid'>
 	<slot name="content">

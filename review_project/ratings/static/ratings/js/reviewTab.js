@@ -5,6 +5,10 @@ var reviewtab = {
     },
     props : {
 	'url' : String,
+	'title_header': {
+	    type :String,
+	    default : '',
+	}
     },
     data: function(){
 	return {
@@ -27,7 +31,8 @@ var reviewtab = {
     template :
     `
 	<div class="modal-body flex-fill d-flex flex-column">
-        <div class="modal-body flex-fill d-flex flex-column">
+	<h5 class='text-center mt-0 mb-0'>Critique de [[ title_header ]]</h5>
+        <div class="modal-body p-0 flex-fill d-flex flex-column">
 	<label class="form-label">
         Titre
         <input v-model="data_title" class="form-control">

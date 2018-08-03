@@ -601,6 +601,7 @@ def album_data(request):
         data = {
             'title' : album.title,
             'artists' : compute_artists_links(album),
+            'avg' : floatformat(album.ratings.get().average, 1),
             'cover' : album.get_cover(),
             'content_type_id' : content_type_id,
             'object_id' : album.id,
@@ -611,6 +612,7 @@ def album_data(request):
             'lists_url' : reverse('lists:get_lists_for_user_and_album'),
             'set_item_url' : reverse('lists:ajax_set_item'),
             'delete_item_url' : reverse('lists:ajax_delete_item'),
+            'album_url' : reverse('albums:album', args=[album.mbid]),
             }
         return JsonResponse(data)
     return HttpResponseNotFound()

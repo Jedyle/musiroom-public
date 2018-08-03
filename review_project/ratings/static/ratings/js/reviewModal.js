@@ -31,7 +31,11 @@ let reviewmodal = {
 	rated : {
 	    type : Boolean,
 	    default : true,
-	}
+	},
+	title : {
+	    type : String,
+	    default : 'l\'album',
+	},
     },
     data : function(){
 	return {
@@ -69,6 +73,7 @@ let reviewmodal = {
 	    if (this.currentView === 'reviewtab'){
 		return {
 		    url : this.review_url,
+		    title_header : this.title,
 		}
 	    }
 	    else if (this.currentView === 'liststab'){
@@ -77,6 +82,7 @@ let reviewmodal = {
 		    set_item_url : this.set_item_url,
 		    delete_item_url : this.delete_item_url,
 		    mbid : this.mbid,
+		    title_header : this.title,
 		}
 	    }
 	},

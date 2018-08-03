@@ -8,6 +8,7 @@
 
 {% load notifications_tags %}
 
+{% notifications_unread as notif_unread_count %}
 {% postman_unread as message_unread_count %}
 
 <!DOCTYPE html>
@@ -21,7 +22,15 @@
 	<meta name="google-site-verification" content="c0eu5cthqqDx8Ir7CF2pysANz8kGfzyHz5znn9ddeJE" />
 	<meta property="og:image" content="{% static 'images/icon.jpg' %}" />
 
-	<title>{% block title %}Home
+	<title>{% if user.is_authenticated %}
+
+	    {% if notif_unread_count > 0 or message_unread_count > 0 %}
+	    ({{ notif_unread_count|add:message_unread_count}})
+	    {% endif %}
+	    {% endif %}
+
+
+	    {% block title %}Home
 	    {% endblock %} - La Musithèque, critiques de musique faites par vous !
 	</title>
 
@@ -63,16 +72,65 @@
 
     <body>
 	<!-- Our application root element -->
-
-	{% notifications_unread as notif_unread_count %}
-
+	
 	<header>
 
 	    <nav class="navbar fixed-top navbar-expand-lg navbar-dark color-sanguine">
 		<a class="navbar-brand" href="/">La Musithèque</a>
-		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-		    <span class="navbar-toggler-icon {% if message_unread_count > 0 or notif_unread_count > 0 %}notif-badge" data-badge="{{message_unread_count|add:notif_unread_count}}"{% else %}"{% endif %}></span>
-		</button>
+
+		{% if user.is_authenticated %}
+		<div class="navbar-header navbar-right float-right">
+		    <ul class="navbar-nav navbar-right ml-auto d-block d-lg-none">
+			<li class="nav-item {% active_url 'notifications' %} mr-2 mr-md-3 ml-1 ml-sm-2 ml-md-3">
+			    {% if notif_unread_count > 0 %}
+			    <a title="Notifications" class="nav-link" href="{% url 'notifications' %}"><i class="notif-badge far fa-bell fa-lg"  data-badge="{{notif_unread_count}}"></i></a>
+			    {% else %}
+			    <a title="Notifications" class="nav-link" href="{% url 'notifications' %}"><i class="far fa-bell fa-lg"></i></a>
+			    {% endif %}
+			</li>
+			<li class="nav-item dropdown mr-2 mr-md-3 mr-sm-2 ml-1 ml-sm-2 ml-md-3">
+			    <a href="#" class="nav-link dropdown-toggle mt-0 mb-0 pt-0 pb-0" id="navbarDropdownColl" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				<span {% if message_unread_count > 0 %}class="notif-badge" data-badge="{{message_unread_count}}"{% endif %}>
+				    <div class="profile-thumb" >
+					<img title="{{ user.username }}" src="{{ user.account.get_avatar }}">
+					
+				    </div>
+				</span>
+			    </a>
+			    <div id="navbarDropdownCollMenu" class="dropdown-menu dropdown-menu-right no-collapse" aria-labelledby="navbarDropdownColl">
+				<a class="dropdown-item" href="{% url 'postman:inbox' %}">Messagerie {% if message_unread_count > 0 %}({{message_unread_count}}){% endif %}</a>
+				<a class="dropdown-item" href="{% url 'profile' user.username %}">Profil et oeuvres</a>
+				<a class="dropdown-item" href="{% url 'logout' %}">Déconnexion</a>
+			    </div>
+			</li>
+			<button class="navbar-toggler ml-1 ml-sm-2 ml-md-3" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+			    <span class="navbar-toggler-icon"></span>
+			</button>
+		    </ul>
+		</div>
+		{% else %}
+
+		<div class="navbar-header navbar-right float-right">
+		    <ul class="navbar-nav navbar-right ml-auto d-block d-lg-none">
+			<li class="nav-item dropdown mr-2 mr-md-3 mr-sm-2 ml-1 ml-sm-2 ml-md-3">
+			    <a href="#" class="nav-link dropdown-toggle mt-0 mb-0 pt-0 pb-0" id="navbarDropdownColl" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				<div class="profile-thumb">
+				    <img title="Mon compte" src="{% static 'account/images/profile.png' %}">
+				</div>
+			    </a>
+			    <div id="navbarDropdownCollMenu" class="dropdown-menu dropdown-menu-right no-collapse" aria-labelledby="navbarDropdownColl">
+				<a class="dropdown-item" href="{% url 'login' %}?next={{request.path}}">Connexion</a>
+				<a class="dropdown-item" href="{% url 'register' %}">Inscription</a>
+			    </div>
+			</li>
+			<button class="navbar-toggler ml-1 ml-sm-2 ml-md-3" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+			    <span class="navbar-toggler-icon"></span>
+			</button>
+		    </ul>
+		</div>
+
+		{% endif %}
+
 
 		<div class="collapse navbar-collapse" id="navbarSupportedContent">
 		    <ul class="navbar-nav col-xl-3 col-lg-3">
@@ -112,17 +170,16 @@
 		    <ul class="navbar-nav ml-auto">			
 			
 			{% if user.is_authenticated %}
-			<li class="nav-item {% active_url 'notifications' %}">
-			    {% notifications_unread as unread_count %}
-			    {% if unread_count > 0 %}
-			    <a title="Notifications" class="nav-link" href="{% url 'notifications' %}"><i class="notif-badge far fa-bell"  data-badge="{{unread_count}}"></i></a>
+			<li class="nav-item {% active_url 'notifications' %} d-none d-lg-block">
+			    {% if notif_unread_count > 0 %}
+			    <a title="Notifications" class="nav-link" href="{% url 'notifications' %}"><i class="notif-badge far fa-bell fa-lg"  data-badge="{{notif_unread_count}}"></i></a>
 			    {% else %}
-			    <a title="Notifications" class="nav-link" href="{% url 'notifications' %}"><i class="far fa-bell"></i></a>
+			    <a title="Notifications" class="nav-link" href="{% url 'notifications' %}"><i class="far fa-bell fa-lg"></i></a>
 			    {% endif %}
 			    
 			</li>
 			{% endif %}
-			<li class="nav-item dropdown"  {% if message_unread_count > 0 %}data-badge="{{message_unread_count}}"{% endif %}>
+			<li class="nav-item dropdown d-none d-lg-block"  {% if message_unread_count > 0 %}data-badge="{{message_unread_count}}"{% endif %}>
 			    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 				{% if user.is_authenticated %}<span {% if message_unread_count > 0 %}class="notif-badge" data-badge="{{message_unread_count}}"{% endif %}>{{ user.username }}</span>{% else %}Compte{% endif %}
 			    </a>
@@ -201,6 +258,16 @@
 	     window.dispatchEvent(event);
 	 }, false)
 	 
+	 var account_menu = document.getElementById('navbarDropdownColl')
+	 account_menu.addEventListener('click', function(event){
+	     event.preventDefault();
+	     document.getElementById('navbarDropdownCollMenu').classList.toggle('show');
+	 });
+
+	 document.getElementById('navbarDropdownColl').addEventListener('blur', function(event){
+	     document.getElementById('navbarDropdownCollMenu').classList.toggle('show');  
+	 })
+
 	</script>
 	
 	{% block scripts %}
