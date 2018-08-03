@@ -44,7 +44,6 @@ def display_list(request, list_id):
             followees_rating = 0
         author_rating = UserRating.objects.for_instance_by_user(album, user = author)
 
-        print(followees_rating)
         
         res_item = {
             'album' : album,
@@ -65,7 +64,6 @@ def display_list(request, list_id):
     else :
         user_vote = "none"
 
-    print(reverse('albums:ajax_search_in_db'))
 
     context = {
         'list' : res_items,
@@ -207,7 +205,6 @@ def ajax_set_description(request):
 
 @login_required
 def ajax_delete_item(request):
-    print('delete')
     if request.method == 'POST':
         mbid = request.POST['mbid']
         list_id = int(request.POST['list_id'])
@@ -225,7 +222,6 @@ def ajax_delete_item(request):
     
 
 def ajax_get_items(request):
-    print('get')
     if request.method == 'GET':
         list_id = int(request.GET['list_id'])
         itemlist = ItemList.objects.get(pk = list_id)
@@ -270,7 +266,6 @@ def ajax_move_items(request):
 
 @login_required
 def ajax_set_item(request):
-    print('add')
     if request.method == 'POST':
         list_id = int(request.POST['list_id'])
         itemlist = ItemList.objects.get(pk = list_id)
@@ -298,7 +293,6 @@ def ajax_delete_list(request):
 def get_lists_for_user_and_album(request):
     if request.method == 'GET' :
         itemlists = ItemList.objects.filter(user = request.user)
-        print(request.GET)
         mbid = request.GET['mbid']
         album = get_object_or_404(Album, mbid = mbid)
         lists_contains_alb = []
