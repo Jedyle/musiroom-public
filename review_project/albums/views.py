@@ -598,10 +598,16 @@ def album_data(request):
             user_rating = usr_rating.score
             review = None
 
+        avg = album.ratings.get().average
+        if avg < 1.0:
+            avg = '-'
+        else:
+            avg = floatformat(avg, 1)
+
         data = {
             'title' : album.title,
             'artists' : compute_artists_links(album),
-            'avg' : floatformat(album.ratings.get().average, 1),
+            'avg' : avg,
             'cover' : album.get_cover(),
             'content_type_id' : content_type_id,
             'object_id' : album.id,
