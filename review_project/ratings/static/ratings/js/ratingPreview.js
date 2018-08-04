@@ -33,7 +33,7 @@ let ratingpreview = {
 	<img class="card-img-top" :src="review.album_cover" style='height:100px; width:100px; object-fit:cover;' alt="review.album_title">
 	</div>
 	<div class='flex-grow-1'>
-	<h5><a :href="review.url_album">[[ review.album_title ]]</a> <span style='float:right'><span title="Note moyenne" class="w3-tag rounded avg-rating w3-xlarge" style="float : right;"> [[ displayRating(review.average) ]]</span> <span style="float : right;">&ensp;&ensp;</span>  <span v-if='!is_anonymous' title="Moyenne de mes abonnements" class="w3-tag rounded follow-rating w3-xlarge" style="float : right;"> [[ displayRating(review.followees_avg) ]]</span></span> </h5>
+	<h5><a :href="review.url_album">[[ review.album_title ]]</a> <span style='float:right'><span title="Note moyenne" class="w3-tag rounded avg-rating w3-large" style="float : right;"> [[ displayRating(review.average) ]]</span> <span style="float : right;">&ensp;</span>  <span v-if='!is_anonymous' title="Moyenne de mes abonnements" class="w3-tag rounded follow-rating w3-large" style="float : right;"> [[ displayRating(review.followees_avg) ]]</span></span> </h5>
 	<p v-html="review.artists"></p>
 	<p v-if='!is_anonymous' class='text-right'> Ma note : <album_popover @rate="user_rating = $event;" :rating="displayRating(user_rating)" :mbid="review.mbid"></album_popover></p>
     
