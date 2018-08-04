@@ -15,9 +15,9 @@ Profil de {{profile.user.username}}
 {% block profile_content %}
 
 <div class="row">
-    <div class="col-sm-12 col-md-12 col-lg-8">
+    <div class="col-sm-12 col-md-12 col-lg-10">
 
-	<ul class="nav nav-tabs">
+	<ul class="nav nav-pills">
 	    <li class="nav-item">
 		<a class="nav-link" :class="{ 'active' : (currentView === 'profile') }" href="#" @click.prevent="currentView = 'profile'">Profil</a>
 	    </li>
@@ -34,6 +34,8 @@ Profil de {{profile.user.username}}
 		<a class="nav-link" :class="{ 'active' : (currentView === 'contacts') }" href="#" @click.prevent="currentView = 'contacts'">Contacts</a>
 	    </li>
 	</ul>
+
+	<hr>
 	
 	<div v-show="currentView === 'profile'">
 	    <br>
@@ -50,11 +52,11 @@ Profil de {{profile.user.username}}
 
 
 	    <ul>
-	    <li>{{ nb_ratings }} albums notés</li>
-	    <li>{{ nb_reviews }} critiques</li>
+		<li>{{ nb_ratings }} albums notés</li>
+		<li>{{ nb_reviews }} critiques</li>
 	    </ul>
 
-	   <div class="col-xs-12 col-sm-6">
+	    <div class="col-xs-12 col-sm-6">
 
 		{% if top_10|length != 0 %}
 
@@ -65,14 +67,14 @@ Profil de {{profile.user.username}}
 		    <li class="list-group-item">
 			<img src="{% static 'images/loading.gif' %}" data-src="{{ item.album.get_cover }}" style="height : 50px"> &nbsp <a href="{% url 'albums:album' item.album.mbid %}">{{ item.album }}</a>
 		    </li>
-		{% endfor %}
+		    {% endfor %}
 		</ul>
 
 		<p class="text-right mt-2"><a href="{% url 'lists:display_list' profile.top_albums.id %}">Voir son top</a></p>
 
 		{% endif %}
 		
-	   </div>
+	    </div>
 	    
 	</div>
 

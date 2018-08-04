@@ -87,7 +87,6 @@ var popover = {
 	</div>
 	`,
     mounted : function(){
-	this.translatePop();
 	var vm = this;
 	window.addEventListener('resize', function(){
 	    vm.translatePop();

@@ -14,18 +14,25 @@ let reviewpreviewuser = {
     template : `
  <div>
     <div class="row">
-	<div class='col-3'>
-	    <div class="card">
-		<img class="card-img-top" :src="review.album_cover" alt="review.album_title">
-		<div class="card-body">
+	<div class='col-12 col-md-4 col-xl-2 p-0'>
+	    <div class="card bg-light">
+		<img class="card-img-top d-none d-md-block" :src="review.album_cover" alt="review.album_title">
+	<div class="card-body">
+	<div class='row'>
+	<div class='col-4 col-md-0 d-block d-md-none'>
+	<img class="card-img-top d-block d-md-none" :src="review.album_cover" alt="review.album_title">
+	</div>
+	<div class='col-8 col-md-12'>
 		    <h5 class="card-title"><a :href="review.url_album">[[ review.album_title ]]</a></h5>
-		    <p class="card-text" v-html="review.artists">
+	<p class="card-text" v-html="review.artists">
+	</div>
+	</div>
 		    </p>
 		</div>
 	    </div>
 	</div>
-	<div class='col-9'>
-	<h3 style='font-weight: bold;'> [[ review.title ]] </h3>
+	<div class='col-12 col-md-8 col-xl-10 border bg-light'>
+	<h3 style='font-weight: bold; word-wrap:break-word;'> [[ review.title ]] </h3>
 	    <p> [[ cleanContent ]]... </p>
 	    <p class="text-right"><a target="_blank" :href="review.url_review">Lire la critique</a></p>
 	    <div class="d-flex bd-highlight mb-3">

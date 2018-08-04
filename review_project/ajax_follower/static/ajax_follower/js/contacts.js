@@ -13,7 +13,7 @@ var contactPreview = {
 	'circlethumb' : circlethumb,
     },
     template : `
-	<div class="col-xs-6 col-sm-6 col-md-4 col-lg-3 mb-md-0 mb-4">
+	<div class="col-6 col-sm-6 col-md-4 col-lg-3 mb-md-0 mb-4">
 	<div class="row">
 	<a class='mx-auto' :href="profile_url"><circlethumb :url="avatar" size="72px"></circlethumb></a>
 	</div>
