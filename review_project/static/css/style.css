@@ -160,6 +160,10 @@ body {
     color : white;
 }
 
+.color-sanguine:focus {
+    box-shadow : 0 0 0 0.2rem pink;
+}
+
 .sanguine {
     color : #9A3334;
 }

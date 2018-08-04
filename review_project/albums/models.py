@@ -49,7 +49,7 @@ class Genre(models.Model):
         db_index=True,
         null=True,
         unique=True,
-        help_text="Court nom descriptif pour les urls",
+        help_text="Court nom sans espace pour les urls",
     )
     parent = models.ForeignKey("self", null=True, blank=True, on_delete=models.CASCADE
     )
