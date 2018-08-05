@@ -157,7 +157,7 @@
 				<div style="width:50px; height:50px; background-image: url({{ rating.user.account.get_avatar }}); background-size:cover; background-position : center;"></div>
 			    </div>
 			    <div class="flex-grow-1">
-			 <a href="{% url 'profile' rating.user.username %}">{{rating.user}}</a> à donné la note de <strong>{{rating.score}}</strong> à l'album {% if user.is_authenticated %}<album_popover style="display:inline" class="mt-0" mbid="{{album.mbid}}"><a slot="preview" href="{% url 'albums:album' album.mbid %}">{{rating.rating.albums.get.title}}</a></album_popover>{% else %}<a href="{% url 'albums:album' album.mbid %}">{{album.title}}</a>{% endif %}
+				<a href="{% url 'profile' rating.user.username %}">{{rating.user}}</a> à donné la note de <strong>{{rating.score}}</strong> à l'album {% if user.is_authenticated %}<album_popover style="display:inline" class="mt-0" mbid="{{album.mbid}}"><a slot="preview" href="{% url 'albums:album' album.mbid %}">{{rating.rating.albums.get.title}}</a></album_popover>{% else %}<a href="{% url 'albums:album' album.mbid %}">{{album.title}}</a>{% endif %}
 			    </div>
 
 			</div>
@@ -202,10 +202,10 @@
 <script src="{% static 'js/jquery.min.js' %}"></script>
 
 <!-- Editor itself -->
-<script src="https://unpkg.com/trumbowyg@2/dist/trumbowyg.min.js"></script>
+<script src="{% static 'trumbowyg/trumbowyg/dist/trumbowyg.min.js' %}"></script>
 
 <script src="https://unpkg.com/vue-trumbowyg"></script>
-<script src="{% static 'js/trumbowyg/fr.min.js' %}"></script>
+<script src="{% static 'trumbowyg/trumbowyg/dist/langs/fr.min.js' %}"></script>
 
 
 <script src="{% static 'js/utilities.js' %}"></script>

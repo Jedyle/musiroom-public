@@ -339,3 +339,8 @@ body {
 li.dropdown:hover > .dropdown-menu {
     display: block;
 }
+
+.list-group-item:focus, .list-group-item:hover {
+    z-index : 9998;
+    text-decoration: none;
+}
