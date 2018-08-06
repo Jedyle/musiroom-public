@@ -15,6 +15,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from .utils import compute_artists_links
 from lists.views import search_list
+from account.views import search_account
 from lists.models import ItemList
 import re
 from django.core.cache import cache
@@ -401,6 +402,8 @@ def search(request):
                 return render(request, 'albums/artist_results.html', {'query': query, 'm_type' : m_type, 'page_list' : page_list, 'page' : page, 'artists' : results})
         elif m_type == 'liste':
             return search_list(request)
+        elif m_type == 'compte':
+            return search_account(request)
         else :
             return HttpResponseNotFound()
 

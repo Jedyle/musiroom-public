@@ -22,6 +22,7 @@ var toggleFollowButton = {
 	`,
     methods : {
 	toggleValue : function(){
+	    console.log(this.url)
 	    axios({
 		method:'post',
 		url: this.url,

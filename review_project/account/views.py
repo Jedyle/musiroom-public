@@ -194,3 +194,39 @@ def notifications(request):
     rendered = render_to_string('account/notifications.html', context, request=request)
     p.object_list.mark_all_as_read()
     return HttpResponse(rendered)
+
+
+def search_account(request):
+    m_type = request.GET.get('type')
+    query = request.GET.get('query')
+    page = request.GET.get('page')
+    if not query or (m_type != 'compte') :
+        return redirect('/')
+    else :
+        if not page :
+            page = 1
+        list_account = User.objects.filter(username__icontains = query, is_active = True).order_by('username')
+        paginate = Paginator(list_account, 12)
+        print(paginate)
+        try:
+            accounts = paginate.page(page)
+        except EmptyPage :
+            accounts = paginate.page(paginate.num_pages)
+        except PageNotAnInteger:
+            accounts = paginate.page(1)
+        accounts_and_followees = []
+        for account in accounts:
+            if request.user.is_anonymous :
+                accounts_and_followees.append([account, None])
+            else :
+                accounts_and_followees.append([account, Follow.objects.follows(request.user, account)])
+                
+        context = {
+            'accounts' : accounts,
+            'follows' : accounts_and_followees,
+            'paginate' : (paginate.num_pages > 1),
+            'query' : query,
+            'm_type' : m_type,
+            'page' : page,
+            }
+        return render(request, 'account/search_account.html', context) 
