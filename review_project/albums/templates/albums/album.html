@@ -19,6 +19,7 @@
 
     <br>
 
+
     {% if lists %}
     <div class="row">
 	<div class="col-12">
@@ -57,6 +58,17 @@
 		    {% endif %}
 		</div>
 	    </div>
+
+	    {% if not genres %}
+
+	    <div class="alert alert-info">
+
+		<h3 class="text-center">Quel est le genre de cet album ?</h3>
+		<p class="text-center">Cet album n'a pas encore de style(s) attitré(s). Prenez 5 secondes pour <a href="{% url 'albums:album_genres' mbid %}">proposer un genre</a> pour cette oeuvre ! </p>
+		
+	    </div>
+	    
+	    {% endif %}
 
 	    <br>
 
