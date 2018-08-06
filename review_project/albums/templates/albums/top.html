@@ -24,6 +24,15 @@ Top 100 albums
 
 <div class="col-sm-12 col-md-10 offset-md-1 col-lg-6 offset-lg-3 bg-light">
 
+    <div class="alert alert-info">
+	<h2 class="text-center">Les tops sont encore un peu vides :(</h2>
+	{% if user.is_anonymous %}
+	<p>Seuls les albums notés par au moins 3 personnes sont présents dans ces tops. <a href="{% url 'register' %}">Inscrivez-vous</a>, vous pourrez ainsi remplir ce top et y faire entrer vos albums préférés !</p>
+	{% else %}
+	<p>Seuls les albums notés par au moins 3 personnes sont présents dans ces tops. N'oubliez pas de noter vos albums préférés pour les faire entrer dans le top !</p>
+	{% endif %}
+    </div>
+
     <form action="{% url 'albums:top_album_get' %}" method="get">
 	<div class="form-group">
 	    <label for="genre">Genre :</label>
