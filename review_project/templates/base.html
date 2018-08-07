@@ -135,9 +135,9 @@
 		<div class="collapse navbar-collapse" id="navbarSupportedContent">
 		    <ul class="navbar-nav col-xl-3 col-lg-3">
 			{% url 'albums:browse_album' as album_url %}
-			<li class="nav-item {% active_url 'albums:browse_albums' %}">
-			    <a class="nav-link" href="{% url 'albums:browse_albums' %}">Albums</a>
-			</li>
+			<!-- <li class="nav-item {% active_url 'albums:browse_albums' %}">
+			     <a class="nav-link" href="{% url 'albums:browse_albums' %}">Albums</a>
+			     </li> -->
 			<li class="nav-item {% active_url 'albums:top_album' %}">
 			    <a class="nav-link" href="{% url 'albums:top_album_get' %}">Tops</a>
 			</li>
