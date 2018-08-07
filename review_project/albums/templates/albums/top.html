@@ -36,7 +36,7 @@ Top 100 albums
     <form action="{% url 'albums:top_album_get' %}" method="get">
 	<div class="form-group">
 	    <label for="genre">Genre :</label>
-	    <select name="genre" id="genre" class="form-control">
+	    <select name="genre" id="genre" class="form-control" onchange="this.form.submit()">
 		<optgroup>
 		    <option value="tout">Tous les genres</option>
 		</optgroup>
@@ -54,7 +54,7 @@ Top 100 albums
 	</div>
 	<div class="form-group">
 	    <label for="annee">Année :</label>
-	    <select name="annee" id="annee" class="form-control">
+	    <select name="annee" id="annee" class="form-control" onchange="this.form.submit()">
 		
 		<optgroup>
 		    <option value="tout">Tous les temps</option>
@@ -80,8 +80,9 @@ Top 100 albums
 	    </select>
 	    
 	</div>
-	<button class="btn btn-default" type="submit" value="Valider">Valider</button>
     </form>
+
+    <br>
     
     {% for item in list %}
     <p>

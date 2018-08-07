@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
-from django.core.validators import RegexValidator, FileExtensionValidator
+from django.core.validators import RegexValidator, FileExtensionValidator, MinLengthValidator, MaxLengthValidator
 from django.contrib.auth.password_validation import get_default_password_validators
 from .models import Account, get_100_last_years
 from datetime import date
@@ -83,8 +83,9 @@ class RegistrationForm(forms.ModelForm):
         super(RegistrationForm, self).__init__(*args, **kwargs)
         self.fields['username'].validators.append(ForbiddenUsernamesValidator)
         self.fields['username'].validators.append(OnlyAlphanumericValidator)
-        self.fields['username'].validators.append(
-            UniqueUsernameIgnoreCaseValidator)
+        self.fields['username'].validators.append(UniqueUsernameIgnoreCaseValidator)
+        self.fields['username'].validators.append(MinLengthValidator(3))
+        self.fields['username'].validators.append(MaxLengthValidator(30))
         self.fields['password'].validators.extend([validator.validate for validator in get_default_password_validators()])
         self.fields['email'].validators.append(UniqueEmailValidator)
 
