@@ -4,6 +4,7 @@
 {% load cache %}
 
 {% block extrahead %}
+<link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css"/>
 {% endblock %}
 
 {% block body_title %}
@@ -41,9 +42,9 @@
 	</div>
 	{% endif %}    
 	
-    {% endif %}
-    
-    {% endfor %}
+	{% endif %}
+	
+	{% endfor %}
     </div>
     {% endcache %}
 </div>
@@ -73,22 +74,22 @@
 	    <div v-show="currentView === 'all_reviews'" v-cloak>
 		{% endif %}
 
+		{% cache 60 new_reviews user.is_authenticated %}
 		<ul class="list-group">
 
-		    {% cache 60 new_reviews user.is_authenticated %}
 		    {% for review in reviews %}
-		    {% with album=review.rating.rating.albums.get %} 
-		    <li class="list-group-item">
+		    {% if review.reviews|length == 1 %}
+		    {% with album=review.reviews.0.rating.rating.content_object rev=review.reviews.0 %}
+		    <li class="list-group-item popoover-item">
 			<div class="d-flex">
 			    <div style="min-width:70px">
-				<div style="width:50px; height:50px; background-image: url({{ review.rating.user.account.get_avatar }}); background-size:cover; background-position : center;"></div></div>
+				<div style="width:50px; height:50px; background-image: url({{ review.account.get_avatar }}); background-size:cover; background-position : center;"></div></div>
 				<div class="flex-grow-1">
-				    &nbsp;
-				    <a href="{% url 'albums:review' album.mbid review.id %}">
-					{{ review.title }}
+				    <a href="{% url 'albums:review' album.mbid rev.id %}">
+					{{ rev.title }}
 				    </a> par
-				    <a href="{% url 'profile' review.rating.user.username %}">
-					{{review.rating.user}}
+				    <a href="{% url 'profile' review.user.username %}">
+					{{review.user}}
 				    </a>
 				    sur l'album
 				    {% if user.is_authenticated %}
@@ -106,10 +107,60 @@
 			</div>
 		    </li>
 		    {% endwith %}
+		    {% else %}
+		    <li class="list-group-item popover-item" v-b-toggle="'rev-{{review.user}}'">
+			<div class="d-flex">
+			    <div style="min-width:70px">
+				<div style="width:50px; height:50px; background-image: url({{ review.account.get_avatar }}); background-size:cover; background-position : center;"></div></div>
+				<div class="flex-grow-1">
+				    <a @click.stop href="{% url 'profile' review.user.username %}">{{review.user}}</a> a critiqué {% if review.reviews|length >= 15 %}plus de {% endif %}{{review.reviews|length}} albums.
+				    <a href="#" @click.prevent><span class="menu-ico-collapse"><i class="fa fa-chevron-down"></i></span></a>
+				</div>
+			</div>
+		    </li>
+		    <b-collapse id="rev-{{review.user}}">
+			{% for rev in review.reviews %}
+			{% with album=rev.rating.rating.content_object %}
+			<li class="list-group-item popover-item sub-item">
+
+			    <div class="d-flex">
+				<div style="min-width:30px">
+				</div>
+				<div style="min-width:50px">
+				    <div style=" width:30px; height:30px; background-image: url({{ review.account.get_avatar }}); background-size:cover; background-position : center;"></div>
+				</div>
+				<div class="flex-grow-1">
+
+	
+					<a href="{% url 'albums:review' album.mbid rev.id %}">
+					    {{ rev.title }}
+					</a> 
+					à propos de l'album
+					{% if user.is_authenticated %}
+					<album_popover style="display:inline" class="mt-0" mbid="{{album.mbid}}">mbid : {{album.mbid}}
+					    <a slot="preview" href="{% url 'albums:album' album.mbid %}">
+						{{album.title}}
+					    </a>
+					</album_popover>
+					{% else %}
+					<a slot="preview" href="{% url 'albums:album' album.mbid %}">
+					    {{album.title}}
+					</a>
+					{% endif %}
+				    </div>
+			    </div>
+			    
+			</li>
+			{% endwith %}
+			{% endfor %}
+		    </b-collapse>
+		    
+		    
+		    {% endif %}
 		    {% endfor %}
-		    {% endcache %}
 		</ul>
-		
+		{% endcache %}
+
 
 		<p class="text-right"><a href="{% url 'reviews:latest_reviews' %}">Voir plus</a></p>
 
@@ -146,27 +197,64 @@
 	    <div v-show="currentViewRating === 'all_ratings'" v-cloak>
 		{% endif %}
 
+		{% cache 60 new_ratings user.is_authenticated %}
+
 		<ul class="list-group">
 
-		    {% cache 60 new_ratings user.is_authenticated %}
 		    {% for rating in ratings %}
-		    {% with album=rating.rating.albums.get %}
-		    <li class="list-group-item">
+		    {% if rating.ratings|length <= 1 %}
+		    {% with album=rating.ratings.0.rating.content_object rating=rating.ratings.0 %}
+		    <li class="list-group-item popover-item">
 			<div class="d-flex">
 			    <div style="min-width:70px">
-				<div style="width:50px; height:50px; background-image: url({{ rating.user.account.get_avatar }}); background-size:cover; background-position : center;"></div>
+				<div style="width:50px; height:50px; background-image: url({{ rating.account.get_avatar }}); background-size:cover; background-position : center;"></div>
 			    </div>
 			    <div class="flex-grow-1">
-				<a href="{% url 'profile' rating.user.username %}">{{rating.user}}</a> à donné la note de <strong>{{rating.score}}</strong> à l'album {% if user.is_authenticated %}<album_popover style="display:inline" class="mt-0" mbid="{{album.mbid}}"><a slot="preview" href="{% url 'albums:album' album.mbid %}">{{rating.rating.albums.get.title}}</a></album_popover>{% else %}<a href="{% url 'albums:album' album.mbid %}">{{album.title}}</a>{% endif %}
+				<a href="{% url 'profile' rating.user.username %}">{{rating.user}}</a> à donné la note de <strong>{{rating.score}}</strong> à l'album {% if user.is_authenticated %}<album_popover style="display:inline" class="mt-0" mbid="{{album.mbid}}"><a slot="preview" href="{% url 'albums:album' album.mbid %}">{{album.title}}</a></album_popover>{% else %}<a href="{% url 'albums:album' album.mbid %}">{{album.title}}</a>{% endif %}
 			    </div>
 
 			</div>
 			
 		    </li>
 		    {% endwith %}
+		    {% else %}
+
+		    <li class="list-group-item popover-item" v-b-toggle="'rat-{{rating.user}}'">
+			<div class="d-flex">
+			    <div style="min-width:70px">
+				<div style="width:50px; height:50px; background-image: url({{ rating.account.get_avatar }}); background-size:cover; background-position : center;"></div></div>
+				<div class="flex-grow-1">
+				    <a @click.stop href="{% url 'profile' rating.user.username %}">{{rating.user}}</a> a noté {% if rating.ratings|length >= 15 %}plus de {% endif %}{{rating.ratings|length}} albums.
+				    <a href="#" @click.prevent><span class="menu-ico-collapse"><i class="fa fa-chevron-down"></i></span></a>
+				</div>
+			</div>
+		    </li>
+		    <b-collapse id="rat-{{rating.user}}">
+			{% for rat in rating.ratings %}
+			{% with album=rat.rating.content_object %}
+			<li class="list-group-item popover-item sub-item">
+
+			    <div class="d-flex">
+				<div style="min-width:30px">
+				</div>
+				<div style="min-width:50px">
+				    <div style=" width:30px; height:30px; background-image: url({{ rating.account.get_avatar }}); background-size:cover; background-position : center;"></div>
+				</div>
+				<div class="flex-grow-1">
+				    <a href="{% url 'profile' rating.user.username %}">{{rating.user}}</a> à donné la note de <strong>{{rat.score}}</strong> à l'album {% if user.is_authenticated %}<album_popover style="display:inline" class="mt-0" mbid="{{album.mbid}}"><a slot="preview" href="{% url 'albums:album' album.mbid %}">{{album.title}}</a></album_popover>{% else %}<a href="{% url 'albums:album' album.mbid %}">{{album.title}}</a>{% endif %}
+				</div>
+			    </div>
+			    
+			</li>
+			{% endwith %}
+			{% endfor %}
+		    </b-collapse>
+		    
+		    {% endif %}
 		    {% endfor %}
-		    {% endcache %}
 		</ul>
+
+		{% endcache %}
 
 		{% if user.is_authenticated %}
 	    </div>
@@ -198,6 +286,9 @@
 <script src="{% static 'js/vue.min.js' %}"></script>
 <script src="{% static 'js/axios.js' %}"></script>
 
+<script src="{% static 'js/polyfill.min.js' %}"></script>
+<script src="{% static 'js/bootstrap-vue.min.js' %}"></script>
+
 <!-- Editor dependency-->
 <script src="{% static 'js/jquery.min.js' %}"></script>
 
@@ -228,7 +319,7 @@
      },
      data : function(){
 	 return {
-	     ratings : [],
+	     users : [],
 	     loading : true,
 	 }
      },
@@ -238,43 +329,113 @@
      template : `
 	 <div v-cloak>
 	     <div v-show='!loading'>
-		 <template v-if='ratings.length > 0'>
+		 <template v-if='users.length > 0'>
+
 		     <ul class="list-group">
-			 <li v-for='rating in ratings' class="list-group-item">
-			     <div class='d-flex'>
-				 <div style='min-width:70px'>
-				     <div :style="{ 'width' : '50px',  'height' : '50px' , 'background-image' : 'url(' + rating.avatar + ')',  'background-size' : 'cover' , 'background-position' : 'center'}"></div>
-				 </div>
-					 <div class='flex-grow-1'>
-					     <a :href="rating.profile_url">[[ rating.username ]]</a> à donné la note de <strong>[[ rating.score ]]</strong> à l'album <album_popover :mbid='rating.mbid' class='mt-0' style='display:inline'><a slot='preview' :href="rating.album_url">[[ rating.title ]]</a></album_popover>	
-					 </div>
-			     </div>
-			 </li>	    
+			 <template v-for='user in users'>
+			     
+			     <li class='list-group-item popover-item' v-if='user.ratings.length == 1'>
+				 
+				 <div class="d-flex">
+				     <div style="min-width:70px">
+					 <div :style="{ 'width' : '50px' , 'height' : '50px' , 'background-image': 'url(' + user.avatar  + ')', 'background-size' : 'cover', 'background-position' : 'center'}"></div></div>
+					     <div class="flex-grow-1">
+						 <a :href="user.profile_url">
+						     [[ user.username ]]
+						 </a> 
+						     a donné la note de 
+						     <strong>[[ user.ratings[0].score ]]</strong>
+							 à l'album
+							 <album_popover style="display:inline" class="mt-0" :mbid="user.ratings[0].mbid">
+							     <a slot="preview" :href="user.ratings[0].album_url">
+								 [[ user.ratings[0].title ]]
+							     </a>
+							 </album_popover>
+					     </div>
+				 </div>				     
+			     </li>
+								 
+								 <template v-else>
+								     <li class='list-group-item popover-item' v-b-toggle="'rat-' + user.username">
+									 
+				    					 <div class="d-flex">
+									     <div style="min-width:70px">
+										 <div :style="{ 'width' : '50px', 'height' : '50px', 'background-image' :  'url(' + user.avatar + ')',  'background-size' : 'cover', 'background-position' : 'center'}"></div></div>
+										     <div class="flex-grow-1">
+											 <a @click.stop :href="user.profile_url">[[user.username]]</a> a noté [[ display(user.ratings.length) ]] albums.
+											     <a href="#" @click.prevent><span class="menu-ico-collapse"><i class="fa fa-chevron-down"></i></span></a>
+										     </div>
+									 </div>
+												 
+								     </li>
+												 <b-collapse :id="'rat-' + user.username">
+												     <li class="list-group-item sub-item popover-item" v-for='rating in user.ratings'>
+													 <div class="d-flex">
+													     <div style="min-width:30px">
+													     </div>
+														 <div style="min-width:50px">
+														     <div :style="{ 'width' : '30px',  'height' : '30px',  'background-image' : 'url(' + user.avatar + ')',  'background-size' : 'cover' , 'background-position' : 'center'}"></div>
+														 </div>
+															 <div class="flex-grow-1">
+															     <a :href="user.profile_url">
+																 [[ user.username ]]
+															     </a> 
+																 a donné la note de <strong>[[ rating.score ]]</strong>	
+																     à l'album
+																     <album_popover style="display:inline" class="mt-0" :mbid="rating.mbid">
+																	 <a slot="preview" :href="rating.album_url">
+																	     [[ rating.title ]]
+																	 </a>
+																     </album_popover>
+															 </div>
+													 </div>				 
+												     </li>
+												 </b-collapse>
+																	     
+																	     
+								 </template>
+																	     
+																	     
+																	     
+																	     
+																	     
+			 </template>
+																	     
 		     </ul>
+																	     
 		 </template>
-						 <template v-else>
-						     Aucun résultat trouvé
-						 </template>
-						     
+																	     <template v-else>
+																		 Aucun résultat trouvé
+																	     </template>
+																		 
 	     </div>
-						     <div v-show="loading">
-							 <br><br>
-							 <div class="spinner" style="position:relative">
-							 </div>
-						     </div>
+																		 <div v-show="loading"><br><br><div class="spinner" style="position:relative"></div>
+																		 </div>
 	 </div>
      `,
      mounted : function(){
 	 this.loading = true;
 	 axios.get(this.url 
 	 ).then(response => {
-	     this.ratings = JSON.parse(JSON.stringify(response.data.ratings));
+	     console.log(response.data.users)
+	     this.users = response.data.users;
 	     this.loading = false;
 	 }
 	 ).catch(error => {
 	     console.log(error)
 	     this.loading = false;
 	 })
+     },
+     methods : {
+	 display : function(nb){
+	     if (nb < 15){
+		 return nb
+	     }
+	     else{
+		 return 'plus de ' + nb
+	     }
+	     
+	 }
      }
  }
  
@@ -285,8 +446,19 @@
      },
      data : function(){
 	 return {
-	     ratings : [],
+	     users : [],
 	     loading : true,
+	 }
+     },
+     methods : {
+	 display : function(nb){
+	     if (nb < 15){
+		 return nb
+	     }
+	     else{
+		 return 'plus de ' + nb
+	     }
+	     
 	 }
      },
      components : {
@@ -295,35 +467,95 @@
      template : `
 	 <div v-cloak>
 	     <div v-show='!loading'>
-		 <template v-if='ratings.length > 0'>
+		 <template v-if='users.length > 0'>
+
 		     <ul class="list-group">
-			 <li v-for='rating in ratings' class="list-group-item">
-			     <div class='d-flex'>
-				 <div style='min-width:70px'>
-				     <div :style="{ 'width' : '50px',  'height' : '50px' , 'background-image' : 'url(' + rating.avatar + ')',  'background-size' : 'cover' , 'background-position' : 'center'}"></div>
-				 </div>
-				<div class='flex-grow-1'>
-				    <a :href="rating.review_url">[[ rating.review_title ]]</a> 
-					par <a :href="rating.profile_url">[[ rating.username ]]</a>
-					    sur l'album <album_popover :mbid='rating.mbid' class='mt-0' style='display:inline'><a slot='preview' :href="rating.album_url">[[rating.title]]</a></album_popover> ([[rating.score]]/10)	
-						</div>
-			 </li>	    
+			 <template v-for='user in users'>
+			     
+			     <li class='list-group-item popover-item' v-if='user.reviews.length == 1'>
+				 
+				 <div class="d-flex">
+				     <div style="min-width:70px">
+					 <div :style="{ 'width' : '50px' , 'height' : '50px' , 'background-image': 'url(' + user.avatar  + ')', 'background-size' : 'cover', 'background-position' : 'center'}"></div></div>
+					     <div class="flex-grow-1">
+						 <a :href="user.reviews[0].review_url">
+						     [[ user.reviews[0].review_title ]]
+						 </a> par
+						     <a :href="user.profile_url">
+							 [[ user.username ]]
+						     </a>
+							 sur l'album
+							 <album_popover style="display:inline" class="mt-0" :mbid="user.reviews[0].mbid">
+							     <a slot="preview" :href="user.reviews[0].album_url">
+								 [[ user.reviews[0].title ]]
+							     </a>
+							 </album_popover> ([[user.reviews[0].score]]/10)
+					     </div>
+				 </div>				     
+			     </li>
+								 
+								 <template v-else>
+								     <li class='list-group-item popover-item' v-b-toggle="'rev-' + user.username">
+									 
+				    					 <div class="d-flex">
+									     <div style="min-width:70px">
+										 <div :style="{ 'width' : '50px' , 'height' : '50px' , 'background-image' :  'url(' + user.avatar + ')',  'background-size' : 'cover', 'background-position' : 'center'}"></div></div>
+										     <div class="flex-grow-1">
+											 <a @click.stop :href="user.profile_url">[[user.username]]</a> a critiqué [[ display(user.reviews.length) ]] albums.
+											     <a href="#" @click.prevent><span class="menu-ico-collapse"><i class="fa fa-chevron-down"></i></span></a>
+										     </div>
+									 </div>
+												 
+								     </li>
+												 <b-collapse :id="'rev-' + user.username">
+												     <li class="list-group-item sub-item popover-item" v-for='review in user.reviews'>
+													 <div class="d-flex">
+													     <div style="min-width:30px">
+													     </div>
+														 <div style="min-width:50px">
+														     <div :style="{ 'width' : '30px',  'height' : '30px',  'background-image' : 'url(' + user.avatar + ')',  'background-size' : 'cover' , 'background-position' : 'center'}"></div>
+														 </div>
+															 <div class="flex-grow-1">
+															     <a :href="review.review_url">
+																 [[ review.review_title ]]
+															     </a> 
+																 à propos de l'album
+																 <album_popover style="display:inline" class="mt-0" :mbid="review.mbid">
+																     <a slot="preview" :href="review.album_url">
+																	 [[ review.title ]]
+																     </a>
+																 </album_popover> ([[review.score]]/10)
+															 </div>
+													 </div>				 
+												     </li>
+												 </b-collapse>
+																	 
+																	 
+								 </template>
+																	 
+																	 
+																	 
+																	 
+																	 
+			 </template>
+																	 
 		     </ul>
+																	 
 		 </template>
-						<template v-else>
-						    Aucun résultat trouvé
-						</template>
-						    
-			     </div>
-							     <div v-show="loading"><br><br><div class="spinner" style="position:relative"></div>
-							     </div>
+																	 <template v-else>
+																	     Aucun résultat trouvé
+																	 </template>
+																	     
 	     </div>
+																	     <div v-show="loading"><br><br><div class="spinner" style="position:relative"></div>
+																	     </div>
+	 </div>
      `,
      mounted : function(){
 	 this.loading = true;
 	 axios.get(this.url 
 	 ).then(response => {
-	     this.ratings = response.data.reviews;
+	     this.users = response.data.users;
 	     this.loading = false;
 	 }
 	 ).catch(error => {
@@ -385,6 +617,22 @@
      });
  });
 
+</script>
+
+{% else %}
+
+<script src="{% static 'js/vue.min.js' %}"></script>
+<script src="{% static 'js/polyfill.min.js' %}"></script>
+<script src="{% static 'js/bootstrap-vue.min.js' %}"></script>
+
+
+<script>
+
+ var vm = new Vue({
+     delimiters : ['[[', ']]'],
+     el : '#app',
+ })
+ 
 </script>
 
 

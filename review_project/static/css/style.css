@@ -340,7 +340,23 @@ li.dropdown:hover > .dropdown-menu {
     display: block;
 }
 
-.list-group-item:focus, .list-group-item:hover {
+.popover-item:focus, .popover-item:hover {
     z-index : 9998;
     text-decoration: none;
+			}
+
+
+.menu-ico-collapse {
+    margin-left: 4px;
+}
+
+.list-group-submenu .list-group-item:first-child {
+     border-top-right-radius: 0;
+     border-top-left-radius: 0;
+}
+
+.list-group-submenu .list-group-item:last-child {
+     margin-bottom: -1px;
+     border-bottom-right-radius: 0;
+     border-bottom-left-radius: 0;
 }

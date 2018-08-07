@@ -5,7 +5,7 @@
 {% load comments %}
 
 {% block title %}
-{{ album.title }} : critique de {{review.rating.user}}
+Critique de {{review.rating.user}} sur {{ album.title }}
 {% endblock %}
 
 {% block extrahead %}

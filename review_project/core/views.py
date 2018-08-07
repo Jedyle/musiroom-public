@@ -8,14 +8,16 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from star_ratings.models import UserRating
 from django.urls import reverse
+from django.db.models import Max, Q
+from django.db.models import Prefetch
 
 # Create your views here.
 
 def home(request):
     time_threshold = datetime.now() - timedelta(days=60)
     new_albums = Album.objects.filter(release_date__gt=time_threshold).filter(ratings__isnull = False).order_by('-ratings__count')[:18]
-    reviews = Review.objects.all().order_by('-date_publication')[:10]
-    ratings = UserRating.objects.all().order_by('-modified')[:10]
+    reviews = compute_reviews_feed()
+    ratings = compute_ratings_feed()
     context = {
         'albums' : new_albums,
         'reviews' : reviews,
@@ -23,48 +25,86 @@ def home(request):
         }
     return render(request, 'core/home.html', context)
 
+DATE = datetime.now() - timedelta(days = 10)
+
+def compute_reviews_feed():
+    users = User.objects.filter(userrating__review__isnull=False, userrating__review__date_publication__gt=DATE).distinct().annotate(last_date = Max('userrating__review__date_publication')).order_by('-last_date').select_related('account')
+
+    user_list = users[:10]
+
+    user_reviews = []
+    for user in user_list:
+        reviews = Review.objects.filter(Q(rating__user=user) & Q(date_publication__gt = DATE)).order_by('-date_publication').prefetch_related('rating__rating__content_object')[:15]
+        user_reviews.append({
+            'user' : user,
+            'account' : user.account, #mis car select related ne marche pas ...
+            'reviews' : reviews,
+            })
+    return user_reviews
+
+def compute_ratings_feed():
+    users = User.objects.filter(userrating__isnull=False, userrating__modified__gt=DATE).annotate(last_date = Max('userrating__modified')).order_by('-last_date').select_related('account')
+    user_list = users[:10]
+
+    user_ratings = []
+    for user in user_list:
+        ratings = UserRating.objects.filter(Q(user=user) & Q(modified__gt = DATE)).order_by('-modified').prefetch_related('rating__content_object')[:15]
+        user_ratings.append({
+            'user' : user,
+            'account' : user.account, #mis car select related ne marche pas ...
+            'ratings' : ratings,
+            })
+    return user_ratings
+
+
 @login_required
 def ajax_followees_reviews(request):
-    followees_reviews = Review.objects.filter(rating__user__followers__follower = request.user).order_by('-date_publication')[:10]
-    reviews = []
-    for review in followees_reviews:
-        album = review.rating.rating.albums.get()
-        username = review.rating.user.username
-        reviews.append({
-            'mbid' : album.mbid,
-            'title' : album.title,
-            'cover' : album.get_cover(),
-            'username' : username,
-            'score' : review.rating.score,
-            'review_title' : review.title,
-            'album_url' : reverse('albums:album', args=[album.mbid]),
-            'profile_url' : reverse('profile', args=[username]),
-            'review_url' : reverse('albums:review', args=[album.mbid, review.id]),
-            'avatar' : review.rating.user.account.get_avatar(),
+    users = User.objects.filter(followers__follower = request.user, userrating__review__isnull=False, userrating__review__date_publication__gt=DATE).annotate(last_date = Max('userrating__review__date_publication')).order_by('-last_date').select_related('account')
+    user_list = users[:10]
+
+    user_reviews = []
+    for user in user_list:
+        reviews = Review.objects.filter(Q(rating__user=user) & Q(date_publication__gt = DATE)).order_by('-date_publication').prefetch_related('rating__rating__content_object')[:15]
+        reviews_data = []
+        for rev in reviews:
+            album = rev.rating.rating.content_object
+            reviews_data.append({
+                'mbid' : album.mbid,
+                'title' : album.title,
+                'review_url' : reverse('albums:review', args=[album.mbid, rev.id]),
+                'score' : rev.rating.score,
+                'review_title' : rev.title,
+                'album_url' : reverse('albums:album', args=[album.mbid]),
+                })
+        user_reviews.append({
+            'username' : user.username,
+            'profile_url' : reverse('profile', args=[user.username]),
+            'avatar' : user.account.get_avatar(),
+            'reviews' : reviews_data,
             })
-    context = {
-        'reviews' : reviews,
-        }
-    return JsonResponse(context)
+    return JsonResponse({'users' : user_reviews})
     
 @login_required
 def ajax_followees_ratings(request):
-    followees_ratings = UserRating.objects.filter(user__followers__follower = request.user).order_by('-modified')[:10]
-    ratings = []
-    for rating in followees_ratings:
-        album = rating.rating.albums.get()
-        username = rating.user.username
-        ratings.append({
-            'score' : rating.score,
-            'username' : username,
-            'mbid' : album.mbid,
-            'cover' : album.get_cover(),
-            'title' : album.title,
-            'album_url' : reverse('albums:album', args=[album.mbid]),
-            'profile_url' : reverse('profile', args=[username]),
-            'avatar' : rating.user.account.get_avatar(),
+    users = User.objects.filter(followers__follower = request.user, userrating__isnull=False, userrating__modified__gt=DATE).annotate(last_date = Max('userrating__modified')).order_by('-last_date').select_related('account')
+    user_list = users[:10]
+
+    user_ratings = []
+    for user in user_list:
+        ratings = UserRating.objects.filter(Q(user=user) & Q(modified__gt = DATE)).order_by('-modified').prefetch_related('rating__content_object')[:15]
+        ratings_data = []
+        for rat in ratings:
+            album = rat.rating.content_object
+            ratings_data.append({
+                'mbid' : album.mbid,
+                'title' : album.title,
+                'score' : rat.score,
+                'album_url' : reverse('albums:album', args=[album.mbid]),
+                })
+        user_ratings.append({
+            'username' : user.username,
+            'profile_url' : reverse('profile', args=[user.username]),
+            'avatar' : user.account.get_avatar(),
+            'ratings' : ratings_data,
             })
-    context = {
-        'ratings' : ratings,
-        }
-    return JsonResponse(context)
+    return JsonResponse({'users' : user_ratings})
