@@ -351,6 +351,9 @@
      },
      methods : {
 	 lineBreak : function(value){
+	     if (value === "" && infos.can_edit){
+		 return "<p>Ajouter un commentaire...</p>"
+	     }
 	     return value.replace(/(?:\r\n|\r|\n)/g, '<br>');
 	 },
 	 ajaxEditDescription : function(){
@@ -402,6 +405,9 @@
      },     
      methods : {
 	 lineBreak : function(value){
+	     if (value === '' && infos.can_edit){
+		 return "<p style='color:grey'>Ajouter un commentaire..</p>"
+	     }
 	     return value.replace(/(?:\r\n|\r|\n)/g, '<br>');
 	 },
 	 changeAndScroll : function(page){
