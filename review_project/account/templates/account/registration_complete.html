@@ -18,7 +18,7 @@ Inscription terminée
 <div class="col-sm-12 col-md-6 offset-md-3">
 
     <p>Vous pouvez dès à présent vous connecter et remplir votre profil.</p>
-    <p><a href="{% url 'login' %}" class="button big fit">Se connecter</a></p>
+    <p><a href="{% url 'login' %}?next={% url 'edit_profile' %}" class="btn big fit">Se connecter</a></p>
 
 </div>
 

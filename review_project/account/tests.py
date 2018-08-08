@@ -58,7 +58,7 @@ class EditAccountFormTests(TestCase):
             }
         form = EditAccountForm(data = data)
         self.assertTrue(form.is_valid())
-
+    
 
 class LoginRequiredTest(TestCase):
 
@@ -141,6 +141,76 @@ Register :
 - test formulaire register (confirm password)
 """
 
+class RegistrationFormTest(TestCase):
+
+        
+    def check_form(self, data, val):
+        form = RegistrationForm(data)
+        self.assertEquals(form.is_valid(), val)
+
+    def check_form_serie(self, data, array, field, val):
+        for elt in array:
+            data['username'] = elt
+            self.check_form(data, val)
+
+    def test_valid(self):
+        data = {
+            'username' : 'toto',
+            'password' : 'passe123456',
+            'confirm_password' : 'passe123456',
+            'email' : 'toto@domain.com',
+            }
+        self.check_form(data, True)
+    
+    def test_username_too_short(self):
+        data = {
+            'username' : 'toto',
+            'password' : 'passe123456',
+            'confirm_password' : 'passe123456',
+            'email' : 'toto@domain.com',
+            }        
+        usernames = ['1', 'a', 'b', 'aa', 'bu', '12', '3a', '00']
+        self.check_form_serie(data, usernames, 'username', False)
+        
+    def test_username_too_long(self):
+        data = {
+            'username' : 'toto',
+            'password' : 'passe123456',
+            'confirm_password' : 'passe123456',
+            'email' : 'toto@domain.com',
+            }
+        usernames = ['aerihrfzuehfzoefhzrepfhzpfhzpufzpfgepf', 'zirijepjefrr2r5efref5efefeffefefz']
+        self.check_form_serie(data, usernames, 'username', False)
+
+    def test_passwords_differents(self):
+        data = {
+            'username' : 'toto',
+            'password' : 'passe123456',
+            'confirm_password' : 'passe1234567',
+            'email' : 'toto@domain.com',
+            }
+        self.check_form(data, False)
+
+    def test_username_forbidden_char(self):
+        data = {
+            'username' : 'toto@',
+            'password' : 'passe123456',
+            'confirm_password' : 'passe123456',
+            'email' : 'toto@domain.com',
+            }
+        usernames = ['toto@', 'aaaaa^', '$toto', 't+oto']
+        self.check_form_serie(data, usernames, 'username', False)
+        
+    def test_wrong_email(self):
+        data = {
+            'username' : 'toto',
+            'password' : 'passe123456',
+            'confirm_password' : 'passe123456',
+            'email' : 'toto@domain',
+            }
+        emails = ['toto@domain','toto', 'toto@', '@domain.com', 'toto@domain..fr', 'toto@@domain.fr','toto@toto@domain.fr']
+        self.check_form_serie(data, emails, 'email', False)
+        
 
 """
 Send email :
@@ -200,3 +270,22 @@ class DeleteUserTest(TestCase):
         response = c.post(delete_url, {'password': 'pass12345'})
         self.assertEquals(response.status_code, 302)  
         
+
+class SearchAccountTest(TestCase):
+
+    def setUp(self):
+        user = User.objects.create_user(username = 'Toto', password = 'pass12345', email = 'toto@test.fr')
+
+        itemlist = ItemList(user = user, title='Top albums de Toto')
+        itemlist.save()
+        account = Account(user = user, top_albums = itemlist)        
+        account.save()
+        
+    def test_search_redirects_to_account(self):
+        c = Client()
+        url = reverse('albums:search')
+        response = c.get(url, {'type' : 'compte', 'query' : 'toto'})
+        print(response)
+        self.assertEquals(response.status_code, 200)
+        self.assertContains(response, 'Toto')
+    

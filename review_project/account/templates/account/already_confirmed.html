@@ -16,6 +16,6 @@ Inscription confirmée
 
 {% block content %}
 <div class="col-sm-12 col-md-6 offset-md-3">
-    <h2 class="text-center">Vous pouvez maintenant vous <a href="{% url 'login' %}">connecter</a>.</h2>
+    <h2 class="text-center">Vous pouvez maintenant vous <a href="{% url 'login' %}?next={% url 'edit_profile' %}">connecter</a>.</h2>
 </div>
 {% endblock %}

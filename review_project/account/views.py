@@ -69,9 +69,9 @@ def register(request):
             send_email(request, user)
             return render(request, 'account/confirm_email.html', {'email': addr, 'user' : user})
         else:
-            return render(request, 'account/registration_form.html',{'form': form, 'error' : True})
+            return render(request, 'account/registration_form.html', {'form': form, 'error' : True})
     else:
-        return render(request, 'account/registration_form.html',{'form': RegistrationForm()})
+        return render(request, 'account/registration_form.html', {'form': RegistrationForm()})
 
 def activate(request, uidb64, token):
     try:
