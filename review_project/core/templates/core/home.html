@@ -131,7 +131,6 @@
 				</div>
 				<div class="flex-grow-1">
 
-	
 					<a href="{% url 'albums:review' album.mbid rev.id %}">
 					    {{ rev.title }}
 					</a> 
@@ -197,20 +196,20 @@
 	    <div v-show="currentViewRating === 'all_ratings'" v-cloak>
 		{% endif %}
 
-		{% cache 60 new_ratings user.is_authenticated %}
+		{% cache 5 new_ratings user.is_authenticated %}
 
 		<ul class="list-group">
 
 		    {% for rating in ratings %}
 		    {% if rating.ratings|length <= 1 %}
-		    {% with album=rating.ratings.0.rating.content_object rating=rating.ratings.0 %}
+		    {% with album=rating.ratings.0.rating.content_object rating_=rating.ratings.0 %}
 		    <li class="list-group-item">
 			<div class="d-flex">
 			    <div style="min-width:70px">
 				<div style="width:50px; height:50px; background-image: url({{ rating.account.get_avatar }}); background-size:cover; background-position : center;"></div>
 			    </div>
 			    <div class="flex-grow-1">
-				<a href="{% url 'profile' rating.user.username %}">{{rating.user}}</a> à donné la note de <strong>{{rating.score}}</strong> à l'album {% if user.is_authenticated %}<album_popover style="display:inline" class="mt-0" mbid="{{album.mbid}}"><a slot="preview" href="{% url 'albums:album' album.mbid %}">{{album.title}}</a></album_popover>{% else %}<a href="{% url 'albums:album' album.mbid %}">{{album.title}}</a>{% endif %}
+				<a href="{% url 'profile' rating.user.username %}">{{rating.user}}</a> à donné la note de <strong>{{rating_.score}}</strong> à l'album {% if user.is_authenticated %}<album_popover style="display:inline" class="mt-0" mbid="{{album.mbid}}"><a slot="preview" href="{% url 'albums:album' album.mbid %}">{{album.title}}</a></album_popover>{% else %}<a href="{% url 'albums:album' album.mbid %}">{{album.title}}</a>{% endif %}
 			    </div>
 
 			</div>
