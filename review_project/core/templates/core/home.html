@@ -196,7 +196,7 @@
 	    <div v-show="currentViewRating === 'all_ratings'" v-cloak>
 		{% endif %}
 
-		{% cache 5 new_ratings user.is_authenticated %}
+		{% cache 60 new_ratings user.is_authenticated %}
 
 		<ul class="list-group">
 
