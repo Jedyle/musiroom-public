@@ -80,7 +80,7 @@
 		    {% for review in reviews %}
 		    {% if review.reviews|length == 1 %}
 		    {% with album=review.reviews.0.rating.rating.content_object rev=review.reviews.0 %}
-		    <li class="list-group-item popoover-item">
+		    <li class="list-group-item">
 			<div class="d-flex">
 			    <div style="min-width:70px">
 				<div style="width:50px; height:50px; background-image: url({{ review.account.get_avatar }}); background-size:cover; background-position : center;"></div></div>
@@ -108,7 +108,7 @@
 		    </li>
 		    {% endwith %}
 		    {% else %}
-		    <li class="list-group-item popover-item" v-b-toggle="'rev-{{review.user}}'">
+		    <li class="list-group-item" v-b-toggle="'rev-{{review.user}}'">
 			<div class="d-flex">
 			    <div style="min-width:70px">
 				<div style="width:50px; height:50px; background-image: url({{ review.account.get_avatar }}); background-size:cover; background-position : center;"></div></div>
@@ -121,7 +121,7 @@
 		    <b-collapse id="rev-{{review.user}}">
 			{% for rev in review.reviews %}
 			{% with album=rev.rating.rating.content_object %}
-			<li class="list-group-item popover-item sub-item">
+			<li class="list-group-item sub-item">
 
 			    <div class="d-flex">
 				<div style="min-width:30px">
@@ -204,7 +204,7 @@
 		    {% for rating in ratings %}
 		    {% if rating.ratings|length <= 1 %}
 		    {% with album=rating.ratings.0.rating.content_object rating=rating.ratings.0 %}
-		    <li class="list-group-item popover-item">
+		    <li class="list-group-item">
 			<div class="d-flex">
 			    <div style="min-width:70px">
 				<div style="width:50px; height:50px; background-image: url({{ rating.account.get_avatar }}); background-size:cover; background-position : center;"></div>
@@ -219,7 +219,7 @@
 		    {% endwith %}
 		    {% else %}
 
-		    <li class="list-group-item popover-item" v-b-toggle="'rat-{{rating.user}}'">
+		    <li class="list-group-item" v-b-toggle="'rat-{{rating.user}}'">
 			<div class="d-flex">
 			    <div style="min-width:70px">
 				<div style="width:50px; height:50px; background-image: url({{ rating.account.get_avatar }}); background-size:cover; background-position : center;"></div></div>
@@ -232,7 +232,7 @@
 		    <b-collapse id="rat-{{rating.user}}">
 			{% for rat in rating.ratings %}
 			{% with album=rat.rating.content_object %}
-			<li class="list-group-item popover-item sub-item">
+			<li class="list-group-item sub-item">
 
 			    <div class="d-flex">
 				<div style="min-width:30px">
@@ -334,7 +334,7 @@
 		     <ul class="list-group">
 			 <template v-for='user in users'>
 			     
-			     <li class='list-group-item popover-item' v-if='user.ratings.length == 1'>
+			     <li class='list-group-item' v-if='user.ratings.length == 1'>
 				 
 				 <div class="d-flex">
 				     <div style="min-width:70px">
@@ -356,7 +356,7 @@
 			     </li>
 								 
 								 <template v-else>
-								     <li class='list-group-item popover-item' v-b-toggle="'rat-' + user.username">
+								     <li class='list-group-item' v-b-toggle="'rat-' + user.username">
 									 
 				    					 <div class="d-flex">
 									     <div style="min-width:70px">
@@ -369,7 +369,7 @@
 												 
 								     </li>
 												 <b-collapse :id="'rat-' + user.username">
-												     <li class="list-group-item sub-item popover-item" v-for='rating in user.ratings'>
+												     <li class="list-group-item sub-item" v-for='rating in user.ratings'>
 													 <div class="d-flex">
 													     <div style="min-width:30px">
 													     </div>
@@ -417,7 +417,6 @@
 	 this.loading = true;
 	 axios.get(this.url 
 	 ).then(response => {
-	     console.log(response.data.users)
 	     this.users = response.data.users;
 	     this.loading = false;
 	 }
@@ -472,7 +471,7 @@
 		     <ul class="list-group">
 			 <template v-for='user in users'>
 			     
-			     <li class='list-group-item popover-item' v-if='user.reviews.length == 1'>
+			     <li class='list-group-item' v-if='user.reviews.length == 1'>
 				 
 				 <div class="d-flex">
 				     <div style="min-width:70px">
@@ -495,7 +494,7 @@
 			     </li>
 								 
 								 <template v-else>
-								     <li class='list-group-item popover-item' v-b-toggle="'rev-' + user.username">
+								     <li class='list-group-item' v-b-toggle="'rev-' + user.username">
 									 
 				    					 <div class="d-flex">
 									     <div style="min-width:70px">
@@ -508,7 +507,7 @@
 												 
 								     </li>
 												 <b-collapse :id="'rev-' + user.username">
-												     <li class="list-group-item sub-item popover-item" v-for='review in user.reviews'>
+												     <li class="list-group-item sub-item" v-for='review in user.reviews'>
 													 <div class="d-flex">
 													     <div style="min-width:30px">
 													     </div>
