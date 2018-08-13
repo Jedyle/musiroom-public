@@ -470,11 +470,11 @@ def test_search_artist(artist):
 def test_page_list(nb_pages, current_page):
     print('nb_pages : ', nb_pages, 'current_page : ', current_page, 'list : ', get_page_list(nb_pages, current_page))
 
-test_album('1122eaed-f403-4feb-af98-63a63d3e083a')
-test_album('9c150c9b-769e-4a63-92b3-faf0db3033b0')
-test_album('1bd0767d-756b-3023-bf84-ca475fea487a')
-test_album('3a73b210-aa6e-459d-a9f7-9be3')
-test_album('4dd4a542-dbd9-3cd4-8d2b-7729f12f2a82')
+# test_album('1122eaed-f403-4feb-af98-63a63d3e083a')
+# test_album('9c150c9b-769e-4a63-92b3-faf0db3033b0')
+# test_album('1bd0767d-756b-3023-bf84-ca475fea487a')
+# test_album('3a73b210-aa6e-459d-a9f7-9be3')
+# test_album('4dd4a542-dbd9-3cd4-8d2b-7729f12f2a82')
 
 #test_artist('06fb1c8b-566e-4cb2-985b-b467c90781d4')
 #test_artist('d347406f-839d-4423-9a28-188939282afa')
