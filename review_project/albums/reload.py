@@ -18,7 +18,6 @@ def reload_all():
     albums = Album.objects.all()
     for album in albums:
         print(album.title)
-        if album.tracks == None:
-            reload_tracks(album.mbid)
+        reload_tracks(album.mbid)
     end = time.time()
     print('elapsed : ' , end - start)
