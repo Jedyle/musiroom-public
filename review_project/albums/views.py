@@ -79,6 +79,7 @@ def all_followees_ratings(user, album):
 
 NB_LISTS = 10
 
+@transaction.atomic
 def album(request, mbid):
     try:
         album = Album.objects.get(mbid = mbid)
@@ -118,7 +119,7 @@ def album(request, mbid):
                 cover_url = parse_cover.get_cover_small()
             else:
                 cover_url = ""
-            album = Album.objects.create(mbid = mbid, title = parser.get_title(), release_date=parser.get_release_date(), cover = cover_url, album_type = parser.get_type())
+            album = Album.objects.create(mbid = mbid, title = parser.get_title(), release_date=parser.get_release_date(), cover = cover_url, album_type = parser.get_type(), tracks=parser.get_track_list())
             authors = get_artists_in_db(parser.get_artists())
             for author in authors :
                 album.artists.add(author)

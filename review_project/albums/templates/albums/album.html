@@ -19,6 +19,15 @@
 
     <br>
 
+    <div class="row">
+	<div class="col-12 m-3">
+
+	    {% include 'albums/track_list.html' with album=album%}
+	    
+	</div>
+    </div>
+
+    <br>
 
     {% if lists %}
     <div class="row">
@@ -182,6 +191,7 @@
 		{% endif %}
 	    </div>
 
+	    <br>
 	    
 	</div>
 	

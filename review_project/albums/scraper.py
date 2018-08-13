@@ -145,7 +145,9 @@ class ParseArtistPhoto:
 class ParseAlbum:
     def __init__(self, album_id, protocol = PROTOCOL, url =  MUSICBRAINZ_URL, album_folder = ALBUM):
         self.album_id = album_id
+        self.root_url = protocol + url
         self.url = protocol + url + album_folder
+        self.track_list = None
 
     def load(self):
         req = requests.get(self.url + self.album_id)
@@ -194,7 +196,47 @@ class ParseAlbum:
             return None
                     
     def get_track_list(self):
-        pass
+        if self.track_list:
+            return self.track_list
+        else:
+            table = self.soup.find('table', {'class' : 'tbl'})
+            release_1 = table.tbody.find_all('tr')[1:2]
+            if release_1:
+                release_link = release_1[0].find_all('td')[0].a['href']
+                req = requests.get(self.root_url + release_link)
+                if req.status_code == 200:
+                    page = req.content
+                    tracks_soup = BeautifulSoup(page, "html.parser")
+                    return self.parse_track_list(tracks_soup)
+
+    def parse_track_list(self,soup):
+        tables = soup.find_all('table', {'class' : 'tbl'})
+        lists = []
+        for table in tables:
+            tracks = table.tbody.find_all('tr')[1:]
+            cd = []
+            for track in tracks:
+                cols = track.find_all('td')
+                title = cols[-3].a.text
+                try:
+                    duration = datetime.datetime.strptime(cols[-1].text, '%M:%S')
+                    duration = datetime.timedelta(hours=duration.hour, minutes=duration.minute, seconds=duration.second)
+                except ValueError:
+                    duration = None
+                cd.append({
+                    'title' : title,
+                    'duration' : cols[-1].text,
+                    })
+            name = table.find_all('span', {'class' : 'medium-name' })
+            if name:
+                title = name[0].text
+            else:
+                title = ""
+            lists.append({
+                'medium_title' : title,
+                'tracks' : cd,
+                })
+        return {'track_list' : lists}
 
     def get_type(self):
         album_type = self.soup.find('dl', {'class' : 'properties'}).find('dd', {'class' : 'type'})
@@ -393,6 +435,7 @@ def test_album(album_id):
         print(album.get_artists())
         print(album.get_type())
         print(album.get_release_date())
+        print(album.get_track_list())
     print('\n\n')
 
 def test_artist(artist_id):

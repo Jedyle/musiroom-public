@@ -10,6 +10,7 @@ from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.dispatch import receiver
 from django.urls import reverse
+from jsonfield.fields import JSONField
 
 
 # Create your models here.
@@ -92,6 +93,7 @@ class Album(models.Model):
     title = models.CharField(max_length = 100)
     release_date = models.DateField(blank = True, null = True)
     cover = models.CharField(max_length = 100, null = True)
+    tracks = JSONField(null = True)
 
     TYPE_CHOICES = (
         ('SI', 'Single'),
