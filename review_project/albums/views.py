@@ -132,6 +132,19 @@ def album(request, mbid):
                 }
             return render(request, 'albums/album.html', context)
 
+def update_cover(request):
+    if request.method == 'POST':
+        mbid = request.POST.get('mbid')
+        album = get_object_or_404(Album,mbid=mbid)
+        parse_cover = ParseCover(mbid)
+        if parse_cover.load():
+            album.cover = parse_cover.get_cover_small()
+        else:
+            album.cover = ""
+        album.save()
+        return JsonResponse({})
+    return HttpResponseNotFound()
+
 def browse_albums(request):
     albums = Album.objects.all()
     try:

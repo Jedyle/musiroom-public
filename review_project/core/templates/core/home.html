@@ -25,7 +25,7 @@
     
     <h1 class="text-center">Nouveautés</h1>
 
-    {% cache 3600 new_albums user.is_authenticated %}
+    {% cache 5 new_albums user.is_authenticated %}
     <div class="row">
 	{% for album in albums %}
 
@@ -610,6 +610,23 @@
 	     album_popover,
 	 },
 	 mounted : function(){
+	     this.$refs.popover.onerror = function(e){
+		 e.preventDefault();
+		 this.src = "{% static 'albums/images/default_cover.png' %}"
+
+		 axios({
+		     method : 'post',
+		     url : "{% url 'albums:update_cover' %}",
+		     data : getFormData({
+			 mbid : mbid.replace('ID', '')
+		     })
+		 }).then(response => {
+		     
+		 }).catch(error => {
+		     console.log(error);
+		 })
+		 
+	     }
 	     this.$refs.popover.src = this.$refs.popover.getAttribute('data_src');
 	 }
      });

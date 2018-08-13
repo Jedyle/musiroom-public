@@ -3,7 +3,7 @@
 {% load ratings %}
 
 <div class="card">
-    <img class="card-img-top" src="{% static 'images/loading.gif' %}" data-src="{{ album.get_cover }}" alt="{{ album.title }}">
+    <img class="card-img-top" id="ID{{album.mbid}}" src="{% static 'images/loading.gif' %}" data-src="{{ album.get_cover }}" alt="{{ album.title }}">
     
     <div class="card-body">
 	<h5 class="card-title"><a href="{% url 'albums:album' mbid %}">{{ album.title }}</a></h5>

@@ -8,6 +8,7 @@ app_name = 'albums'
 urlpatterns = [
     url(r'^$', views.browse_albums, name='browse_albums'),
     url(r'^album/(?P<mbid>[0-9a-z-]{36})/$', views.album, name='album'),
+    url(r'^album/update_cover/$', views.update_cover, name='update_cover'),
     url(r'^album/(?P<mbid>[0-9a-z-]{36})/genres/$', views.album_genres, name='album_genres'),
     url(r'^album/(?P<mbid>[0-9a-z-]{36})/critiques/(?P<review_id>[0-9]+)/$', rating_views.review, name='review'),
     url(r'^album/(?P<mbid>[0-9a-z-]{36})/listes/$', views.album_lists, name='album_lists'),
