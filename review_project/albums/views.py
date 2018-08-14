@@ -123,6 +123,17 @@ def album(request, mbid):
             authors = get_artists_in_db(parser.get_artists())
             for author in authors :
                 album.artists.add(author)
+
+            tags = parser.get_tags()
+            for tag in tags:
+                genres = Genre.objects.filter(name__iexact = tag.lower().replace('-', ' '))
+                if genres.count() > 0:
+                    genre = genres[0]
+                    album_genre, created = AlbumGenre.objects.get_or_create(album = album, genre = genre)
+                    if created:
+                        album_genre.num_vote_up = 1
+                        album_genre.save()
+                
             album.save()
             artists = [{'name' : author.name, 'mbid' : author.mbid} for author in authors]
             artists_links = ["<a href='{}'>{}</a>".format(reverse('albums:artist', args=[artist['mbid']]), artist['name']) for artist in artists]

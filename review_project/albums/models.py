@@ -141,6 +141,9 @@ class AlbumGenre(VoteModel, ModelWithFlag, models.Model):
     def __str__(self):
         return "%s - %s" % (self.album.title, self.genre.name)
 
+    class Meta:
+        unique_together = ('album', 'genre')
+
 class Artist(models.Model):
     mbid = models.CharField(db_index=True, max_length = 36, unique = True)
     name = models.CharField(max_length = 50)

@@ -74,14 +74,25 @@ class ParseSearchAlbums(ParseSearch):
             table = self.soup.find('table', {'class', 'tbl'})
             result_list = []
             rows = table.tbody.find_all('tr')
+            titles = table.thead.find_all('th')
+            album_type_index = 0
+            album_index = 0
+            artist_index = 0
+            for i in range(len(titles)):
+                if titles[i].text == 'Release Group':
+                    album_index = i
+                if titles[i].text == 'Artist':
+                    artist_index = i
+                if titles[i].text == 'Type' :
+                    album_type_index = i
             for row in rows:
                 try:
                     cols = row.find_all('td')
-                    title = cols[1].text
-                    album_mbid = cols[1].a['href'].split('/')[-1]
-                    artist = cols[2].text
-                    artist_mbid = cols[2].a['href'].split('/')[-1]
-                    release_type = cols[3].getText()
+                    title = cols[album_index].text
+                    album_mbid = cols[album_index].a['href'].split('/')[-1]
+                    artist = cols[artist_index].text
+                    artist_mbid = cols[artist_index].a['href'].split('/')[-1]
+                    release_type = cols[album_type_index].getText()
                     result = {
                         'title' : title,
                         'album_mbid' : album_mbid ,
@@ -107,11 +118,16 @@ class ParseSearchArtists(ParseSearch):
             table = self.soup.find('table', {'class', 'tbl'})
             result_list = []
             rows = table.tbody.find_all('tr')
+            titles = table.thead.find_all('th')
+            artist_index = 0
+            for i in range(len(titles)):
+                if titles[i].text == 'Name':
+                    artist_index = i
             for row in rows:
                 try:
                     cols = row.find_all('td')
-                    name = cols[1].text.strip('\n')
-                    mbid = cols[1].a['href'].split('/')[-1]
+                    name = cols[artist_index].text.strip('\n')
+                    mbid = cols[artist_index].a['href'].split('/')[-1]
                     result = {
                         'name' : name,
                         'mbid' : mbid ,
@@ -260,6 +276,17 @@ class ParseAlbum:
                 'Album + Compilation + Live' : 'LI',            
                 }.get(album_type, 'UK')
         return "UK"
+
+    def get_tags(self):
+        tag_list = self.soup.find('div', {'id' : 'sidebar-tags'})
+        if tag_list:
+            tags = tag_list.find_all('a')
+            tag_names = []
+            for tag in tags:
+                tag_names.append(tag.text)
+            return tag_names
+        else:
+            return []
         
 def merge_identical(discog):
     n = len(discog)
@@ -375,62 +402,6 @@ class ParseArtist:
                         pass
                 discog.append((release_type, album_list))
         return discog
-
-        # def get_one_page_discography(self, soup):
-    #     discog = []
-    #     form = soup.find('h2', {'class': 'discography'}).find_next_sibling('form')
-    #     if form:
-    #         tables = form.find_all('table')
-    #         for table in tables:
-    #             release_type = table.find_previous_sibling('h3').text
-    #             album_list = []
-    #             rows = table.tbody.find_all('tr')
-    #             for row in rows:
-    #                 try:
-    #                     cols = row.find_all('td')
-    #                     year = valid_year(cols[0].text)
-    #                     title = cols[1].a.text
-    #                     mbid = cols[1].a['href'].split('/')[-1]
-    #                     artists = cols[2].find_all('a')
-    #                     featurings = []
-    #                     for artist in artists:
-    #                         a_mbid = artist['href'].split('/')[-1]
-    #                         if a_mbid != self.artist_id:
-    #                             collab = {
-    #                                 'name' : artist.text,
-    #                                 'mbid' : a_mbid,
-    #                                 }
-    #                             featurings.append(collab)                                
-    #                     release = {
-    #                         'year' : year,
-    #                         'title' : title ,
-    #                         'mbid' : mbid,
-    #                         'feat' : featurings
-    #                         }
-    #                     album_list.append(release)
-    #                 except:
-    #                     pass
-    #             discog.append((release_type, album_list))
-    #     return discog
-                    
-    # def get_discography(self):
-    #     """
-    #     get an artist discography, sorted by type and release date
-    #     """
-
-    #     nb_pages = self.get_nb_pages()
-
-    #     discog = self.get_one_page_discography(self.soup)
-
-    #     if nb_pages > 1:
-    #         for i in range(2, nb_pages+1):
-    #             req = requests.get(self.url + self.artist_id + "?page=" + str(i))
-    #             if req.status_code == 200:
-    #                 page = req.content
-    #                 soup = BeautifulSoup(page, "html.parser")
-    #                 discog.extend(self.get_one_page_discography(soup))
-    #         discog = merge_identical(discog)
-    #     return discog
             
 
 
@@ -443,6 +414,7 @@ def test_album(album_id):
         print(album.get_type())
         print(album.get_release_date())
         print(album.get_track_list())
+        print(album.get_tags())
     print('\n\n')
 
 def test_artist(artist_id):
@@ -463,6 +435,7 @@ def test_cover(album_id):
 def test_search_album(album):
     search = ParseSearchAlbums(album)
     if search.load():
+        print('ok')
         print(search.get_results())
 
 def test_search_artist(artist):
@@ -478,12 +451,13 @@ def test_page_list(nb_pages, current_page):
 # test_album('1bd0767d-756b-3023-bf84-ca475fea487a')
 # test_album('3a73b210-aa6e-459d-a9f7-9be3')
 # test_album('62db99f0-2629-305c-8c2d-b860b5b99744')
+# test_album('aebc4e2f-f900-3ccd-886f-626c2b02eca8')
 
 #test_artist('06fb1c8b-566e-4cb2-985b-b467c90781d4')
 #test_artist('d347406f-839d-4423-9a28-188939282afa')
 
-#test_search_album('Mariner')
-#test_search_artist('Opeth')
+# test_search_album('Mariner')
+# test_search_artist('Opeth')
 
 # test_page_list(1,1)
 # test_page_list(50, 100)
