@@ -35,7 +35,7 @@
 	    {% endfor %})
 	    {% endif %}
 	</td>
-	<td class="col-8 offset-4 col-sm-4 col-md-5 offset-sm-0 rating_area" id="ID{{r.mbid}}" v-cloak>
+	<td class="col-8 offset-4 col-sm-4 col-md-5 offset-sm-0 rating_area" id="ID{{r.mbid}}" {ù if user.is_authenticated %}v-cloak{% endif %}>
 	    {% if user.is_authenticated %}<star-rating :inline="true" :show-rating="false" :max-rating='10' :star-size='15' v-model='rating'></star-rating>
 	    <div class="ml-xl-3 d-block d-xl-inline">
 		<span title="Ma note" class="w3-tag const-span rounded user-rating">[[ scoreOrZero(rating) ]]</span> <span title="Note de mes abonnements" class="w3-tag const-span rounded follow-rating">...</span>{% endif %} <span title="Note moyenne" class="w3-tag const-span rounded avg-rating">...</span> {% if user.is_authenticated %}</div>{% endif %}
