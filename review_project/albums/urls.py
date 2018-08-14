@@ -25,4 +25,5 @@ urlpatterns = [
     url(r'^top/$', views.top_album_get, name='top_album_get'),
     url(r'^top/(?P<slug>([a-zA-Z-_]+))/(?P<year>([0-9]{4}s?|tout))/$', views.top_album, name='top_album'),
     url(r'album/donnees/$', views.album_data, name='album_data'),
+    url(r'album/load_and_rate/$', views.load_and_rate, name='load_and_rate'),
         ]

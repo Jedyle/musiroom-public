@@ -79,6 +79,36 @@ def all_followees_ratings(user, album):
 
 NB_LISTS = 10
 
+
+def load_album_if_not_exists(mbid):        
+    parser = ParseAlbum(mbid)
+    if not parser.load():
+        return HttpResponseNotFound()
+    else:
+        parse_cover = ParseCover(mbid)
+        if parse_cover.load():
+            cover_url = parse_cover.get_cover_small()
+        else:
+            cover_url = ""
+        album, created = Album.objects.get_or_create(mbid = mbid, title = parser.get_title(), release_date=parser.get_release_date(), cover = cover_url, album_type = parser.get_type(), tracks=parser.get_track_list())
+        authors = get_artists_in_db(parser.get_artists())
+        for author in authors :
+            album.artists.add(author)
+
+        tags = parser.get_tags()
+        for tag in tags:
+            genres = Genre.objects.filter(name__iexact = tag.lower().replace('-', ' '))
+            if genres.count() > 0:
+                genre = genres[0]
+                album_genre, created = AlbumGenre.objects.get_or_create(album = album, genre = genre)
+                if created:
+                    album_genre.num_vote_up = 1
+                    album_genre.save()
+                    
+        album.save()
+        artists = [{'name' : author.name, 'mbid' : author.mbid} for author in authors]
+        return album, artists
+
 @transaction.atomic
 def album(request, mbid):
     try:
@@ -114,28 +144,7 @@ def album(request, mbid):
         if not parser.load():
             return HttpResponseNotFound()
         else:
-            parse_cover = ParseCover(mbid)
-            if parse_cover.load():
-                cover_url = parse_cover.get_cover_small()
-            else:
-                cover_url = ""
-            album = Album.objects.create(mbid = mbid, title = parser.get_title(), release_date=parser.get_release_date(), cover = cover_url, album_type = parser.get_type(), tracks=parser.get_track_list())
-            authors = get_artists_in_db(parser.get_artists())
-            for author in authors :
-                album.artists.add(author)
-
-            tags = parser.get_tags()
-            for tag in tags:
-                genres = Genre.objects.filter(name__iexact = tag.lower().replace('-', ' '))
-                if genres.count() > 0:
-                    genre = genres[0]
-                    album_genre, created = AlbumGenre.objects.get_or_create(album = album, genre = genre)
-                    if created:
-                        album_genre.num_vote_up = 1
-                        album_genre.save()
-                
-            album.save()
-            artists = [{'name' : author.name, 'mbid' : author.mbid} for author in authors]
+            album, artists = load_album_if_not_exists(mbid)
             artists_links = ["<a href='{}'>{}</a>".format(reverse('albums:artist', args=[artist['mbid']]), artist['name']) for artist in artists]
             context = {
                 'album' : album,
@@ -143,6 +152,20 @@ def album(request, mbid):
                 'mbid': mbid,
                 }
             return render(request, 'albums/album.html', context)
+
+@login_required
+def load_and_rate(request):
+    if request.method == 'POST':
+        mbid = request.POST.get('mbid')
+        score = request.POST.get('score')
+        user = request.user
+        try:
+            album = Album.objects.get(mbid = mbid)
+        except Album.DoesNotExist:
+            album, artist = load_album_if_not_exists(mbid)
+        Rating.objects.rate(album, score, user = user)              
+        return JsonResponse({})
+    return HttpResponseNotFound()
 
 def update_cover(request):
     if request.method == 'POST':

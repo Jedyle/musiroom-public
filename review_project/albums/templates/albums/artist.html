@@ -46,6 +46,8 @@ Artiste
 
 <script src="{% static 'js/vue.min.js' %}"></script>
 <script src="{% static 'js/axios.js' %}"></script>
+<script src="{% static 'js/utilities.js' %}"></script>
+<script src="{% static 'star-ratings/js/star-rating-popover.min.js' %}"></script>
 
 <script>
  
@@ -60,7 +62,6 @@ Artiste
 	     },
 	 }
      ).then(response => {
-	 console.log(response)
 	 var data = document.getElementById('data');
 	 data.innerHTML = response.data.html;
 	 var artist = document.getElementById('artiste');
@@ -103,20 +104,22 @@ Artiste
      }
      ).then(response => {
 	 var data = response.data.albums;
-	 console.log(data);
 	 
 	 var alb_id = document.getElementsByClassName('rating_area');
-	 console.log(alb_id);
+
+	 {% if user.is_authenticated %}
+	 var user_data  = {};
+	 {% endif %}
 
 	 Array.from(alb_id).forEach(function(item) {
-	     var mbid = item.id;
-	     console.log(item.getElementsByClassName('user-rating')[0])
+	     var mbid = item.id.replace('ID', '');
 	     if (data.hasOwnProperty(mbid)){
 
 		 item.getElementsByClassName('avg-rating')[0].innerText = scoreOrZero(data[mbid]['avg'])
 		 item.getElementsByClassName('avg-rating')[0].title = 'Note moyenne (' + data[mbid]['count'] + ' notes)';
 		 {% if user.is_authenticated %}
-		 item.getElementsByClassName('user-rating')[0].innerText = scoreOrZero(data[mbid]['user'])
+		 user_data[mbid] = data[mbid]['user']
+		 /* item.getElementsByClassName('user-rating')[0].innerText = scoreOrZero(data[mbid]['user'])*/
 		 item.getElementsByClassName('follow-rating')[0].innerText = scoreOrZero(data[mbid]['followees'])
 		 {% endif %}
 	     }
@@ -124,11 +127,62 @@ Artiste
 		 item.getElementsByClassName('avg-rating')[0].innerText = '-'
 		 item.getElementsByClassName('avg-rating')[0].title = 'Note moyenne (0 notes)';
 		 {% if user.is_authenticated %}
-		 item.getElementsByClassName('user-rating')[0].innerText = '-'
+		 user_data[mbid] = 0
+		 /* item.getElementsByClassName('user-rating')[0].innerText = '-'*/
 		 item.getElementsByClassName('follow-rating')[0].innerText = '-'
 		 {% endif %}
 	     }
+
+	     {% if user.is_authenticated %}
+	     new Vue({
+		 el : '#' + item.id,
+		 delimiters : ['[[', ']]'],
+		 components : {
+		     'star-rating' : VueStarRating.default,
+		 },
+		 data : {
+		     rating : user_data[mbid],
+		     mbid : mbid,
+		     url : "{% url 'albums:load_and_rate' %}",
+		 },
+		 methods : {
+		     scoreOrZero : function(score){
+			 if (parseFloat(score) == 0)
+			     return '-';
+			 return score;
+		     },
+		     post_vote : function(newVal, oldVal){
+			 axios({
+			     method : 'post',
+			     url : this.url,
+			     data : getFormData({
+				 mbid : this.mbid,
+				 score : newVal,
+			     }),
+			     xsrfHeaderName: "X-CSRFToken",
+			 }).then(response => {
+			     console.log('success !');
+			 }).catch(error => {
+			     this.unwatch();
+			     this.rating = oldVal;
+			     var vm = this;
+			     this.unwatch = this.$watch('rating', function(newVal, oldVal){vm.post_vote(newVal, oldVal)});
+			     alert('Une erreur est survenue : votre note n\'a pas été prise en compte');
+			     console.log(error);
+			 });
+			 this.$emit('rate', newVal);
+		     }
+		 },
+		 mounted : function(){
+		     var vm = this;
+		     this.unwatch = this.$watch('rating', function(newVal, oldVal){vm.post_vote(newVal, oldVal)});
+		 }
+		 
+		 
+	     });
+	     {% endif %}
 	 });
+
 	 
      }
      ).catch(error => {console.log(error)})
