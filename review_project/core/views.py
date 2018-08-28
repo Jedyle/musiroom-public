@@ -26,15 +26,16 @@ def home(request):
     return render(request, 'core/home.html', context)
 
 DATE = datetime.now() - timedelta(days = 5)
+DATE_REVIEWS = datetime.now() - timedelta(days = 30)
 
 def compute_reviews_feed():
-    users = User.objects.filter(userrating__review__isnull=False, userrating__review__date_publication__gt=DATE).distinct().annotate(last_date = Max('userrating__review__date_publication')).order_by('-last_date').select_related('account')
+    users = User.objects.filter(userrating__review__isnull=False, userrating__review__date_publication__gt=DATE_REVIEWS).distinct().annotate(last_date = Max('userrating__review__date_publication')).order_by('-last_date').select_related('account')
 
     user_list = users[:10]
 
     user_reviews = []
     for user in user_list:
-        reviews = Review.objects.filter(Q(rating__user=user) & Q(date_publication__gt = DATE)).order_by('-date_publication').prefetch_related('rating__rating__content_object')[:15]
+        reviews = Review.objects.filter(Q(rating__user=user) & Q(date_publication__gt = DATE_REVIEWS)).order_by('-date_publication').prefetch_related('rating__rating__content_object')[:15]
         user_reviews.append({
             'user' : user,
             'account' : user.account, #mis car select related ne marche pas ...
@@ -59,12 +60,12 @@ def compute_ratings_feed():
 
 @login_required
 def ajax_followees_reviews(request):
-    users = User.objects.filter(followers__follower = request.user, userrating__review__isnull=False, userrating__review__date_publication__gt=DATE).annotate(last_date = Max('userrating__review__date_publication')).order_by('-last_date').select_related('account')
+    users = User.objects.filter(followers__follower = request.user, userrating__review__isnull=False, userrating__review__date_publication__gt=DATE_REVIEWS).annotate(last_date = Max('userrating__review__date_publication')).order_by('-last_date').select_related('account')
     user_list = users[:10]
 
     user_reviews = []
     for user in user_list:
-        reviews = Review.objects.filter(Q(rating__user=user) & Q(date_publication__gt = DATE)).order_by('-date_publication').prefetch_related('rating__rating__content_object')[:15]
+        reviews = Review.objects.filter(Q(rating__user=user) & Q(date_publication__gt = DATE_REVIEWS)).order_by('-date_publication').prefetch_related('rating__rating__content_object')[:15]
         reviews_data = []
         for rev in reviews:
             album = rev.rating.rating.content_object
