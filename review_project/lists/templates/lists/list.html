@@ -2,6 +2,7 @@
 
 {% load staticfiles %}
 {% load comments %}
+{% load comments_xtd %}
 
 {% block title %}
 {{ infos.title }}
@@ -10,7 +11,6 @@
 {% block extrahead %}
 <link rel="stylesheet" href="{% static 'albums/css/style.css' %}">
 <link rel="stylesheet" href="{% static 'css/modal.css' %}">
-<link rel="stylesheet" type="text/css" href="{% static 'fluent_comments/css/ajaxcomments.css' %}" />
 {% endblock %}
 
 {% block body_title %}
@@ -42,9 +42,9 @@
 
 {% block content %}
 
-<div class="col-12" id="app">
+<div class="col-12">
     <div class="row">
-	<div class="col-sm-12 col-md-9 offset-md-1 col-lg-7 offset-lg-2">
+	<div class="col-sm-12 col-md-9 offset-md-1 col-lg-7 offset-lg-2" id="app">
 
 	    <p class="text-center" v-cloak>Liste de [[ all_items.length ]] albums</p>
 	    <a id="deleteList" class="float-right" href="{% if user.is_authenticated %}{% url 'profile' user.username %}{% endif %}" v-if="infos.can_edit" @click.prevent="deleteList">Supprimer ma liste</a>
@@ -202,12 +202,29 @@
 		</div>
 
 	    </modal>
+	    
+	</div>
+	
+    </div>
+    <div class="row">
 
-	    <h3>Commentaires</h3>
+	<div class="col-sm-12 col-md-9 offset-md-1 col-lg-7 offset-lg-2">
+
+	    {% get_comment_count for infos as comment_count %}
+	    
+	    <br>
+	    
+	    {% if comment_count %}
+	    <h3 class="text-center">Commentaires ({{comment_count}})</h3>
+	    {% else %}
+	    <h3 class="text-center">Commentaires</h3>
+	    <p class="text-center">Aucun commentaire n'a été posté pour le moment.</p>
+	    {% endif %}
+	    <br>
 	    
 	    <div>
-		<div id="comments" style="max-height : 600px; overflow-y: scroll;">
-		    {% render_comment_list for infos %}
+		<div id="comments">
+		    {% render_xtdcomment_tree for infos allow_flagging allow_feedback show_feedback %}
 		</div>
 		{% if user.is_authenticated %}
 		{% render_comment_form for infos %}
@@ -216,15 +233,12 @@
 	    </div>
 	    
 	</div>
-	
+	     
     </div>
 </div>
 {% endblock %}
 
 {% block scripts %}
-
-<script type="text/javascript" src="{% static 'fluent_comments/js/ajaxcomments.js' %}"></script>
-
 
 <script src="{% static 'js/vue.min.js' %}"></script>
 <script src="{% static 'js/axios.js' %}"></script>
@@ -238,7 +252,6 @@
 <script src="{% static 'js/vuejs-paginate.js' %}"></script>
 
 <!-- Modal -->
-<script src="{% static 'js/jquery.min.js' %}"></script>
 <script src="{% static 'trumbowyg/trumbowyg/dist/trumbowyg.min.js' %}"></script>
 <script src="https://unpkg.com/vue-trumbowyg@3"></script>
 <script src="{% static 'trumbowyg/trumbowyg/dist/langs/fr.min.js' %}"></script>
@@ -589,5 +602,9 @@
 
 </script>
 
+{% if user.is_authenticated %}
+<!-- Show likes user list -->
+<script src="{% static 'js/comments/comment-plugin.js' %}"></script>
+{% endif %}
 
 {% endblock %}

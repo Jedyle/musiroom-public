@@ -22,6 +22,9 @@ class ItemList(VoteModel, models.Model):
     def __str__(self):
         return self.user.username + " : " + self.title
 
+    def get_absolute_url(self):
+        return reverse('lists:display_list', args=[self.id])
+
 class ListObject(models.Model):
     item_list = models.ForeignKey(ItemList, on_delete=models.CASCADE)
     album = models.ForeignKey(Album, on_delete=models.CASCADE)
