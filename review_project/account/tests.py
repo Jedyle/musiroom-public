@@ -285,7 +285,6 @@ class SearchAccountTest(TestCase):
         c = Client()
         url = reverse('albums:search')
         response = c.get(url, {'type' : 'compte', 'query' : 'toto'})
-        print(response)
         self.assertEquals(response.status_code, 200)
         self.assertContains(response, 'Toto')
     
