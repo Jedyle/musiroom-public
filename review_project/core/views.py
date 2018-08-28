@@ -25,7 +25,7 @@ def home(request):
         }
     return render(request, 'core/home.html', context)
 
-DATE = datetime.now() - timedelta(days = 30)
+DATE = datetime.now() - timedelta(days = 5)
 
 def compute_reviews_feed():
     users = User.objects.filter(userrating__review__isnull=False, userrating__review__date_publication__gt=DATE).distinct().annotate(last_date = Max('userrating__review__date_publication')).order_by('-last_date').select_related('account')
