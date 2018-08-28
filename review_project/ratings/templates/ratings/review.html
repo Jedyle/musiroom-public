@@ -3,6 +3,7 @@
 {% load staticfiles %}
 {% load ratings %}
 {% load comments %}
+{% load comments_xtd %}
 
 {% block title %}
 Critique de {{review.rating.user}} sur {{ album.title }}
@@ -14,7 +15,7 @@ Critique de {{review.rating.user}} sur {{ album.title }}
 <link rel="stylesheet" href="{% static 'css/modal.css' %}">
 
 <link href="{% static 'css/trumbowyg.min.css' %}" rel="stylesheet">
-<link rel="stylesheet" type="text/css" href="{% static 'fluent_comments/css/ajaxcomments.css' %}" />
+<!-- <link rel="stylesheet" type="text/css" href="{% static 'fluent_comments/css/ajaxcomments.css' %}" /> -->
 {% endblock %}
 
 {% block body_title %}
@@ -82,13 +83,24 @@ Critique de {{review.rating.user}} sur {{ album.title }}
 
 	    <vote type="{{ user_vote }}" :upvotes="{{ review.num_vote_up }}" :downvotes="{{ review.num_vote_down }}" url_votes="{% url 'reviews:ajax_vote' %}" element_id="{{ review.id }}" :can_vote="{% if user.is_authenticated and user != r_user %}true{% else %}false{% endif %}"></vote>
 
+	    {% get_comment_count for review as comment_count %}
 
-	    <h3>Commentaires</h3>
+	    <br>
+	    
+	    {% if comment_count %}
+	    <h3 class="text-center">Commentaires ({{comment_count}})</h3>
+	    {% else %}
+	    <h3 class="text-center">Commentaires</h3>
+	    <p class="text-center">Aucun commentaire n'a été posté pour le moment.</p>
+	    {% endif %}
+	    <br>
 	    
 	    <div>
-		<div id="comments" style="max-height : 600px; overflow-y : scroll;">
-		    {% render_comment_list for review %}
+		{% if comment_count %}
+		<div id="comments">
+		    {% render_xtdcomment_tree for review allow_flagging allow_feedback show_feedback %}
 		</div>
+		{% endif %}
 		{% if user.is_authenticated %}
 		{% render_comment_form for review %}
 		{% endif %}
@@ -107,9 +119,6 @@ Critique de {{review.rating.user}} sur {{ album.title }}
 
 {% block scripts %}
 
-<script src="{% static 'js/jquery.min.js' %}"></script>
-
-<script type="text/javascript" src="{% static 'fluent_comments/js/ajaxcomments.js' %}"></script>
 
 <script src="{% static 'trumbowyg/trumbowyg/dist/trumbowyg.min.js' %}"></script>
 
@@ -134,10 +143,9 @@ Critique de {{review.rating.user}} sur {{ album.title }}
      var objDiv = document.getElementById("comments");
      objDiv.scrollTop = objDiv.scrollHeight;
  }, false)
-     
-     
+ 
+ 
 </script>
-
 
 <script>
  var template_data = {
@@ -236,5 +244,9 @@ Critique de {{review.rating.user}} sur {{ album.title }}
 
 </script>
 
+{% if user.is_authenticated %}
+<!-- Show likes user list -->
+<script src="{% static 'js/comments/comment-plugin.js' %}"></script>
+{% endif %}
 
 {% endblock %}

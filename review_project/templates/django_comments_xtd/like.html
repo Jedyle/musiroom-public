@@ -1,0 +1,80 @@
+{% extends "django_comments_xtd/base.html" %}
+{% load i18n %}
+{% load comments_xtd %}
+
+{% block title %}Confirmez votre opinion{% endblock %}
+
+{% block header %}
+<a href="{{ comment.content_object.get_absolute_url }}">{{ comment.content_object }}</a>
+{% endblock %}
+
+{% block content %}
+<h4 class="page-header text-center">
+  {% if already_liked_it %}
+  Vous avez aimé ce commentaire, voulez-vous modifier ?
+  {% else %}
+  Liker ce commentaire ?
+  {% endif %}
+</h4>
+<p class="alert alert-info text-center">Veuillez confirmer votre opinion sur le commentaire</p>
+<div class="row">
+  <div class="col-lg-offset-1 col-md-offset-1 col-lg-10 col-md-10">
+    <div class="media">
+      <div class="media-left">
+        {% if comment.user_url %}
+        <a href="{{ comment.user_url }}">
+          {{ comment.user_email|xtd_comment_gravatar }}
+        </a>
+        {% else %}
+        {{ comment.user_email|xtd_comment_gravatar }}
+        {% endif %}
+      </div>
+      <div class="media-body">
+        <h6 class="media-heading">
+          {{ comment.submit_date|date:"N j, Y, P" }}&nbsp;-&nbsp;
+          {% if comment.user_url %}
+          <a href="{{ comment.user_url }}" target="_new">{% endif %}
+            {{ comment.user_name }}
+            {% if comment.user_url %}
+          </a>{% endif %}
+        </h6>
+        <p>{{ comment.comment }}</p>
+      </div>
+    </div>
+    {% with object_absolute_url=comment.content_object.get_absolute_url %}
+    {% if object_absolute_url %}
+    <p class="text-center">
+      Posté sur &nbsp;<a href="{{ object_absolute_url }}">{{ comment.content_object }}</a>
+    </p>
+    {% endif %}
+    {% endwith %}
+    <div class="visible-lg-block visible-md-block">
+      <hr/>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-lg-offset-1 col-md-offset-1 col-lg-10 col-md-10">
+    {% if already_liked_it %}
+    <div class="alert alert-warning text-center">
+      Cliquez sur 'Retirer' pour annuler votre like sur ce commentaire.
+    </div>
+    {% endif %}
+    <div class="well well-lg">
+      <form action="." method="post" class="form-horizontal">{% csrf_token %}
+        <input type="hidden" name="next" value="{{ comment.get_absolute_url }}">
+        <div class="form-group">
+          <div class="text-center">
+            {% if already_liked_it %}
+            <input type="submit" name="submit" class="btn btn-warning" value="Retirer"/>
+            {% else %}
+            <input type="submit" name="submit" class="btn btn-primary" value="J'aime"/>
+            {% endif %}
+            <a class="btn btn-default" href="{{ comment.get_absolute_url }}">Annuler</a>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

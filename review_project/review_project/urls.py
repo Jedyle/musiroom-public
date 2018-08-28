@@ -31,7 +31,7 @@ urlpatterns = [
     url(r'^musique/', include('albums.urls', namespace='albums')),
     url(r'^notes/', include('star_ratings.urls', namespace='ratings')),
     url(r'^critiques/', include('ratings.urls', namespace='reviews')),
-    url(r'^commentaires/', include('fluent_comments.urls')),
+    url(r'^commentaires/', include('django_comments_xtd.urls')),
     url(r'^contacts/', include('friendship.urls')),
     url(r'^suivre/', include('ajax_follower.urls')),
     url(r'^listes/', include('lists.urls', namespace='lists')),

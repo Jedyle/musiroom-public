@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'debug_toolbar',
     'django_unused_media',
     'django_forms_bootstrap',
+    'rest_framework',
     'siteflags',
     'moderation',
     'core',
@@ -50,8 +51,7 @@ INSTALLED_APPS = [
     'vote',
     'star_ratings',
     'ratings',
-    'fluent_comments',  # must be before django_comments
-    'crispy_forms',
+    'django_comments_xtd',
     'django_comments',
     'friendship',
     'ajax_follower',
@@ -208,12 +208,18 @@ CSRF_COOKIE_NAME = "XSRF-TOKEN"
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
-COMMENTS_APP = 'fluent_comments'
+COMMENTS_APP = 'django_comments_xtd'
 
-FLUENT_COMMENTS_EXCLUDE_FIELDS = ('name', 'email', 'url')
+COMMENTS_XTD_MAX_THREAD_LEVEL = 1  # default is 0
+COMMENTS_XTD_LIST_ORDER = ('-thread_id', 'order')
 
-FLUENT_COMMENTS_DEFAULT_MODERATOR = 'ratings.moderation.UserLoggedInModerator'
-
+COMMENTS_XTD_APP_MODEL_OPTIONS = {
+    'default': {
+        'allow_flagging': True,
+        'allow_feedback': True,
+        'show_feedback': True,
+    }
+}
 
 # Notifications
 
