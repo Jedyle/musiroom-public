@@ -38,7 +38,7 @@ def comment_review_notification_for_users(user, review):
     res = "<a href='{}'>{}</a>".format(reverse('profile', args=[user.username]),user.username) + " a commenté la " + "<a href='{}'>critique</a>".format(review.get_absolute_url(), review.title) + " de " + "<a href='{}'>{}</a>".format(reverse('profile', args=[review.rating.user.username]),review.rating.user.username) + " sur l\'album " + "<a href='{}'>{}</a>".format(reverse('albums:album', args=[review.rating.rating.albums.get().mbid]), review.rating.rating.albums.get().title)
     return res
 
-def comment_reply_notification(comment, parent):
+def comment_review_reply_notification(comment, parent):
     review = comment.content_object
     res = "<a href='{}'>{}</a>".format(reverse('profile', args=[comment.user_name]),comment.user_name) + " a répondu à " + "<a href='{}'>votre commentaire</a>".format(parent.get_absolute_url()) + " sur la " + "<a href='{}'>critique</a>".format(review.get_absolute_url()) + " de " + "<a href='{}'>{}</a>".format(reverse('profile', args=[review.rating.user.username]),review.rating.user.username) + " sur l\'album " + "<a href='{}'>{}</a>".format(reverse('albums:album', args=[review.rating.rating.albums.get().mbid]), review.rating.rating.albums.get().title)
     return res
@@ -54,9 +54,8 @@ def notify_comment_review(comment, request, **kwargs):
         if comment.parent_id != 0:
             parent = XtdComment.objects.get(pk = comment.parent_id)
             parent_user = parent.user
-            print('user', parent)
             if parent_user != comment.user and parent_user != user:
-                notify.send(sender = comment.user, recipient = parent_user, verb ="a répondu à votre commentaire", target = comment.xtd_comment, to_str = comment_reply_notification(comment, parent))
+                notify.send(sender = comment.user, recipient = parent_user, verb ="a répondu à votre commentaire", target = comment.xtd_comment, to_str = comment_review_reply_notification(comment, parent))
         else :
             parent_user = None
             users_in_thread = User.objects.filter(comment_comments__content_type = ContentType.objects.get_for_model(Review), comment_comments__object_pk = pk).exclude(pk = comment.user.pk).exclude(pk = user.pk).distinct()
