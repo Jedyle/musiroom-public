@@ -504,7 +504,7 @@ def top_album(request, slug, year):
         genre = Genre.objects.get(slug = slug)
         associated_genres = genre.get_all_children()
         albums = albums.filter(Q(albumgenre__genre__in = associated_genres) & Q(albumgenre__is_genre = True))
-    albums = albums.filter(Q(ratings__isnull=False) & Q(ratings__average__gt = 1.0) & Q(ratings__count__gt = 2)).order_by('-ratings__average')
+    albums = albums.filter(Q(ratings__isnull=False) & Q(ratings__average__gt = 1.0) & Q(ratings__count__gt = 2)).order_by('-ratings__average', 'title')
 
     cache_albums = cache.get('top_album_albums_{}_{}'.format(slug, year))
     if cache_albums is None:
@@ -513,7 +513,7 @@ def top_album(request, slug, year):
     else:
         albums = cache_albums
 
-    ratings = list(albums.values('mbid','ratings__average', 'ratings__count'))
+    ratings = list(albums.values('mbid','title','ratings__average', 'ratings__count'))
         
     if request.user.is_authenticated :
         ct = ContentType.objects.get_for_model(Album)
