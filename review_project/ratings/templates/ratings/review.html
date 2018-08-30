@@ -4,6 +4,7 @@
 {% load ratings %}
 {% load comments %}
 {% load comments_xtd %}
+{% load core_tags %}
 
 {% block title %}
 Critique de {{review.rating.user}} sur {{ album.title }}
@@ -74,7 +75,10 @@ Critique de {{review.rating.user}} sur {{ album.title }}
 			<h5 class="font-weight-bold dark-grey-text mb-3">
 			    <strong><a href="{% url 'profile' r_user.username %}">{{ r_user.username }}</a></strong> &nbsp; <span class="w3-tag bg-secondary">{{ review.rating.score }}</span>
 			</h5>
-			<p>{{ r_user.account.description|linebreaks  }}
+			<p>
+			    {% autoescape off %}
+			    {{ r_user.account.description|parse_links|linebreaks  }}
+			    {% endautoescape %}			    
 			</p>
 		    </div>
 		</div>

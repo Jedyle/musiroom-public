@@ -18,3 +18,8 @@ def active_url(context, url):
     except KeyError:
         return ''
     return 'active' if re.search(pattern, path) else ''
+
+
+@register.filter
+def parse_links(value):
+    return re.sub(r'(https://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+)', r"<a target='_blank' href='\1'>\1</a>", value)

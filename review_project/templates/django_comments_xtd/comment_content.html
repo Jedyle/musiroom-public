@@ -1,0 +1,7 @@
+{% load core_tags %}
+
+{% autoescape off %}
+
+{{ content|parse_links|linebreaks }}
+
+{% endautoescape %}
