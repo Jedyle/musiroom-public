@@ -11,6 +11,9 @@ ARTIST = "artist/"
 ALBUM = "release-group/"
 SEARCH = "search"
 
+LASTFM_API_KEY = "f92f74bff80870fe482db287a02685c3"
+LASTFM_API_URL = "ws.audioscrobbler.com/2.0/"
+
 def valid_year(year):
     if year and year.isdigit():
         if int(year) >=1000 and int(year) <=3000:
@@ -141,20 +144,23 @@ class ParseSearchArtists(ParseSearch):
 
 
 class ParseArtistPhoto:
-    def __init__(self, artist_id, protocol = PROTOCOL, artist_folder = ARTIST, url = MUSICBRAINZ_URL):
+    def __init__(self, artist_id, protocol = PROTOCOL, url = LASTFM_API_URL):
         self.artist_id = artist_id
-        self.url = protocol + url + artist_folder + artist_id + '/commons-image'
+        self.url = protocol + url + "?method=artist.getinfo" + "&api_key=" + LASTFM_API_KEY + "&format=json" + "&mbid=" + self.artist_id
 
     def load(self):
+        print('url', self.url)
         req = requests.get(self.url)
         if req.status_code == 200:
-            self.photo = req.json()
+            self.json = req.json()
         return (req.status_code == 200)
     
     def get_thumb(self):
         try:
-            url = self.photo['image']['thumb_url']
-            return url
+            images = self.json['artist']['image']
+            if images:
+                return images[-1]["#text"]
+            return ""
         except:
             return ""
 

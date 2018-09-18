@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'jchart',
     'notifications',
     'feedback',
+    'discussions', 
     ]
 
 SITE_ID = 4
@@ -211,6 +212,10 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 COMMENTS_APP = 'django_comments_xtd'
 
 COMMENTS_XTD_MAX_THREAD_LEVEL = 1  # default is 0
+COMMENTS_XTD_MAX_THREAD_LEVEL_BY_APP_MODEL = {
+    'discussions.discussion' : 3,
+    }
+
 COMMENTS_XTD_LIST_ORDER = ('thread_id', 'order')
 
 COMMENTS_XTD_APP_MODEL_OPTIONS = {
@@ -236,3 +241,14 @@ FEEDBACK_CHOICES = (
     ('album', 'Rapporter un album non présent sur le site')
 )
 ALLOW_ANONYMOUS_FEEDBACK = True
+
+
+# Discussion settings
+
+#default : title
+DISCUSSIONS_SEARCH_FIELDS = {
+    'album' : 'title',
+    'artist' : 'name',
+    }
+
+

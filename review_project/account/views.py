@@ -207,7 +207,6 @@ def search_account(request):
             page = 1
         list_account = User.objects.filter(username__icontains = query, is_active = True).order_by('username')
         paginate = Paginator(list_account, 12)
-        print(paginate)
         try:
             accounts = paginate.page(page)
         except EmptyPage :

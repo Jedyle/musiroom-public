@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% load staticfiles %}
+{% load discussion %}
 
 {% block title %}
 
@@ -17,7 +18,7 @@ Artiste
 <div class="col-sm-12 col-md-3 col-lg-3">
 
     <div class="card">
-	<img class="card-img-top" src="{% static 'images/loading.gif' %}" data-src="{% if artist_picture %}{{ artist_picture }}{% else %}{% static 'images/artist.jpg' %}{% endif %}" alt="{{ artist_name }}" class="img-responsive">
+	<img class="card-img-top" src="{% static 'images/loading.gif' %}" data-src="{{ artist.get_photo }}" alt="{{ artist_name }}" class="img-responsive">
 	<div class="card-body">
 	    <h5 class="card-title" id="artiste_bar">{{ artist_name }}</h5>
 	    <p class="card-text">
@@ -30,6 +31,18 @@ Artiste
 	    </p>
 	</div>
     </div>
+
+    <hr>
+    
+    {% if artist %}
+
+    {% get_last_discussions artist 5 %}
+    
+    <a style="color:white; white-space : normal; word-wrap:break-word;" class="btn btn-block color-skyblue" type="button" href="{% url 'discussions:search_discussion_for_object' artist|content_type_pk artist.pk %}">Discussions sur {{ artist }}</a>
+    
+    <a style="color:white; white-space : normal; word-wrap:break-word;" class="btn btn-block color-teal" type="button" href="{% url 'discussions:create_discussion' artist|content_type_pk artist.pk %}">Nouvelle discussion</a>
+   
+    {% endif %}
     
 </div>
 

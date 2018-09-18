@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% load staticfiles %}
+{% load discussion %}
+{% load core_tags %}
+{% load bootstrap_tags %}
+
+{% block title %}
+Modifier une discussion : {{ discussion.title }}
+{% endblock %}
+
+{% block body_title %}
+<div class="jumbotron jumbotron-fluid">
+
+    <div class="container">
+	<h3>
+	    <a href="{{ discussion.content_object.get_absolute_url }}">{{ discussion.content_object }}</a> > <a href="#">Discussions</a> > <a href="{{ discussion.get_absolute_url }}">{{ discussion.title }}</a>
+	</h3>
+    </div>
+    
+</div>
+{% endblock %}
+
+{% block content %}
+
+<div class="col-12 col-sm-4 col-md-3 col-lg-2">
+
+    {% if discussion.content_object.get_preview %}
+    <div class="card">
+	<img class="card-img-top" id="ID{{album.mbid}}" src="{% static 'images/loading.gif' %}" data-src="{{ discussion.content_object.get_preview }}" alt="{{ discussion.content_object }}">
+	
+	<div class="card-body">
+	    <h5 class="card-title"><a href="{{ discussion.content_object.get_absolute_url }}">{{ discussion.content_object }}</a></h5>
+	    <p>{{ discussion.content_object|content_type }}</p>
+	</div>
+    </div>
+    {% endif %}
+    
+</div>
+
+<div class="col-12 col-sm-8 col-md-9 col-lg-7 bg-light mt-3 mt-md-0">
+
+    <h3>Modifier la discussion</h3>
+
+    {% if errors == True %}
+
+    <div class="alert alert-danger">
+	Votre formulaire comporte des erreurs. Votre discussion doit avoir un titre et un contenu.
+    </div>
+    
+    {% endif %}
+    
+    <form action="{% url 'discussions:edit_discussion' discussion.pk %}" method="post">
+
+	{% csrf_token %}
+
+	{{ discussion_form|as_bootstrap }}
+	
+	<input class="form-control" type="submit" value="Modifier" />
+	
+    </form>
+
+</div>
+{% endblock %}

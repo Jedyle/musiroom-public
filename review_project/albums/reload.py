@@ -17,7 +17,5 @@ def reload_all():
     start = time.time()
     albums = Album.objects.all()
     for album in albums:
-        print(album.title)
         reload_tracks(album.mbid)
     end = time.time()
-    print('elapsed : ' , end - start)

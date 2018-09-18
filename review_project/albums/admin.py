@@ -28,6 +28,7 @@ class AlbumGenreInline(admin.TabularInline):
 class ArtistAdmin(admin.ModelAdmin):
     inlines = [ArtistAlbumInline,]
     verbose_name = "Artiste"
+    search_fields = ['name']
 
 @admin.register(Album)
 class AlbumAdmin(admin.ModelAdmin):

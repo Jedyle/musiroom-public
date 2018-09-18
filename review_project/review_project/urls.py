@@ -24,8 +24,8 @@ from core import views
 urlpatterns = [
     url(r'^manage/', admin.site.urls),
     url(r'^$', views.home, name = 'home'),
-    url(r'^home_followees_reviews', views.ajax_followees_reviews, name="home_followees_reviews"),
-    url(r'^home_followees_ratings', views.ajax_followees_ratings, name="home_followees_ratings"),
+    url(r'^home_followees_reviews/', views.ajax_followees_reviews, name="home_followees_reviews"),
+    url(r'^home_followees_ratings/', views.ajax_followees_ratings, name="home_followees_ratings"),
     url(r'^profil/',  include('account.urls')),
     url(r'^messages/', include('postman.urls', namespace='postman')),
     url(r'^musique/', include('albums.urls', namespace='albums')),
@@ -37,6 +37,7 @@ urlpatterns = [
     url(r'^listes/', include('lists.urls', namespace='lists')),
     url(r'^notifications/', include('notifications.urls', namespace='notifications')),
     url(r'^feedback/', include('feedback.urls', namespace='feedback')),
+    url(r'^discussions/', include('discussions.urls', namespace='discussions')),
     ]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:

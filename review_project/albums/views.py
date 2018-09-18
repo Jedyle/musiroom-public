@@ -333,20 +333,16 @@ def artist(request, mbid):
         artist_genres = AlbumGenre.objects.filter(album__artists__in = [artist], vote_score__gt = 0).values('genre__name', 'genre__slug').annotate(total = Count('genre')).order_by('-total')[:5]
         artist_genres = ["<a href='{}'>{}</a>".format(reverse('albums:genre', args=[artist_genre['genre__slug']]), artist_genre['genre__name']) for artist_genre in artist_genres]
         genres = ", ".join(artist_genres)
+        context['artist'] = artist
         context['artist_name'] = artist.name
         context['genres'] = genres
     except Artist.DoesNotExist:
-        pass
-    parserphoto = ParseArtistPhoto(mbid)
-    if parserphoto.load():
-        picture = parserphoto.get_thumb()
-    else:
         parser = ParseArtist(mbid, page=page, name=search)
         if not parser.load():
             return HttpResponseNotFound()
         else:
-            picture = ""
-    context['artist_picture'] = picture
+            artist = Artist.objects.create(mbid = mbid, name = parser.get_name())
+            context['artist'] = artist
     return render(request, 'albums/artist.html', context)
 
 def ajax_artist(request, mbid):

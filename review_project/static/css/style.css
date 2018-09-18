@@ -36,7 +36,7 @@
 
 .color-skyblue {
    background-color: #4986A1;
-   color : black;
+   color : white;
 }
 
 .color-pale {
@@ -375,3 +375,7 @@ li.dropdown:hover > .dropdown-menu {
   hyphens: auto;
 
 }
+
+.vote:hover {
+   cursor : pointer   
+  }

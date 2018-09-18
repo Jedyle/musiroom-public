@@ -3,6 +3,7 @@
 {% load staticfiles %}
 {% load ratings %}
 {% load jchart %}
+{% load discussion %}
 
 {% block title %}
 {{ album.title }}
@@ -19,21 +20,26 @@
 
     <br>
 
-    <div class="row">
+    <div class="row d-none d-md-block">
 	<div class="col-12">
 
-	    {% include 'albums/track_list.html' with album=album%}
 	    
-	</div>
-    </div>
+	    {% get_last_discussions album 5 %}
 
-    <br>
+	    <a style="color:white; white-space : normal; word-wrap:break-word;" class="btn btn-block color-skyblue" type="button" href="{% url 'discussions:search_discussion_for_object' album|content_type_pk album.pk %}">Discussions sur {{album.title}}</a>
+	    
+	    <a style="color:white; white-space : normal; word-wrap:break-word;" class="btn btn-block color-teal" type="button" href="{% url 'discussions:create_discussion' album|content_type_pk album.pk %}">Nouvelle discussion</a>
 
-    {% if lists %}
-    <div class="row">
-	<div class="col-12">
+	    <hr>
+	    
+	    {% include 'albums/track_list.html' with album=album %}
 
-	    <h4>Listes avec cet album : </h4>
+	    <hr>
+	    
+	    {% if lists %}
+	    <hr>
+
+	    <h4><strong>Listes avec cet album </strong></h4>
 
 	    <ul class="list-group">
 		{% for list in lists %}
@@ -42,11 +48,11 @@
 	    </ul>
 
 	    <a class="float-right" href="{% url 'albums:album_lists' mbid %}">Voir toutes les listes</a>
+	    {% endif %}
 	    
 	</div>
 
     </div>
-    {% endif %}
     
 </div>
 
@@ -90,17 +96,18 @@
 			<input type="checkbox" id="rated" name="rated" v-model="rated" style="display: none"/>
 			{% endif %}
 
-			<a class="btn color-sanguine" :href="reviewlink" v-if="rated && reviewed" v-cloak>Voir ma critique</a>
+			<a class="btn color-sanguine mb-1" :href="reviewlink" v-if="rated && reviewed" v-cloak>Voir ma critique</a>
 
-			<button type="button" class="btn color-sanguine" @click="loadReview" v-if="rated && !reviewed" v-cloak>Critiquer</button>
-			<button type="button" class="btn color-sanguine" @click="loadReview" v-else-if="rated && reviewed" v-cloak>Modifier ma critique</button>
+			<button type="button" class="btn color-sanguine mb-1" @click="loadReview" v-if="rated && !reviewed" v-cloak>Critiquer</button>
+			<button type="button" class="btn color-sanguine mb-1" @click="loadReview" v-else-if="rated && reviewed" v-cloak>Modifier ma critique</button>
 			{% if user.is_authenticated %}
-			<button type="button" class="btn color-sanguine" @click="loadLists" v-cloak>Ajouter à une liste</button>
+			<button type="button" class="btn color-sanguine mb-1" @click="loadLists" v-cloak>Ajouter à une liste</button>
 			{% endif %}
 
 			<reviewmodal title="{{album.title}}" :show="showModal" :view="modalView" :lists_url="lists_url" :set_item_url="set_item_url" :delete_item_url="delete_item_url" :mbid="mbid"  :review_url="review_url" v-on="modalHandlers" :rated="rated" ></reviewmodal>
 		    </div>
 		</div>
+		
 	    </div>
 
 	    <br>
@@ -112,7 +119,7 @@
 
 	    <div style="max-width : 300px">
 		<div class="border">
-		{% if average %}		
+		    {% if average %}		
 		    <div class="h1 text-center"> <strong>{{ average|floatformat:'1' }}</strong></div>
 		    <p class="text-center">{% if average_count == 1 %}1 note{% else %}{{average_count}} notes{% endif %}</p>
 		{% render_chart 'reviews:ratings_chart' album.id %}
@@ -125,7 +132,6 @@
 		    <a style="color:white; white-space : normal; word-wrap:break-word;" target="_blank" type="button" :href="ytb_link" class="btn btn-block color-sanguine" ref="ytb" v-cloak><i class="fas fa-play-circle"></i> &nbsp; Écouter un extrait</a>
 		</div>
 	    </div>
-	    
 	    
 	</div>
 
@@ -166,7 +172,7 @@
 		{% endif %}
 	    </div>
 
-	    <br>
+	    <hr>
 
 	    <div style="max-height : 300px; overflow-y: scroll;">
 		{% for rating in followees_ratings %}
@@ -184,7 +190,7 @@
 		<ul class="list-group">
 		    {% for album in same_artist %}
 		    <li class="list-group-item">
-			<img src="{% static 'images/loading.gif' %}" data-src="{{ album.get_cover }}" style="height : 50px"> &nbsp <a href="{% url 'albums:album' album.mbid %}">{{ album }}</a>
+			<img src="{% static 'images/loading.gif' %}" data-src="{{ album.get_cover }}" style="height : 50px"> &nbsp <a href="{% url 'albums:album' album.mbid %}">{{ album.title }}</a>
 		    </li>
 		    {% endfor %}
 		</ul>
@@ -192,6 +198,24 @@
 	    </div>
 
 	    <br>
+
+	    <div class="row d-md-none">
+		<div class="col-12">
+		    
+		    <a type="button" style="white-space : normal; word-wrap:break-word;" class="btn btn-block btn-secondary" href="{% url 'albums:album_lists' mbid %}">Listes avec {{album.title}}</a>
+		    
+		    <a style="color:white; white-space : normal; word-wrap:break-word;" class="btn btn-block color-skyblue" type="button" href="{% url 'discussions:search_discussion_for_object' album|content_type_pk album.pk %}">Discussions sur {{album.title}}</a>
+		    
+		    <a style="color:white; white-space : normal; word-wrap:break-word;" class="btn btn-block color-teal" type="button" href="{% url 'discussions:create_discussion' album|content_type_pk album.pk %}">Nouvelle discussion</a>
+
+		    <hr>
+		    
+		    {% include 'albums/track_list.html' with album=album %}
+
+		    
+		</div>
+
+	    </div>
 	    
 	</div>
 	

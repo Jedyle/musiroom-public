@@ -32,6 +32,9 @@ Profil de {{profile.user.username}}
 		<a class="nav-link" :class="{ 'active' : (currentView === 'lists') }" href="#" @click.prevent="currentView = 'lists'">Listes</a>
 	    </li>
 	    <li class="nav-item">
+		<a class="nav-link" :class="{ 'active' : (currentView === 'discussions') }" href="#" @click.prevent="currentView = 'discussions'">Discussions</a>
+	    </li>
+	    <li class="nav-item">
 		<a class="nav-link" :class="{ 'active' : (currentView === 'contacts') }" href="#" @click.prevent="currentView = 'contacts'">Contacts</a>
 	    </li>
 	</ul>
@@ -125,6 +128,7 @@ Profil de {{profile.user.username}}
 <script src="{% static 'albums/js/album_popover.js' %}"></script>
 <script src="{% static 'ajax_follower/js/contacts.js' %}"></script>
 <script src="{% static 'lists/js/lists.js' %}"></script>
+<script src="{% static 'discussions/js/discussions.js' %}"></script>
 <script src="{% static 'ratings/js/reviewPreviewUser.js' %}"></script>
 <script src="{% static 'ratings/js/ratingPreview.js' %}"></script>
 <script src="{% static 'ratings/js/reviewList.js' %}"></script>
@@ -204,14 +208,22 @@ Profil de {{profile.user.username}}
 		     username : "{{ profile.user.username}}",
 		 }
 	     }
+	     else if (this.currentView === 'discussions'){
+		 return {
+		     url : "{% url 'discussions:ajax_user_discussions' %}",
+		     user_is_profile : {% if profile.user == user %}true{% else %}false{% endif %},
+		     create_url : "{% url 'discussions:create_discussion' %}",
+		     username : "{{ profile.user.username}}",
+		 }
+	     }
 	 }
      },
      components : {
 	 ratings,
 	 reviews,
 	 lists,
+	 discussions,
 	 contacts,
-	 lists,
 	 album_popover,
 	 popover,
      }

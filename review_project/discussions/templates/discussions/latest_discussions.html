@@ -1,0 +1,13 @@
+
+{% if discussions %}
+<h4><strong>Dernières discussions</strong></h4>
+<ul class="list-group">
+    {% for disc in discussions %}
+    <a class="list-group-item" href="{% url 'discussions:display_discussion' disc.id %}">
+	{{ disc.title }}
+    </a>
+    {% endfor %}
+</ul>
+<br>
+
+{% endif %}

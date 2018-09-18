@@ -22,7 +22,7 @@
 
 <div class="col-sm-12 col-md-9 col-lg-6">
 
-    <h1> Listes avec {{ album }}</h1>
+    <h2> Listes avec {{ album.title }}</h2>
 
     <a href="{% url 'albums:album' album.mbid %}">< Retourner à la page album</a>
     <br>    <br>
@@ -44,6 +44,7 @@
     </nav>
     {% endif %}
 
+    {% if lists %}
     <table class="table">
 	<tr>
 	    <th>Listes</th>
@@ -54,6 +55,9 @@
 	</tr> 
 	{% endfor %}
     </table>
+    {% else %}
+    <p>    Aucun résultat trouvé.</p>
+    {% endif %}
     
 </div>
 

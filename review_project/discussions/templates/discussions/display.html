@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+
+{% load staticfiles %}
+{% load discussion %}
+{% load comments %}
+{% load comments_xtd %}
+{% load core_tags %}
+
+{% block title %}
+Discussion : {{ discussion.title }}
+{% endblock %}
+
+{% block body_title %}
+<div class="jumbotron jumbotron-fluid">
+
+    <div class="container">
+	    <h3>
+		<a href="{% url 'discussions:search_discussion_for_object' %}">Discussions</a> > <a href="{% url 'discussions:search_discussion_for_object' discussion.content_object|content_type_pk discussion.content_object.pk %}">{{ discussion.content_object }}</a> > <a href="{{ discussion.get_absolute_url }}">{{ discussion.title }}</a>
+	    </h3>
+    </div>
+    
+</div>
+{% endblock %}
+
+{% block content %}
+
+<div class="col-12 col-sm-4 col-md-3 col-lg-2">
+
+    {% if discussion.content_object.get_preview %}
+    <div class="card">
+	<img class="card-img-top" id="ID{{album.mbid}}" src="{% static 'images/loading.gif' %}" data-src="{{ discussion.content_object.get_preview }}" alt="{{ discussion.content_object }}">
+	
+	<div class="card-body">
+	    <h5 class="card-title"><a href="{{ discussion.content_object.get_absolute_url }}">{{ discussion.content_object }}</a></h5>
+	    <p>{{ discussion.content_object|content_type }}</p>
+	</div>
+    </div>
+    {% endif %}
+    
+</div>
+
+<div class="col-12 col-sm-8 col-md-9 col-lg-7 bg-light mt-3 mt-md-0 pl-0">
+
+    <div class="d-flex">
+	<div style="min-width:45px" class="mr-1" id="app">
+	    {% if user.is_authenticated %}
+	    <discussion_vote url_votes="{% url 'discussions:ajax_vote' %}" d_id="{{ discussion.id }}" content_object type="{{ discussion|get_vote:user }}" :upvotes="{{ discussion.num_vote_up }}" :downvotes="{{ discussion.num_vote_down }}"></discussion_vote>
+	    {% else %}
+
+	    <div class="mt-2 p-0">
+		<p class='text-center m-0'><a href="{% url 'login' %}?next={{request.path}}" class='vote fas fa-angle-up fa-lg'></a></p>
+		<h5 class='m-0 text-center'>{{ discussion.vote_score }}</h5>
+		<p class='text-center m-0'><a href="{% url 'login' %}?next={{request.path}}" class='vote fas fa-angle-down fa-lg'></a></p> 
+	    </div>
+	    
+	    {% endif %}
+	</div>
+
+	<div class="flex-grow-1">
+	    <p class="text-muted mt-1 mb-1"><a href="{% url 'profile' discussion.author.username %}"><span class="m-0 company-header-avatar" style="background-image : url({{ discussion.author.account.get_avatar }}); width : 25px; height : 25px;"></span></a> &nbsp; <a href="{% url 'profile' discussion.author.username %}"> {{ discussion.author }}</a> le {{ discussion.created }}</p>
+	    <hr class="m-1">
+
+	    {% if user == discussion.author %}
+	    <p class="text-right"><a href="{% url 'discussions:edit_discussion' discussion.pk %}">Modifier</a> - <a href="{% url 'discussions:confirm_delete' discussion.pk %}">Supprimer</a></p>
+	    {% endif %}
+	    
+	    <h3>{{discussion.title}}</h3>    
+
+	    <p>
+		{% autoescape off %}
+		{{ discussion.content|parse_links|linebreaks }}
+		{% endautoescape %}
+	    </p>
+
+	</div>
+
+    </div>
+
+    <hr>
+    
+    {% get_comment_count for discussion as comment_count %}
+    
+    
+    {% if comment_count %}
+    <h3 class="text-center">Commentaires ({{comment_count}})</h3>
+    {% else %}
+    <h3 class="text-center">Commentaires</h3>
+    <p class="text-center">Aucun commentaire n'a été posté pour le moment.</p>
+    {% endif %}
+    <br>
+    
+    <div>
+	{% if comment_count %}
+	<div id="comments">
+	    {% render_xtdcomment_tree for discussion allow_flagging allow_feedback show_feedback %}
+	</div>
+	{% endif %}
+	{% if user.is_authenticated %}
+	{% render_comment_form for discussion %}
+	{% endif %}
+	
+    </div>
+    
+</div>
+{% endblock %}
+
+
+{% block scripts %}
+
+{% if user.is_authenticated %}
+
+<script src="{% static 'js/utilities.js' %}"></script>
+<script src="{% static 'js/vue.min.js' %}"></script>
+<script src="{% static 'js/axios.js' %}"></script>
+
+<script src="{% static 'discussions/js/discussionVote.js' %}"></script>
+<script>
+ let vm = new Vue({
+     el: '#app',
+     delimiters : ['[[', ']]'],
+     components : {discussion_vote},
+ });
+ 
+</script>
+
+<!-- Show likes user list -->
+<script src="{% static 'js/comments/comment-plugin.js' %}"></script>
+
+{% endif %}
+
+{% endblock %}

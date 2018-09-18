@@ -145,6 +145,9 @@
 			<li class="nav-item {% active_url 'albums:genres' %}">
 			    <a class="nav-link" href="{% url 'albums:genres' %}">Genres</a>
 			</li>
+			<li class="nav-item {% active_url 'discussions:search_discussion_for_object' %}">
+			    <a class="nav-link" href="{% url 'discussions:search_discussion_for_object' %}">Discussions</a>
+			</li>
 		    </ul>
 		    <ul class="navbar-nav col-xl-3 offset-xl-4 offset-lg-3 col-lg-3">
 			<form class="form-inline" method="get" action="{% url 'albums:search' %}" role="search">
