@@ -21,7 +21,14 @@
 
 {% block content %}
 
-<div class="col-sm-12 col-md-8 offset-md-2">    
+<div class="col-sm-12 col-md-8 offset-md-2">
+
+    <div class="alert alert-info">
+
+	<h1 class="text-center"> Les discussions sont arrivées !</h1>
+	<p class="text-center"> Vous pouvez maintenant ouvrir des discussions sur un artiste ou un album, et les commenter. Pour cela, rendez vous dans l'onglet 'discussions' de la barre de navigation ou directement sur la page d'un artiste ou d'un album. N'hésitez pas à nous donner votre <a href="{% url 'feedback:feedback' %}">feedback</a> (bug, idées..) !</p>
+	
+    </div>
     
     <h1 class="text-center">Nouveautés</h1>
 
