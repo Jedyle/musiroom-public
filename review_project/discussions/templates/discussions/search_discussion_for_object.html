@@ -33,19 +33,21 @@ Toutes les discussions
 
     {% if instance %}
     <p> < <a href="{% url 'discussions:search_discussion_for_object' %}">Toutes les discussions</a></p>
-    <h1>Discussions sur <a href="{{ instance.get_absolute_url }}">{{ instance }}</a></h1>
+    <h1 class="text-center">Discussions sur <a href="{{ instance.get_absolute_url }}">{{ instance }}</a></h1>
     {% else %}
-    <h1>Toutes les discussions</h1>
+    <h1 class="text-center">Toutes les discussions</h1>
 
     {% endif %}
 
+    <div class="text-center">
     {% if instance %}
     <a class="btn color-teal m-2" href="{% url 'discussions:create_discussion' instance|content_type_pk instance.pk %}">Nouvelle discussion</a>
     {% else %}
     <a class="btn color-teal m-2" href="{% url 'discussions:create_discussion' %}">Nouvelle discussion</a>
     {% endif %}
+    </div>
 
-    <form class="form-inline bg-light p-2" method="get" action="{{request.path}}">
+    <form class="form-inline justify-content-center bg-light p-2" method="get" action="{{request.path}}">
 
 	<label for="title" class="sr-only">Sujet : </label>
 	<div class="input-group">
@@ -67,6 +69,7 @@ Toutes les discussions
 
 	<button type="submit" class="btn mr-2 ml-2 mt-1">Rechercher</button>
     </form>
+
 
     <br>
     

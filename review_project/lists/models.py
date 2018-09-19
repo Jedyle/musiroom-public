@@ -18,12 +18,16 @@ class ItemList(VoteModel, models.Model):
     description = models.TextField('Description', blank=True)
     ordered = models.BooleanField('Liste ordonnée (top)', default = False)
     albums = models.ManyToManyField(Album, related_name='lists', through = 'ListObject')
+    modified = models.DateTimeField("Dernière modification", auto_now = True)
 
     def __str__(self):
         return self.user.username + " : " + self.title
 
     def get_absolute_url(self):
         return reverse('lists:display_list', args=[self.id])
+
+    class Meta :
+        ordering = ['-modified']
 
 class ListObject(models.Model):
     item_list = models.ForeignKey(ItemList, on_delete=models.CASCADE)
@@ -45,6 +49,7 @@ def save_list_handler(sender, instance, created, **kwargs):
         nb_items = itemlist.albums.count()
         instance.order = nb_items
         instance.save()
+        itemlist.save()
 
 @receiver(post_delete, sender=ListObject)
 def delete_list_handler(sender, instance, **kwargs):

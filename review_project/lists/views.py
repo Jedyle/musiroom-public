@@ -100,30 +100,21 @@ def search_list_in_db(query, sort, page):
         list_filtered = paginator.page(1)
     except EmptyPage:
         list_filtered = paginator.page(paginator.num_pages)
-    return list_filtered
+    return (list_filtered, paginator.num_pages > 1)
 
 def search_list(request):
-    m_type = request.GET.get('type')
-    query = request.GET.get('query')
-    page = request.GET.get('page')
-    tri = request.GET.get('tri')
-    if not query or (m_type != 'liste') :
-        return redirect('/')
-    else :
-        if not page :
-            page = 1
-        if not tri:
-            tri = ''
-        list_list = search_list_in_db(query, tri, page)
-        context = {
-            'lists' : list_list,
-            'paginate' : True,
-            'query' : query,
-            'tri' : tri,
-            'm_type' : m_type,
-            'page' : page,
-            }
-        return render(request, 'lists/search_list.html', context)            
+    query = request.GET.get('query', '')
+    page = request.GET.get('page', 1)
+    tri = request.GET.get('tri', '')
+    list_list = search_list_in_db(query, tri, page)
+    context = {
+        'lists' : list_list[0],
+        'paginate' : list_list[1],
+        'query' : query,
+        'tri' : tri,
+        'page' : page,
+        }
+    return render(request, 'lists/search_list.html', context)            
                 
 
 def ajax_list(request):
