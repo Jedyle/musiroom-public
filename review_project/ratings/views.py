@@ -340,3 +340,15 @@ def ajax_vote(request):
         ups = review.num_vote_up
         downs = review.num_vote_down
     return JsonResponse({'ups' : ups, 'downs' : downs})
+
+
+@login_required
+def ajax_delete_rating(request):
+    if request.method == 'POST' :
+        mbid = request.POST.get('mbid')
+        album = get_object_or_404(Album, mbid = mbid)
+        user_rating = UserRating.objects.for_instance_by_user(album, user=request.user)
+        if user_rating:
+            user_rating.delete()
+            return JsonResponse({})
+    return HttpResponseNotFound()

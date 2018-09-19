@@ -175,8 +175,4 @@ class UserRating(TimeStampedModel):
 
 
 
-# from star_ratings.models import *
-# from albums.models import *
-# albums = Album.objects.filter(id__in = [2, 6, 13, 3, 4, 28]).order_by('?')
-# jeremy = User.objects.get(username = 'jeremy')
-# UserRating.objects.for_instance_list_by_user(albums, jeremy)
+

@@ -74,22 +74,10 @@
 		</div>
 	    </div>
 
-	    {% if not genres %}
-
-	    <div class="alert alert-info">
-
-		<h3 class="text-center">Quel est le genre de cet album ?</h3>
-		<p class="text-center">Cet album n'a pas encore de style(s) attitré(s). Prenez 5 secondes pour <a href="{% url 'albums:album_genres' mbid %}">proposer un genre</a> pour cette oeuvre ! </p>
-		
-	    </div>
-	    
-	    {% endif %}
-
-	    <br>
-
 	    <div class="row">
 		<div class="col-12">
 		    <div id="app-modal">
+			
 			{% if rated %}
 			<input type="checkbox" id="rated" name="rated" checked v-model="rated" style="display: none" />
 			{% else %}
@@ -103,6 +91,8 @@
 			{% if user.is_authenticated %}
 			<button type="button" class="btn color-sanguine mb-1" @click="loadLists" v-cloak>Ajouter à une liste</button>
 			{% endif %}
+			
+			<a title="Supprimer ma note" class="float-right" @click.prevent="deleteRating()" href="#" v-cloak v-if="rated"><i class="far fa-trash-alt fa-lg"></i></a>
 
 			<reviewmodal title="{{album.title}}" :show="showModal" :view="modalView" :lists_url="lists_url" :set_item_url="set_item_url" :delete_item_url="delete_item_url" :mbid="mbid"  :review_url="review_url" v-on="modalHandlers" :rated="rated" ></reviewmodal>
 		    </div>
@@ -111,6 +101,17 @@
 	    </div>
 
 	    <br>
+
+	    {% if not genres %}
+
+	    <div class="alert alert-info">
+
+		<h3 class="text-center">Quel est le genre de cet album ?</h3>
+		<p class="text-center">Cet album n'a pas encore de style(s) attitré(s). Prenez 5 secondes pour <a href="{% url 'albums:album_genres' mbid %}">proposer un genre</a> pour cette oeuvre ! </p>
+		
+	    </div>
+	    
+	    {% endif %}
 	    
 	</div>
 	
@@ -122,10 +123,10 @@
 		    {% if average %}		
 		    <div class="h1 text-center"> <strong>{{ average|floatformat:'1' }}</strong></div>
 		    <p class="text-center">{% if average_count == 1 %}1 note{% else %}{{average_count}} notes{% endif %}</p>
-		{% render_chart 'reviews:ratings_chart' album.id %}
-		{% else %}
-		<p class="h1 text-center">Aucune note</p>
-		{% endif %}
+		    {% render_chart 'reviews:ratings_chart' album.id %}
+		    {% else %}
+		    <p class="h1 text-center">Aucune note</p>
+		    {% endif %}
 		</div>
 		<br>
 		<div id="app_buttons">
@@ -264,6 +265,7 @@
      set_item_url : "{% url 'lists:ajax_set_item' %}",
      delete_item_url : "{% url 'lists:ajax_delete_item' %}",
      mbid : "{{mbid}}",
+     delete_rating_url : "{% url 'reviews:ajax_delete_rating' %}",
  }
  
  
@@ -288,6 +290,7 @@
 	 set_item_url : template_data.set_item_url,
 	 delete_item_url : template_data.delete_item_url,
 	 mbid : template_data.mbid,
+	 delete_rating_url : template_data.delete_rating_url,
      },
      components : {reviewmodal, modal},
      computed : {
@@ -314,7 +317,6 @@
 	     this.modalView = 'none';
 	 },
 	 updateReview: function(data){
-	     console.log('success');
 	     this.reviewlink = data.review_url;
 	     if (!this.reviewed){
 		 this.reviewed = true;
@@ -323,7 +325,23 @@
 	     else {
 		 alert('Votre critique a bien été modifiée.');
 	     }
-	 }
+	 },
+	 deleteRating: function(){
+	     if (confirm('Êtes vous sur de vouloir supprimer votre note ? Si vous avez écrit une critique sur cet album, elle sera également supprimée')){
+		 axios({
+		     method : 'post',
+		     url : this.delete_rating_url,
+		     data : getFormData({
+			 mbid : this.mbid,
+		     })
+		 }).then(response => {
+		     alert('Votre note a bien été supprimée');
+		     location.reload();
+		 }).catch(error => {
+		     console.log(error);
+		 })
+	     }
+	 },
      },
      watch : {
 	 showModal: function (newVal){
@@ -409,4 +427,4 @@
 </script>
 
 
-    {% endblock %}
+{% endblock %}

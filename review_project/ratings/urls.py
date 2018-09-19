@@ -17,6 +17,7 @@ urlpatterns = [
     url(r'^récentes/$', views.latest_reviews, name='latest_reviews'),
     url(r'liste/notes/u/(?P<username>[\w_-]{3,})/$', views.user_rating_list, name='user_rating_list'),   
     url(r'^ajax_vote/$', views.ajax_vote, name='ajax_vote'),
+    url(r'^ajax_delete_rating/$', views.ajax_delete_rating, name='ajax_delete_rating'),
     url(r'^charts/followees_chart/(?P<album_id>[0-9]+)/(?P<username>[\w_-]{3,})/$', ChartView.from_chart(followees_chart), name='followees_chart'),
     url(r'^charts/ratings_chart/(?P<album_id>[0-9]+)/$', ChartView.from_chart(ratings_chart), name='ratings_chart'),
     url(r'^charts/user_ratings_chart/(?P<username>[\w_-]{3,})/$', ChartView.from_chart(user_ratings_chart), name='user_ratings_chart'),
