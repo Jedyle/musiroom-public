@@ -149,7 +149,6 @@ class ParseArtistPhoto:
         self.url = protocol + url + "?method=artist.getinfo" + "&api_key=" + LASTFM_API_KEY + "&format=json" + "&mbid=" + self.artist_id
 
     def load(self):
-        print('url', self.url)
         req = requests.get(self.url)
         if req.status_code == 200:
             self.json = req.json()
