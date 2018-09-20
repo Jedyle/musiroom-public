@@ -30,12 +30,16 @@
 	    {% endif %}
 
 
-	    {% block title %}Home
-	    {% endblock %} - La Musithèque, critiques de musique faites par vous !
+	    {% block title %}Accueil
+	    {% endblock %}
 	</title>
 
-	<meta name="description" content="Critiques d'albums et communauté de passionnés de musique" />
-
+	<meta name="description"
+	      content="{% block meta_description %}
+		    Critiques et communauté de passionnés de musique
+		    {% endblock %}"
+	/>
+	
 	<link rel="shortcut icon" href="{% static 'images/favicon.ico' %}">
 
 	<!-- Required Stylesheets -->
