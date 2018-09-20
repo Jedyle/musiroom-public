@@ -38,6 +38,7 @@ urlpatterns = [
     url(r'^notifications/', include('notifications.urls', namespace='notifications')),
     url(r'^feedback/', include('feedback.urls', namespace='feedback')),
     url(r'^discussions/', include('discussions.urls', namespace='discussions')),
+    url(r'^autocomplete/', include('autocomplete_search.urls', namespace='autocomplete_search')),
     ]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:

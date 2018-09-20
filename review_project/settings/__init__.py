@@ -58,7 +58,8 @@ INSTALLED_APPS = [
     'jchart',
     'notifications',
     'feedback',
-    'discussions', 
+    'discussions',
+    'autocomplete_search', 
     ]
 
 SITE_ID = 4
@@ -252,3 +253,18 @@ DISCUSSIONS_SEARCH_FIELDS = {
     }
 
 
+# Autocomplete settings
+
+AUTOCOMPLETE_SEARCH_FIELDS = {
+    'album' : 'title',
+    'artist' : 'name',
+    'user' : 'username',
+    }
+
+
+
+# User absolute url
+
+ABSOLUTE_URL_OVERRIDES = {
+    'auth.user': lambda o: "/profil/u/%s" % o.username,
+}

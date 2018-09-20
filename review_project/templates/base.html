@@ -140,9 +140,6 @@
 		<div class="collapse navbar-collapse" id="navbarSupportedContent">
 		    <ul class="navbar-nav col-xl-3 col-lg-3">
 			{% url 'albums:browse_album' as album_url %}
-			<!-- <li class="nav-item {% active_url 'albums:browse_albums' %}">
-			     <a class="nav-link" href="{% url 'albums:browse_albums' %}">Albums</a>
-			     </li> -->
 			<li class="nav-item {% active_url 'albums:top_album' %}">
 			    <a class="nav-link" href="{% url 'albums:top_album_get' %}">Tops</a>
 			</li>
@@ -156,19 +153,20 @@
 			    <a class="nav-link" href="{% url 'albums:genres' %}">Genres</a>
 			</li>
 		    </ul>
-		    <ul class="navbar-nav col-xl-3 offset-xl-4 offset-lg-3 col-lg-3">
+		    <ul class="navbar-nav col-xl-3 offset-xl-4 offset-lg-3 col-lg-3" id="autocomplete">
 			<form class="form-inline" method="get" action="{% url 'albums:search' %}" role="search">
 
 			    {% url 'albums:search' as nav_search_url %}
 			    <div class="input-group row no-gutters">
 				<span class="input-group-btn col-8">
-				    <input type="text" class="form-control" name="query" placeholder="Rechercher..." value="{% block search_value %}{% endblock %}">
+				    <!-- <input type="text" class="form-control" name="query" placeholder="Rechercher..." value=""> -->
+				    <autocomplete url="{% url 'autocomplete_search:autocomplete_search' %}" :model="model" value="{% block search_value %}{% endblock %}"></autocomplete>
 				</span>
 				<span class="input-group-btn col-4">
-				    <select class="form-control" name="type" style="height : 100%">
+				    <select v-model="model" class="form-control" name="type" style="height : 100%">
 					<option value="album" {% block album_search_selected %}{% endblock %}>Album</option>
-					<option value="artiste" {% block artist_search_selected %}{% endblock %}>Artiste</option>
-					<option value="compte" {% block account_search_selected %}{% endblock %}>Utilisateur</option>
+					<option value="artist" {% block artist_search_selected %}{% endblock %}>Artiste</option>
+					<option value="user" {% block account_search_selected %}{% endblock %}>Utilisateur</option>
 					
 				    </select>
 				</span>
@@ -258,6 +256,11 @@
 	<script type="text/javascript" src="{% static 'js/popper.min.js' %}"></script>
 	<script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>
 
+	<script src="{% static 'js/vue.min.js' %}"></script>
+	<script src="{% static 'js/axios.js' %}"></script>
+
+	<script src="{% static 'autocomplete_search/js/autocomplete.js' %}"></script>
+
 	<script src="{% static 'lists/js/add_album.js' %}"></script>
 
 	<script>
@@ -302,6 +305,9 @@
 	     document.getElementById('navbarDropdownCollMenu').classList.toggle('show');  
 	 })
 
+	</script>
+
+	<script src="{% static 'js/autocomplete-search.js' %}">
 	</script>
 	
 	{% block scripts %}
