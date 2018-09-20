@@ -436,14 +436,14 @@ def search(request):
                 return render(request, 'albums/album_results.html', {'query' : query, 'm_type' : m_type, 'page_list' : page_list, 'page' : page, 'albums': results})
             else:
                 return HttpResponseNotFound()
-        elif m_type == 'artiste':
+        elif m_type == 'artist':
             parser = ParseSearchArtists(query, page = page)
             if parser.load():
                 results = parser.get_results()
                 nb_pages = parser.get_nb_pages()
                 page_list = get_page_list(nb_pages, page)
                 return render(request, 'albums/artist_results.html', {'query': query, 'm_type' : m_type, 'page_list' : page_list, 'page' : page, 'artists' : results})
-        elif m_type == 'compte':
+        elif m_type == 'user':
             return search_account(request)
         else :
             return HttpResponseNotFound()

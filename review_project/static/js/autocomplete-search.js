@@ -5,7 +5,7 @@ var search = new Vue({
 	'autocomplete' : autocomplete_search,
     },
     data : {
-	model : 'album',
+	model : select_val,
     }
     
 })

@@ -200,7 +200,7 @@ def search_account(request):
     m_type = request.GET.get('type')
     query = request.GET.get('query')
     page = request.GET.get('page')
-    if not query or (m_type != 'compte') :
+    if not query or (m_type != 'user') :
         return redirect('/')
     else :
         if not page :
