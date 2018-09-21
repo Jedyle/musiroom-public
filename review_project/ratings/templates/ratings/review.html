@@ -7,7 +7,7 @@
 {% load core_tags %}
 
 {% block title %}
-Critique de {{review.rating.user}} sur {{ album.title }}
+{{review.title}} - Critique de {{ review.rating.user }} sur {{ album.title }}
 {% endblock %}
 
 {% block extrahead %}

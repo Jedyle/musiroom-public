@@ -66,11 +66,11 @@ Discussion : {{ discussion.title }}
 	    
 	    <h3>{{discussion.title}}</h3>    
 
-	    <p>
+	    <div class="dont-break-out">
 		{% autoescape off %}
 		{{ discussion.content|parse_links|linebreaks }}
 		{% endautoescape %}
-	    </p>
+	    </div>
 
 	</div>
 
