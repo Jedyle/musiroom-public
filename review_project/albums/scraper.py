@@ -320,15 +320,23 @@ class ParseCover:
     
     def get_cover_small(self):
         try:
-            url = self.cover['images'][0]['thumbnails']['small'].split('/')
-            return url[-2]+'/'+url[-1]
+            images = self.cover['images']
+            for image in images:
+                if image["front"] == True:
+                    url = image['thumbnails']['small'].split('/')
+                    return url[-2]+'/'+url[-1]
+            return ""
         except:
             return ""
 
     def get_cover_large(self):
         try:
-            url = self.cover['images'][0]['thumbnails']['large'].split('/')
-            return url[-2] + '/' + url[-1]
+            images = self.cover['images']
+            for image in images:
+                if image["front"] == True:
+                    url = image['thumbnails']['large'].split('/')
+                    return url[-2]+'/'+url[-1]
+            return ""
         except:
             return ""
     
