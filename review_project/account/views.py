@@ -24,6 +24,7 @@ from ratings.models import Review
 from ratings.charts import UserRatingsBarChart
 from lists.models import ItemList, ListObject
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from pinax.badges.registry import badges
 
 
 # Create your views here.
@@ -98,6 +99,7 @@ def loggedin(request):
 
 def profile(request, username):
     user = get_object_or_404(User, username = username)
+    
     profile = user.account
     if request.user.is_authenticated:
         is_followed = Follow.objects.follows(user, request.user)

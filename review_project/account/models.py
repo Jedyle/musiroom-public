@@ -9,6 +9,11 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.contrib.staticfiles.templatetags.staticfiles import static
 import sys
 from lists.models import ItemList
+from pinax.badges.registry import badges
+from .badges import MusicophileBadge, CritiqueBadge, ContributeurBadge, PionnierBadge, PipeletteBadge
+from notifications.signals import notify
+from pinax.badges.signals import badge_awarded
+from django.dispatch import receiver
 
 def get_100_last_years():
     lastyear = date.today().year
@@ -63,3 +68,15 @@ class Account(models.Model):
             #change the imagefield value to be the newley modifed image value
             self.avatar = InMemoryUploadedFile(output,'ImageField', "%s.jpg" %self.avatar.name.split('.')[0], 'image/jpeg', sys.getsizeof(output), None)
         super(Account,self).save()
+
+
+@receiver(badge_awarded)
+def notify_badge_awarded(badge_award, **kwargs):
+    notify.send(badge_award.user, recipient=badge_award.user, verb="Vous avez reçu le badge", target = badge_award, to_str = "Vous avez reçu le badge " + badge_award.name + ".")
+
+
+badges.register(MusicophileBadge)
+badges.register(CritiqueBadge)
+badges.register(ContributeurBadge)
+badges.register(PionnierBadge)
+badges.register(PipeletteBadge)

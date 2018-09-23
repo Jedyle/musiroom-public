@@ -2,6 +2,12 @@
 
 {% load staticfiles %}
 {% load core_tags %}
+{% load pinax_badges_tags %}
+{% load custom_badges_tags %}
+
+{% block extrahead %}
+<link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css"/>
+{% endblock %}
 
 {% block title %}
 Profil de {{profile.user.username}}
@@ -63,24 +69,44 @@ Profil de {{profile.user.username}}
 		<li>{{ nb_reviews }} critiques</li>
 	    </ul>
 
-	    <div class="col-xs-12 col-sm-6">
+	    <div class="row">
 
-		{% if top_10|length != 0 %}
+		<div class="col-12 col-md-6">
 
-		<h3 class="text-center">Ses albums préférés</h3>
+		    {% if top_10|length != 0 %}
 
-		<ul class="list-group">
-		    {% for item in top_10 %}
-		    <li class="list-group-item">
-			<img src="{% static 'images/loading.gif' %}" data-src="{{ item.album.get_cover }}" style="height : 50px"> &nbsp <a href="{% url 'albums:album' item.album.mbid %}">{{ item.album }}</a>
-		    </li>
-		    {% endfor %}
-		</ul>
+		    <h3 class="text-center">Ses albums préférés</h3>
 
-		<p class="text-right mt-2"><a href="{% url 'lists:display_list' profile.top_albums.id %}">Voir son top</a></p>
+		    <ul class="list-group">
+			{% for item in top_10 %}
+			<li class="list-group-item">
+			    <img src="{% static 'images/loading.gif' %}" data-src="{{ item.album.get_cover }}" style="height : 50px"> &nbsp <a href="{% url 'albums:album' item.album.mbid %}">{{ item.album }}</a>
+			</li>
+			{% endfor %}
+		    </ul>
 
-		{% endif %}
-		
+		    <p class="text-right mt-2"><a href="{% url 'lists:display_list' profile.top_albums.id %}">Voir son top</a></p>
+
+		    {% endif %}
+		    
+		</div>
+
+		<div class="col-12 col-md-6" id="badges">
+		    {% distinct_badges_for_user profile.user as badges %}
+		    <h3 class="text-center">Badges ({{ badges.count }})</h3>
+		    
+		    <div class="row">
+			{% for badge in badges %}
+			{% with badge.description as desc %}
+			<div class="col-4 regular-gutter">
+			    <a href="#" @click.prevent v-b-popover.focus="`{{ badge.description }}`" title="{{badge.name}}"><img title="{{badge.name}}" class="responsive" src="{{ badge|badge_image }}"></a>
+			</div>
+			{% endwith %}
+			{% endfor %}
+
+		    </div>		
+		</div>
+
 	    </div>
 	    
 	</div>
@@ -107,8 +133,8 @@ Profil de {{profile.user.username}}
  
 </script>
 
-<script src="{% static 'js/vue.min.js' %}"></script>
-<script src="{% static 'js/axios.js' %}"></script>
+<script src="{% static 'js/polyfill.min.js' %}"></script>
+<script src="{% static 'js/bootstrap-vue.min.js' %}"></script>
 
 <!-- Modal -->
 <script src="{% static 'trumbowyg/trumbowyg/dist/trumbowyg.min.js' %}"></script>

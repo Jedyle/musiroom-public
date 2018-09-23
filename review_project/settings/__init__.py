@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import os
+from celery.schedules import crontab
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -59,7 +60,8 @@ INSTALLED_APPS = [
     'notifications',
     'feedback',
     'discussions',
-    'autocomplete_search', 
+    'autocomplete_search',
+    'pinax.badges',
     ]
 
 SITE_ID = 4
@@ -267,4 +269,23 @@ AUTOCOMPLETE_SEARCH_FIELDS = {
 
 ABSOLUTE_URL_OVERRIDES = {
     'auth.user': lambda o: "/profil/u/%s" % o.username,
+}
+
+
+# CELERY / RABBITMQ
+
+CELERY_BROKER_URL = "amqp://jeremy:dumbpassword3@localhost:5672/jeremy_vhost"
+
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+	
+CELERY_TIMEZONEC  = 'Europe/Paris'
+
+
+CELERY_BEAT_SCHEDULE = {
+    'update-badges': {
+        'task': 'account.tasks.update_badges',
+        'schedule': crontab(minute='*/2'),
+    },
 }

@@ -284,7 +284,7 @@ class SearchAccountTest(TestCase):
     def test_search_redirects_to_account(self):
         c = Client()
         url = reverse('albums:search')
-        response = c.get(url, {'type' : 'compte', 'query' : 'toto'})
+        response = c.get(url, {'type' : 'user', 'query' : 'toto'})
         self.assertEquals(response.status_code, 200)
         self.assertContains(response, 'Toto')
     

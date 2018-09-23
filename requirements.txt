@@ -1,5 +1,8 @@
+amqp==2.3.2
 beautifulsoup4==4.6.0
+billiard==3.5.0.4
 cachetools==2.1.0
+celery==4.2.1
 certifi==2018.4.16
 chardet==3.0.4
 coverage==4.5.1
@@ -29,8 +32,10 @@ docutils==0.14
 httplib2==0.11.3
 idna==2.7
 jsonfield==2.0.2
+kombu==4.2.1
 oauthlib==2.1.0
 Pillow==5.2.0
+pinax-badges==2.0.0
 psycopg2==2.7.5
 pyasn1==0.4.3
 pyasn1-modules==0.2.2
@@ -44,4 +49,5 @@ sqlparse==0.2.4
 swapper==1.1.0
 uritemplate==3.0.0
 urllib3==1.23
+vine==1.1.4
 whitenoise==3.3.1
