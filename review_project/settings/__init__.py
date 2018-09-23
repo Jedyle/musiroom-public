@@ -286,6 +286,6 @@ CELERY_TIMEZONEC  = 'Europe/Paris'
 CELERY_BEAT_SCHEDULE = {
     'update-badges': {
         'task': 'account.tasks.update_badges',
-        'schedule': crontab(minute='*/2'),
+        'schedule': crontab(minute=1, hour=2),
     },
 }
