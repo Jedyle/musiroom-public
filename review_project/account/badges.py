@@ -115,7 +115,7 @@ class ContributeurBadge(Badge):
             ),
         BadgeDetail(
             name = "Contributeur, niveau argent",
-            description = "Ce membre a donné de son temps pour proposer plus de 100 genres pour différents albums. Il contribue ainsi à la renommé mondiale de La Musithèque."
+            description = "Ce membre a donné de son temps pour proposer plus de 100 genres pour différents albums. Il contribue ainsi à la renommée mondiale de La Musithèque."
             ),
         BadgeDetail(
             name = "Contributeur, niveau or",
