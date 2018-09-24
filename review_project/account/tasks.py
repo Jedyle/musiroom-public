@@ -4,4 +4,4 @@ from .badges import regular_badge_update
 
 @task()
 def update_badges():
-    regular_badge_update(days_from_now = 2)
+    regular_badge_update()
