@@ -76,7 +76,7 @@
 			    <strong><a href="{% url 'profile' r_user.username %}">{{ r_user.username }}</a></strong> &nbsp; <span class="w3-tag bg-secondary">{{ review.rating.score }}</span>
 			</h5>
 			<p>
-			    {{ r_user.account.description|parse_links|linebreaks  }}
+			    {{ r_user.account.description|linebreaks|urlize  }}
 			</p>
 		    </div>
 		</div>

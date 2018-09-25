@@ -76,7 +76,7 @@ Profil de {{profile.user.username}}
 	    <br>
 
 	    <div class="bg-light">
-		{{ profile.description|parse_links|linebreaks }}
+		{{ profile.description|linebreaks|urlize }}
 	    </div>
 
 	    {% if profile.user == user %}
