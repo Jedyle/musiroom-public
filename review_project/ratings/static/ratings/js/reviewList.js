@@ -22,7 +22,7 @@ let reviewslist = {
 	}
     },
     template :`	<div>
-    	<p>
+    	<p v-if='sort_methods.length > 0'>
 	Tri :
 	<template v-for="(sort, index) in sort_methods">
 	<a href="#" :id="sort.id" @click.prevent="loadReviewList(sort.id, current_page)" :class="{ 'mark' : sort.id === current_sort_method  }" > [[ sort.name ]]  </a>
@@ -56,7 +56,7 @@ let reviewslist = {
 	></paginate>
 
     
-	<div style="position:relative"class="spinner" v-if="loading"></div>
+	<div style="position:relative" class="spinner" v-if="loading"></div>
     
 	<template v-else>
 	<p v-if="nb_pages < 1">Aucun résultat trouvé</p>

@@ -25,7 +25,7 @@ let vote = {
 	<div class="progress">
 	<div class="progress-bar bg-success" role="progressbar" :style="'width:' + percentage + '%'" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
 	</div>
-	[[ data_upvotes ]] aiment, [[ data_downvotes ]] n\'aiment pas.
+	[[ data_upvotes + ' ' + like ]] , [[ data_downvotes + ' ' + dislike]] .
 
 	<br>
 
@@ -62,6 +62,22 @@ let vote = {
 		return percentage
 	    }
 	    return 0;
+	},
+	like(){
+	    if (this.data_upvotes > 1){
+		return 'aiment'
+	    }
+	    else {
+		return 'aime' 
+	    }
+	},
+	dislike(){
+	    if (this.data_downvotes > 1){
+		return 'n\'aiment pas'
+	    }
+	    else {
+		return 'n\'aime pas' 
+	    }
 	}
     },
     methods : {

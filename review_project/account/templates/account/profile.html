@@ -24,18 +24,39 @@ Profil de {{profile.user.username}}
 <div class="row">
     <div class="col-sm-12 col-md-12 col-lg-10">
 
-	<ul class="nav nav-pills">
+	<!-- <ul class="nav nav-pills">
+	     <li class="nav-item">
+	     <a class="nav-link" :class="{ 'active' : (currentView === 'profile') }" href="#" @click.prevent="currentView = 'profile'">Profil</a>
+	     </li>
+	     <li class="nav-item">
+	     <a class="nav-link" :class="{ 'active' : (currentView === 'ratings') }" href="#" @click.prevent="currentView = 'ratings'">Notes</a>
+	     </li>
+	     <li class="nav-item">
+	     <a class="nav-link" :class="{ 'active' : (currentView === 'reviews') }" href="#" @click.prevent="currentView = 'reviews'">Critiques</a>
+	     </li>
+	     <li class="nav-item">
+	     <a class="nav-link" :class="{ 'active' : (currentView === 'lists') }" href="#" @click.prevent="currentView = 'lists'">Listes</a>
+	     </li>
+	     <li class="nav-item">
+	     <a class="nav-link" :class="{ 'active' : (currentView === 'discussions') }" href="#" @click.prevent="currentView = 'discussions'">Discussions</a>
+	     </li>
+	     <li class="nav-item">
+	     <a class="nav-link" :class="{ 'active' : (currentView === 'contacts') }" href="#" @click.prevent="currentView = 'contacts'">Contacts</a>
+	     </li>
+	     </ul>
+	-->
+	<ul class="nav nav-pills" v-cloak>
 	    <li class="nav-item">
 		<a class="nav-link" :class="{ 'active' : (currentView === 'profile') }" href="#" @click.prevent="currentView = 'profile'">Profil</a>
 	    </li>
-	    <li class="nav-item">
-		<a class="nav-link" :class="{ 'active' : (currentView === 'ratings') }" href="#" @click.prevent="currentView = 'ratings'">Notes</a>
-	    </li>
-	    <li class="nav-item">
-		<a class="nav-link" :class="{ 'active' : (currentView === 'reviews') }" href="#" @click.prevent="currentView = 'reviews'">Critiques</a>
-	    </li>
-	    <li class="nav-item">
-		<a class="nav-link" :class="{ 'active' : (currentView === 'lists') }" href="#" @click.prevent="currentView = 'lists'">Listes</a>
+	    <li class="nav-item dropdown">
+		<a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">[[ currentDropDown ]]</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" :class="{ 'active' : (currentView === 'ratings') }" href="#" @click.prevent="currentView = 'ratings'">Notes</a>
+		    <a class="dropdown-item" :class="{ 'active' : (currentView === 'reviews') }" href="#" @click.prevent="currentView = 'reviews'">Critiques</a>
+		    <a class="dropdown-item" :class="{ 'active' : (currentView === 'lists') }" href="#" @click.prevent="currentView = 'lists'">Listes</a>
+		    <a class="dropdown-item" :class="{ 'active' : (currentView === 'interests') }" href="#" @click.prevent="currentView = 'interests'">Envies</a>
+		</div>
 	    </li>
 	    <li class="nav-item">
 		<a class="nav-link" :class="{ 'active' : (currentView === 'discussions') }" href="#" @click.prevent="currentView = 'discussions'">Discussions</a>
@@ -44,6 +65,10 @@ Profil de {{profile.user.username}}
 		<a class="nav-link" :class="{ 'active' : (currentView === 'contacts') }" href="#" @click.prevent="currentView = 'contacts'">Contacts</a>
 	    </li>
 	</ul>
+	
+	<hr>
+
+	<h3 class="text-center" v-cloak>[[displayCurrentView]]</h3>
 
 	<hr>
 	
@@ -150,6 +175,7 @@ Profil de {{profile.user.username}}
 <script src="{% static 'js/circle_thumbnail.js' %}"></script>
 <script src="{% static 'ajax_follower/js/toggleFollowButton.js' %}"></script>
 <script src="{% static 'star-ratings/js/star-rating-popover.min.js' %}"></script>
+<script src="{% static 'albums/js/toggleUserInterest.js' %}"></script>
 <script src="{% static 'js/popover.js' %}"></script>
 <script src="{% static 'albums/js/album_popover.js' %}"></script>
 <script src="{% static 'ajax_follower/js/contacts.js' %}"></script>
@@ -158,6 +184,7 @@ Profil de {{profile.user.username}}
 <script src="{% static 'ratings/js/reviewPreviewUser.js' %}"></script>
 <script src="{% static 'ratings/js/ratingPreview.js' %}"></script>
 <script src="{% static 'ratings/js/reviewList.js' %}"></script>
+<script src="{% static 'albums/js/interestsPreview.js' %}"></script>
 
 <script>
 
@@ -212,6 +239,24 @@ Profil de {{profile.user.username}}
      mounted : function(){
      }
  }
+
+ var interests = {
+     delimiters : ['[[', ']]'],
+     components : {
+	 interestspreview, reviewslist
+     },
+     template : `
+	 <div>
+	     <reviewslist
+		 :component="interestspreview"
+			 reviewlisturl="{% url 'reviews:user_interest_list' profile.user.username %}"
+		 :sort_methods="[{ id : 'bylastmodif', name : 'les plus récentes' }]">
+	     </reviewslist>
+	 </div>
+     `,
+     mounted : function(){
+     }
+ }
  
  var vue_content_profile = new Vue({
      delimiters : ['[[', ']]'],
@@ -242,12 +287,47 @@ Profil de {{profile.user.username}}
 		     username : "{{ profile.user.username}}",
 		 }
 	     }
+	 },
+	 displayCurrentView : function(){
+	     switch(this.currentView){
+		 case 'contacts' :
+		     return 'Contacts';
+		 case 'lists':
+		     return 'Listes';
+		 case 'discussions':
+		     return 'Discussions';
+		 case 'profile':
+		     return 'Profil';
+		 case 'ratings' :
+		     return 'Notes';
+		 case 'reviews':
+		     return 'Critiques';
+		 case 'interests':
+		     return 'Envies';
+		 default:
+		     return 'Musithèque';
+	     }
+	 },
+	 currentDropDown : function(){
+	     switch(this.currentView){
+		 case 'ratings':
+		     return 'Notes';
+		 case 'reviews':
+		     return 'Critiques';
+		 case 'lists':
+		     return 'Listes';
+		 case 'interests':
+		     return 'Envies';
+		 default:
+		     return 'Musithèque';
+	     }
 	 }
      },
      components : {
 	 ratings,
 	 reviews,
 	 lists,
+	 interests,
 	 discussions,
 	 contacts,
 	 album_popover,

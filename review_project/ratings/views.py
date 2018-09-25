@@ -5,7 +5,7 @@ from django.http import HttpResponse, JsonResponse, HttpResponseNotFound, QueryD
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from star_ratings.models import UserRating
-from albums.models import Album
+from albums.models import Album, UserInterest
 from .models import Review
 from .forms import ReviewForm
 from .utils import rating_for_followees
@@ -41,11 +41,11 @@ def user_review(request, mbid):
                     old_review.title = title
                     old_review.content = content
                     old_review.save()
-                    user_rating.save()
+                    # user_rating.save()
                 except Review.DoesNotExist:
-                    review = Review(title = title, content = content)
-                    user_rating.review = review
-                    user_rating.save()
+                    review = Review(title = title, content = content, rating=user_rating)
+                    # user_rating.review = review
+                    # user_rating.save()
                     review.save()
                 url = reverse('albums:review', args=[mbid, user_rating.review.pk])
                 return JsonResponse({'url' : url})
@@ -223,6 +223,7 @@ def search_rating(result, query):
 def user_rating_list(request, username):
     if request.method == 'GET':
         sort_method = request.GET['methode']
+
         try : 
             page = int(request.GET['page'])
         except ValueError :
@@ -282,6 +283,79 @@ def user_rating_list(request, username):
             response.append(item_data)
         return JsonResponse({'data' : response, 'nbpages' : nb_pages, 'is_anonymous' : request.user.is_anonymous, 'is_user' : (request.user == user)})
     return HttpResponseNotFound()
+
+def search_interests(result, query):
+    words = query.split(' ')
+    for word in words :
+        result = result.filter(Q(album__title__icontains = word) | Q(album__artists__name__icontains = word))
+    return result.distinct()
+
+def user_interest_list(request, username):
+    if request.method == 'GET':
+        sort_method = request.GET['methode']
+        
+        try : 
+            page = int(request.GET['page'])
+        except ValueError :
+            page = 1
+        if page <= 0:
+            page = 1
+            
+        user = User.objects.get(username = username)
+        interests = UserInterest.objects.filter(user = user)
+        if sort_method == 'search':
+            query = request.GET['query']
+            interests = search_interests(interests, query)
+        interests = interests.order_by('-date_created')
+
+        nb_interests = interests.count()
+        interests_per_page = 10
+        nb_pages = ceil(nb_interests * 1.0 / interests_per_page)
+
+        sliced_result = interests[((page-1)*interests_per_page):(page*interests_per_page)]
+        response = []
+        for interest in sliced_result :
+            album = interest.album
+            album_data = compute_sidebar_args(album, add_album = False)
+            if request.user.is_authenticated :
+                followees_avg = rating_for_followees(request.user, album)
+                user_rating = UserRating.objects.for_instance_by_user(album, user = request.user)
+                if user_rating == None:
+                    user_rating = 0
+                else :
+                    user_rating = user_rating.score
+            else :
+                followees_avg = 0
+                user_rating = 0
+
+            rating_ = UserRating.objects.for_instance_by_user(album, user=user)
+            if rating_ is not None:
+                rating = rating_.score
+                try:
+                    url_review = rating_.review.get_absolute_url()
+                except Review.DoesNotExist:
+                    url_review = None
+            else :
+                rating = 0
+                url_review = None
+                
+            interest_data = {
+                'rating' : rating,
+                'average' : floatformat(album.ratings.get().average, 1),
+                'username' : user.username,
+                'url_profile' : user.get_absolute_url(),
+                'url_album' : album.get_absolute_url(),
+                'album_title' : album.title,
+                'album_cover' : album.get_cover(),
+                'followees_avg' : floatformat(followees_avg, 1),
+                'user_rating' : user_rating,
+                'url_review' : url_review
+                }
+
+            response.append({**interest_data, **album_data})
+        return JsonResponse({'data' : response, 'nbpages' : nb_pages, 'is_anonymous' : request.user.is_anonymous, 'is_user' : (request.user == user)})
+    return HttpResponseNotFound()
+
 
 
 def latest_reviews(request):

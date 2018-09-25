@@ -3,6 +3,7 @@ var album_popover_content = {
     components : {
 	popover,
 	'star-rating' : VueStarRating.default,
+	'toggleuserinterest' : toggleUserInterest,
     },
     props : {
 	mbid : {
@@ -33,8 +34,9 @@ var album_popover_content = {
 	<p class='text-left' v-html='album_data.artists'></p>
 	<star-rating :max-rating='10' :star-size='18' v-model='user_rating'></star-rating>
 	<div class='float-right'>
-	<button type="button" :style="{ 'color' : color }" class="btn btn-default" :title='displayReview' v-if='user_rating != 0' @click.prevent="$emit('show', 'review')"><i class="far fa-comment-alt"></i></button>
-	<button type="button" class="btn btn-default" title="Ajouter à une liste" @click.prevent="$emit('show', 'lists')"><i class="fas fa-list"></i></button>
+	<toggleuserinterest :title='displayInterest' :interested='album_data.user_interested' :mbid='mbid' :url='album_data.toggle_interest_url'> <template slot="content"><i class='fas fa-headphones'></i></template> </toggleuserinterest>
+	<button type="button" :class='color' class="btn" :title='displayReview' v-if='user_rating != 0' @click.prevent="$emit('show', 'review')"><i class="far fa-comment-alt"></i></button>
+	<button type="button" class="btn btn-outline-dark" title="Ajouter à une liste" @click.prevent="$emit('show', 'lists')"><i class="fas fa-list"></i></button>
 	</div>
 	</div>
 	</div>
@@ -52,12 +54,20 @@ var album_popover_content = {
 		return 'Critiquer'
 	    }
 	},
-	color : function(){
-	    if (this.album_data.review_exists){
-		return 'red'
+	displayInterest : function(){
+	    if (this.album_data.user_interested){
+		return 'Je veux l\'écouter'
 	    }
 	    else {
-		return ''
+		return 'Ajouter à mes envies'
+	    }
+	},
+	color : function(){
+	    if (this.album_data.review_exists){
+		return 'color-teal'
+	    }
+	    else {
+		return 'btn-outline-dark'
 	    }
 	    
 	}
@@ -77,6 +87,7 @@ var album_popover_content = {
 	    }).then(response => {
 		this.album_data.review = true;
 		this.album_data.user_rating = newVal;
+		this.album_data.user_interested = false;
 		this.$emit('loaded', this.album_data);
 	    }).catch(error => {
 		this.unwatch();

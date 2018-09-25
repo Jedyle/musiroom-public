@@ -221,12 +221,8 @@ class PionnierBadge(Badge):
             return BadgeAwarded(level = 1)
 
 
-def regular_badge_update(days_from_now = None):
+def regular_badge_update():
     users = User.objects.all()
-
-    if days_from_now is not None:
-        today = datetime.now().date()
-        users = users.filter(last_login__gt = today - timedelta(days_from_now)).distinct()
 
     for user in users:
         badges.possibly_award_badge('daily_award', user=user)

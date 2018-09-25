@@ -5,7 +5,7 @@ from django.db import transaction
 from django.db.models import Count, Q, Avg
 from django.urls import reverse
 from .scraper import ParseAlbum, ParseArtist, ParseArtistPhoto, ParseCover, ParseSearchArtists, ParseSearchAlbums, get_page_list
-from .models import Album, Artist, Genre, AlbumGenre
+from .models import Album, Artist, Genre, AlbumGenre, UserInterest
 from ratings.models import Review
 from ratings.utils import rating_for_followees, rating_for_followees_list
 from star_ratings.models import Rating, UserRating
@@ -137,6 +137,8 @@ def album(request, mbid):
             followees_ratings = all_followees_ratings(request.user, album)
             context['followees_avg'] = followees_ratings['avg']
             context['followees_ratings'] = followees_ratings['ratings']
+            context['is_interested'] = (request.user in album.users_interested.all())
+            print(context['is_interested'])
         return render(request, 'albums/album.html', context)
     except Album.DoesNotExist:
         parser = ParseAlbum(mbid)
@@ -648,6 +650,8 @@ def album_data(request):
         else:
             avg = floatformat(avg, 1)
 
+        print(album.users_interested.filter(pk = request.user.pk).exists())
+
         data = {
             'title' : album.title,
             'artists' : compute_artists_links(album),
@@ -658,6 +662,8 @@ def album_data(request):
             'rate_url' : reverse('star_ratings:rate', args=[content_type_id, album.id]),
             'user_rating' : user_rating,
             'review_exists' : (review != None),
+            'user_interested' : (album.users_interested.filter(pk = request.user.pk).exists()),
+            'toggle_interest_url' : reverse('albums:toggle_user_interest'),
             'review_url' : reverse('reviews:user_review', args=[album.mbid]),
             'lists_url' : reverse('lists:get_lists_for_user_and_album'),
             'set_item_url' : reverse('lists:ajax_set_item'),
@@ -666,3 +672,16 @@ def album_data(request):
             }
         return JsonResponse(data)
     return HttpResponseNotFound()
+
+@login_required
+def toggle_user_interest(request):
+    if request.method == 'POST':
+        mbid = request.POST.get('mbid')
+        user = request.user
+        album = get_object_or_404(Album, mbid=mbid)
+        user_interest, created = UserInterest.objects.get_or_create(album = album, user = user)
+        if not created : #if exists, delete
+            user_interest.delete()
+        return JsonResponse({ 'user_interested' : created })
+    return HttpResponseNotFound()
+        

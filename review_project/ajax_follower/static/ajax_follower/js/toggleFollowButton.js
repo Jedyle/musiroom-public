@@ -1,9 +1,3 @@
-function getFormData(object) {
-    const formData = new FormData();
-    Object.keys(object).forEach(key => formData.append(key, object[key]));
-    return formData;
-}
-
 var toggleFollowButton = {
     delimiters : ['[[', ']]'],
     props : {
@@ -22,7 +16,6 @@ var toggleFollowButton = {
 	`,
     methods : {
 	toggleValue : function(){
-	    console.log(this.url)
 	    axios({
 		method:'post',
 		url: this.url,

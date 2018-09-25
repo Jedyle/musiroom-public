@@ -74,6 +74,8 @@
 		</div>
 	    </div>
 
+	    <hr>
+
 	    <div class="row">
 		<div class="col-12">
 		    <div id="app-modal">
@@ -84,12 +86,13 @@
 			<input type="checkbox" id="rated" name="rated" v-model="rated" style="display: none"/>
 			{% endif %}
 
-			<a class="btn color-sanguine mb-1" :href="reviewlink" v-if="rated && reviewed" v-cloak>Voir ma critique</a>
+			<a class="btn btn-outline-dark mb-1" :href="reviewlink" v-if="rated && reviewed" v-cloak>Voir ma critique</a>
 
-			<button type="button" class="btn color-sanguine mb-1" @click="loadReview" v-if="rated && !reviewed" v-cloak>Critiquer</button>
-			<button type="button" class="btn color-sanguine mb-1" @click="loadReview" v-else-if="rated && reviewed" v-cloak>Modifier ma critique</button>
+			<button type="button" class="btn btn-outline-dark mb-1" @click="loadReview" v-if="rated && !reviewed" v-cloak>Critiquer</button>
+			<button type="button" class="btn btn-outline-dark mb-1" @click="loadReview" v-else-if="rated && reviewed" v-cloak>Modifier ma critique</button>
 			{% if user.is_authenticated %}
-			<button type="button" class="btn color-sanguine mb-1" @click="loadLists" v-cloak>Ajouter à une liste</button>
+			<button type="button" class="btn btn-outline-dark mb-1" @click="loadLists" v-cloak>Ajouter à une liste</button>
+			<toggleuserinterest @change="interested = $event;" class="mb-1" url="{% url 'albums:toggle_user_interest' %}" mbid="{{album.mbid}}" :interested="interested"></toggleuserinterest>
 			{% endif %}
 			
 			<a title="Supprimer ma note" class="float-right" @click.prevent="deleteRating()" href="#" v-cloak v-if="rated"><i class="far fa-trash-alt fa-lg"></i></a>
@@ -248,6 +251,7 @@
 <script src="{% static 'ratings/js/reviewModal.js' %}"></script>
 <script src="{% static 'ratings/js/reviewPreview.js' %}"></script>
 <script src="{% static 'ratings/js/reviewList.js' %}"></script>
+<script src="{% static 'albums/js/toggleUserInterest.js' %}"></script>
 
 
 
@@ -263,6 +267,7 @@
      delete_item_url : "{% url 'lists:ajax_delete_item' %}",
      mbid : "{{mbid}}",
      delete_rating_url : "{% url 'reviews:ajax_delete_rating' %}",
+     interested : {% if is_interested %}true{% else %}false{% endif %},
  }
  
  
@@ -288,8 +293,13 @@
 	 delete_item_url : template_data.delete_item_url,
 	 mbid : template_data.mbid,
 	 delete_rating_url : template_data.delete_rating_url,
+	 //Interest
+	 interested : template_data.interested
      },
-     components : {reviewmodal, modal},
+     components : {reviewmodal,
+		   modal,
+		   'toggleuserinterest' : toggleUserInterest,
+     },
      computed : {
 	 modalHandlers : function(){
 	     return {
@@ -349,7 +359,19 @@
 		 document.body.classList.remove("modal-open");
 	     }
 	 },
+	 rated : function(newVal){
+	     if (newVal) {
+		 this.interested = false;
+	     }
+	 }
      },
+     mounted : function(){
+	 var self = this;
+	 window.addEventListener('rate-success', function(event){
+	     self.interested = false;
+	 })
+     }
+     
  });
 
 
@@ -377,7 +399,6 @@
 	     load_ytb : function(){
 		 if (this.ytb_link === ''){
 		     event.preventDefault()
-		     console.log(this.query.replace(" ", "+"));
 		     var request = gapi.client.youtube.search.list({
 			 part : 'snippet',
 			 type : 'video',
@@ -385,7 +406,6 @@
 			 maxResults: 1,
 		     });
 		     request.execute(response => {
-			 console.log(response);
 			 var id = response.result.items[0].id.videoId;
 			 var url = "https://www.youtube.com/watch?v=" + id;
 			 this.ytb_link = url;
@@ -398,7 +418,6 @@
 	     }
 	 },
 	 mounted : function(){
-	     console.log(gapi.client)
 	     window.onload = 
 		 gapi.client.setApiKey("AIzaSyBM0SEUpFmTac-GeSigQeyoL1jeDD7chxI");
 	     gapi.client.load("youtube", "v3", () => {
