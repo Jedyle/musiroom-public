@@ -75,11 +75,9 @@ Profil de {{profile.user.username}}
 	<div v-show="currentView === 'profile'">
 	    <br>
 
-	    {% autoescape off %}
 	    <div class="bg-light">
 		{{ profile.description|parse_links|linebreaks }}
 	    </div>
-	    {% endautoescape %}
 
 	    {% if profile.user == user %}
 	    <a class="btn btn-success" href="{% url 'lists:create_list' %}">Nouvelle liste</a>

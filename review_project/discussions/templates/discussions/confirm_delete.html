@@ -39,9 +39,7 @@ Supprimer la discussion
     <h3>{{discussion.title}}</h3>    
 
     <p>
-	{% autoescape off %}
 	{{ discussion.content|parse_links|linebreaks }}
-	{% endautoescape %}
     </p>
 
 </div>
