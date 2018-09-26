@@ -91,7 +91,7 @@ class Genre(models.Model):
 
 class Album(models.Model):
     mbid = models.CharField(db_index=True,max_length = 36, unique = True)
-    title = models.CharField(max_length = 100)
+    title = models.CharField(max_length = 150)
     release_date = models.DateField(blank = True, null = True)
     cover = models.CharField(max_length = 100, null = True)
     tracks = JSONField(null = True)
@@ -168,7 +168,7 @@ class UserInterest(models.Model):
 
 class Artist(models.Model):
     mbid = models.CharField(db_index=True, max_length = 36, unique = True)
-    name = models.CharField(max_length = 50)
+    name = models.CharField(max_length = 100)
     albums = models.ManyToManyField(Album, related_name='artists', blank = True)
     photo = models.CharField(max_length = 150, null = True)
 
