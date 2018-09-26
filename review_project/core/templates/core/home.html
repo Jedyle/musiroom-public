@@ -21,9 +21,11 @@
 
 {% block content %}
 
-<div class="col-sm-12 col-md-8 offset-md-2">
+<div class="col-sm-12 col-md-10 offset-md-1">
     
     <h1 class="text-center">Nouveautés</h1>
+
+    <br>
 
     {% cache 5 new_albums user.is_authenticated %}
     <div class="row">
@@ -49,7 +51,7 @@
     {% endcache %}
 </div>
 
-<div class="col-sm-12 col-md-8 offset-md-2">
+<div class="col-sm-12 col-md-10 offset-md-1">
 
     <div class="row" id="app">
 

@@ -15,7 +15,7 @@ from django.db.models import Prefetch
 
 def home(request):
     time_threshold = datetime.now() - timedelta(days=60)
-    new_albums = Album.objects.filter(release_date__gt=time_threshold).filter(ratings__isnull = False).order_by('-ratings__count')[:18]
+    new_albums = Album.objects.filter(release_date__gt=time_threshold).filter(ratings__isnull = False).order_by('-ratings__count')[:12]
     reviews = compute_reviews_feed()
     ratings = compute_ratings_feed()
     context = {
