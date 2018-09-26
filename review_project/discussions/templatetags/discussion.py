@@ -9,14 +9,14 @@ register = template.Library()
 @register.filter
 def content_type(obj):
     if not obj:
-        return False
+        return None
     return ContentType.objects.get_for_model(obj)
 
 
 @register.filter
 def content_type_pk(obj):
     if not obj:
-        return False
+        return 0
     return ContentType.objects.get_for_model(obj).pk
 
 

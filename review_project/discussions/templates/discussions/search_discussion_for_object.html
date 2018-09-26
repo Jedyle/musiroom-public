@@ -6,8 +6,10 @@
 
 {% block title %}
 
-{% if instance %}
+{% if instance and instance != 0 %}
 Discussions sur {{ instance }}
+{% elif instance == 0 %}
+Discussions générales
 {% else %}
 Toutes les discussions
 {% endif %}
@@ -18,7 +20,7 @@ Toutes les discussions
 
 <div class="col-12 col-lg-2">
 
-    {% if instance %}
+    {% if instance and instance != 0 %}
     <div class="card">
 	<img class="card-img-top" data-src="{{ instance.get_preview }}" src="{% static 'images/loading.gif' %}" alt="{{instance}}">
 	<div class="card-body">
@@ -30,21 +32,28 @@ Toutes les discussions
 </div>
 
 <div class="col-sm-12 col-lg-8 border" style="height:100%" id="app">
-
-    {% if instance %}
+    
+    {% if instance is not None %}
     <p> < <a href="{% url 'discussions:search_discussion_for_object' %}">Toutes les discussions</a></p>
+    {% if instance == 0 %}
+    <h1 class="text-center">Discussions générales</h1>
+    {% else %}
     <h1 class="text-center">Discussions sur <a href="{{ instance.get_absolute_url }}">{{ instance }}</a></h1>
+    {% endif %}
+    
     {% else %}
     <h1 class="text-center">Toutes les discussions</h1>
 
     {% endif %}
 
     <div class="text-center">
-    {% if instance %}
-    <a class="btn color-teal m-2" href="{% url 'discussions:create_discussion' instance|content_type_pk instance.pk %}">Nouvelle discussion</a>
-    {% else %}
-    <a class="btn color-teal m-2" href="{% url 'discussions:create_discussion' %}">Nouvelle discussion</a>
-    {% endif %}
+	{% if instance and instance != 0 %}
+	<a class="btn color-teal m-2" href="{% url 'discussions:create_discussion' instance|content_type_pk instance.pk %}">Nouvelle discussion</a>
+	{% elif instance == 0 %}
+	<a class="btn color-teal m-2" href="{% url 'discussions:create_discussion' 0 0 %}">Nouvelle discussion</a>
+	{% else %}
+	<a class="btn color-teal m-2" href="{% url 'discussions:create_discussion' %}">Nouvelle discussion</a>
+	{% endif %}
     </div>
 
     <form class="form-inline justify-content-center bg-light p-2" method="get" action="{{request.path}}">
@@ -119,7 +128,11 @@ Toutes les discussions
 		<p class="text-muted mt-1 mb-1 {% if instance == None %}float-left{% endif %}"><a href="{% url 'profile' disc.author.username %}"><span class="m-0 company-header-avatar" style="background-image : url({{ disc.author.account.get_avatar }}); width : 25px; height : 25px;"></span></a> &nbsp; <a href="{% url 'profile' disc.author.username %}"> {{ disc.author }}</a> il y a {{ disc.created|timesince }}</p>
 
 		{% if instance == None %}
-		<p class="float-right pr-2 mb-0"><small>sur <a href="{% url 'discussions:search_discussion_for_object' disc.content_object|content_type_pk disc.content_object.pk %}">{{ disc.content_object }}</a> <span class="d-none d-md-inline">- {{disc.content_object|content_type}}</span></small></p>
+		{% if disc.content_object %}
+		<p class="float-right pr-2 mb-0"><small>sur <a href="{% url 'discussions:search_discussion_for_object' disc.content_object|content_type_pk disc.object_id %}">{{ disc.content_object }}</a> <span class="d-none d-md-inline">- {{disc.content_object|content_type}}</span></small></p>
+		{% else %}
+		<p class="float-right pr-2 mb-0"><small><a href="{% url 'discussions:search_discussion_for_object' 0 0 %}">Discussion générale</a> <span class="d-none d-md-inline"></span></small></p>
+		{% endif %}
 		<div style="clear: both;"></div>
 		{% endif %}
 		

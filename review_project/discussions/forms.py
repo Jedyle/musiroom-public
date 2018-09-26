@@ -27,13 +27,18 @@ class DiscussionForm(forms.Form):
         """
         Returns the dict of data to be used to create a discussion.
         """
-        return dict(
-            content_type = ContentType.objects.get_for_model(self.target_object),
-            object_id = self.target_object.pk,
-            title = self.cleaned_data['title'],
-            content = self.cleaned_data['content'],
-            )
-        
+        if self.target_object is not None:
+            return dict(
+                content_type = ContentType.objects.get_for_model(self.target_object),
+                object_id = self.target_object.pk,
+                title = self.cleaned_data['title'],
+                content = self.cleaned_data['content'],
+                )    
+        else :
+            return dict(
+                title = self.cleaned_data['title'],
+                content = self.cleaned_data['content'],
+                )    
 
 class EditDiscussionForm(forms.ModelForm):
 

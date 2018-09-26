@@ -45,10 +45,10 @@ Nouvelle discussion
 			    
 			    <autocomplete
 				class="form-group col-md-9 col-xl-10"
-				ref="auto"
-				url="{% url 'discussions:ajax_search_object' %}"
- 				:model="type"
-				@changeurl="url=$event;"
+				       ref="auto"
+				       url="{% url 'discussions:ajax_search_object' %}"
+ 				       :model="type"
+				       @changeurl="url=$event;"
 			    ></autocomplete>
 
 			    
@@ -56,6 +56,9 @@ Nouvelle discussion
 			</div>
 			
 		    </form>
+
+		    
+		    <p class="text-right h5">ou bien <a href="{% url 'discussions:create_discussion' 0 0 %}">créez une discussion générale</a> </p>
 		</div>
 	    </div>
 	    

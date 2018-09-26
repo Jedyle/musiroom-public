@@ -18,8 +18,8 @@ class Discussion(VoteModel, models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='discussions')
     title = models.CharField('Titre', max_length = 200, blank = True)
     content = models.TextField('Contenu')
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    object_id = models.PositiveIntegerField()
+    content_type = models.ForeignKey(ContentType, null=True, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField(default=0)
     content_object = GenericForeignKey('content_type', 'object_id')
 
     def __str__(self):

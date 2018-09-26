@@ -15,7 +15,15 @@ Discussion : {{ discussion.title }}
 
     <div class="container">
 	    <h3>
-		<a href="{% url 'discussions:search_discussion_for_object' %}">Discussions</a> > <a href="{% url 'discussions:search_discussion_for_object' discussion.content_object|content_type_pk discussion.content_object.pk %}">{{ discussion.content_object }}</a> > <a href="{{ discussion.get_absolute_url }}">{{ discussion.title }}</a>
+		<a href="{% url 'discussions:search_discussion_for_object' %}">Discussions</a>
+		>
+		{% if discussion.content_object %}
+		<a href="{% url 'discussions:search_discussion_for_object' discussion.content_object|content_type_pk discussion.object_id %}">{{ discussion.content_object }}</a>
+		{% else %}
+		<a href="{% url 'discussions:search_discussion_for_object' 0 0 %}">Général</a>
+		{% endif %}
+		>
+		<a href="{{ discussion.get_absolute_url }}">{{ discussion.title }}</a>
 	    </h3>
     </div>
     

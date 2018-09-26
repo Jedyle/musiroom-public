@@ -12,7 +12,11 @@ Nouvelle discussion
 
     <div class="container">
 
+	{% if target_object %}
 	<h1 class="text-center dont-break-out">Nouvelle discussion sur <a href="{{ target_object.get_absolute_url }}">{{ target_object }}</a></h1>
+	{% else %}
+	<h1 class="text-center dont-break-out">Nouvelle discussion générale</a></h1>
+	{% endif %}
 
 	<p class="text-center h5">ou bien <a href="{% url 'discussions:create_discussion' %}">créez une discussion sur un autre sujet</a></p>
 	

@@ -17,9 +17,13 @@ def create_discussion(request, content_id=None, object_id=None):
     if content_id is None or object_id is None:
         form = DiscussionForm()
         return render(request, 'discussions/choose_object_for_creation.html', {'discussion_form' : form})
-    content_type = ContentType.objects.get(pk = content_id)
-    ct_class = content_type.model_class()
-    instance = ct_class.objects.get(pk = object_id)
+    if int(content_id) == 0 or int(object_id) == 0:
+        instance = None
+    else:
+        content_type = ContentType.objects.get(pk = content_id)
+        ct_class = content_type.model_class()
+        instance = ct_class.objects.get(pk = object_id)
+        
     if request.method == 'POST' : 
         form = DiscussionForm(instance, request.POST)
         if form.is_valid():
@@ -111,10 +115,14 @@ def search_discussion_for_object(request, content_id=None, object_id=None):
         page = 1
     discussions = Discussion.objects.all()
     if content_id is not None and object_id is not None:
-        content_type = ContentType.objects.get(pk = content_id)
-        ct_class = content_type.model_class()
-        instance = ct_class.objects.get(pk = object_id)
-        discussions = discussions.filter(content_type = content_type, object_id = object_id)
+        if int(content_id) == 0 or int(object_id) == 0: #general discussion
+            discussions = discussions.filter(content_type = None)
+            instance = 0
+        else :
+            content_type = ContentType.objects.get(pk = content_id)
+            ct_class = content_type.model_class()
+            instance = ct_class.objects.get(pk = object_id)
+            discussions = discussions.filter(content_type = content_type, object_id = object_id)
     else:
         instance = None
         
