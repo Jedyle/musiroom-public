@@ -21,6 +21,7 @@ var popover = {
         {
             let vm = this;
             this.timer = setTimeout(function() {
+		vm.translatePop();
                 vm.showPopover();
             }, 600);
         },
