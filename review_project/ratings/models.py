@@ -72,12 +72,12 @@ def notify_comment_review(comment, request, **kwargs):
 @receiver(post_save, sender=Review)
 def save_review_handler(sender, instance, created, **kwargs):
     if created:
-        action.send(instance.rating.user, verb='a ecrit une critique : ', action_object=instance)
+        action.send(instance.rating.user, verb='a écrit une critique : ', action_object=instance)
 
 def rating_to_str(instance):
-    return _link(instance.user) + ' a attribué la note de ' + str(instance.score) + ' à l\'album ' + _link(instance.rating.content_object)
+    return _link(instance.user) + ' a attribué la note de ' + str(instance.score) + ' à ' + _link(instance.rating.content_object)
 
 @receiver(post_save, sender=UserRating)
 def save_rating_handler(sender, instance, created, **kwargs):
-    action.send(instance.user, verb='a attribue la note de ' + str(instance.score) + ' a ', action_object=instance, target=instance.rating.content_object, to_str= rating_to_str(instance))
+    action.send(instance.user, verb='a attribué la note de ' + str(instance.score) + ' a ', action_object=instance, target=instance.rating.content_object, to_str= rating_to_str(instance))
         

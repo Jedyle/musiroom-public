@@ -53,7 +53,7 @@ def save_list_handler(sender, instance, created, **kwargs):
         instance.order = nb_items
         instance.save()
         itemlist.save()
-        action.send(itemlist.user, verb="a ajoute", action_object = instance.album, target=instance.item_list, to_str = add_item_activity(instance))
+        action.send(itemlist.user, verb="a ajouté", action_object = instance.album, target=instance.item_list, to_str = add_item_activity(instance))
 
 def add_item_activity(instance):
     return _link(instance.item_list.user) + " a ajouté l'album " + _link(instance.album) + " à sa liste " + _link(instance.item_list, instance.item_list.title)

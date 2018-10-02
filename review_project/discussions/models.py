@@ -41,9 +41,9 @@ class Discussion(VoteModel, models.Model):
 def create_discussion_handler(sender, instance, created, **kwargs):
     if created:
         if instance.content_object: #not null
-            action.send(instance.author, verb='a poste la discussion', action_object=instance, target=instance.content_object)
+            action.send(instance.author, verb='a posté la discussion', action_object=instance, target=instance.content_object)
         else:
-            action.send(instance.author, verb='a poste la discussion generale', action_object=instance) 
+            action.send(instance.author, verb='a posté la discussion générale', action_object=instance) 
 
 def comment_discussion_notification(user, discussion):
     if discussion.content_object:
