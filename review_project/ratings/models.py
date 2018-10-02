@@ -72,7 +72,7 @@ def notify_comment_review(comment, request, **kwargs):
 @receiver(post_save, sender=Review)
 def save_review_handler(sender, instance, created, **kwargs):
     if created:
-        action.send(instance.rating.user, verb='a écrit une critique : ', action_object=instance)
+        action.send(instance.rating.user, verb='a ecrit une critique : ', action_object=instance)
 
 def rating_to_str(instance):
     return _link(instance.user) + ' a attribué la note de ' + str(instance.score) + ' à l\album ' + _link(instance.rating.content_object)

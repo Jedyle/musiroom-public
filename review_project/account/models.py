@@ -80,7 +80,7 @@ def comment_activity_str(comment):
 
 @receiver(confirmation_received)
 def comment_activity(comment, request, **kwargs):
-    action.send(comment.user, verb="a commenté", action_object=comment.xtd_comment, to_str=comment_activity_str(comment))
+    action.send(comment.user, verb="a commente", action_object=comment.xtd_comment, to_str=comment_activity_str(comment))
 
 
 @receiver(badge_awarded)
