@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+
+{% load i18n %}
 {% load bootstrap_tags %}
 
 {% block title %}
@@ -10,6 +12,10 @@ Feedback
 <div class="col-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3">
 
     <h1 class="text-center">Feedback</h1>
+
+    {% get_current_language as LC %}
+
+    {{LC}}
 
     <p class="text-center">Une suggestion, un bug à signaler ? Envoyez-nous un message et nous le traiterons le plus vite possible.</p>
 
