@@ -1,6 +1,6 @@
 from django.db import models
 from django.dispatch import receiver
-from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.auth.models import User
 from django_comments_xtd.models import XtdComment
 from django_comments_xtd.signals import confirmation_received
@@ -32,9 +32,10 @@ class Discussion(VoteModel, models.Model):
     class Meta:
         verbose_name = "discussion"
         verbose_name_plural = "discussions"
-        ordering = ["-created"]
+        ordering = ["-modified"]
         indexes = [
-            models.Index(fields=['created'])
+            models.Index(fields=['modified']),
+            models.Index(fields=['created']),
             ]
 
 @receiver(post_save, sender=Discussion)
@@ -64,9 +65,14 @@ def comment_discussion_reply_notification(comment, parent):
     res = "<a href='{}'>{}</a>".format(reverse('profile', args=[comment.user_name]),comment.user_name) + " a répondu à " + "<a href='{}'>votre commentaire</a>".format(parent.get_absolute_url()) + " sur la discussion " + "<a href='{}'>{}</a>".format(discussion.get_absolute_url(), discussion.title) 
     return res
 
+
+def update_modified_field_for_discussion(comment):
+    comment.content_object.save()
+
 @receiver(confirmation_received)
 def notify_comment_discussion(comment, request, **kwargs):
     if comment.content_type == ContentType.objects.get_for_model(Discussion):
+        update_modified_field_for_discussion(comment)
         pk = comment.object_pk
         discussion = Discussion.objects.get(pk = pk)
         user = discussion.author

@@ -246,7 +246,7 @@ def user_rating_list(request, username):
             return HttpResponseNotFound()
 
         nb_ratings = all_ratings.count()
-        ratings_per_page = 10
+        ratings_per_page = 20
         nb_pages = ceil(nb_ratings * 1.0 / ratings_per_page)
 
         sliced_result = result[((page-1)*ratings_per_page):(page*ratings_per_page)]
@@ -309,7 +309,7 @@ def user_interest_list(request, username):
         interests = interests.order_by('-date_created')
 
         nb_interests = interests.count()
-        interests_per_page = 10
+        interests_per_page = 20
         nb_pages = ceil(nb_interests * 1.0 / interests_per_page)
 
         sliced_result = interests[((page-1)*interests_per_page):(page*interests_per_page)]

@@ -3,11 +3,9 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.template import RequestContext
 from feedback.forms import AnonymousFeedbackForm, FeedbackForm
-import locale
 
 
 def leave_feedback(request, template_name='feedback/feedback_form.html'):
-    loc = locale.getlocale()
     if request.user.is_authenticated:
         form = FeedbackForm(request.POST or None)
     else:
@@ -23,4 +21,4 @@ def leave_feedback(request, template_name='feedback/feedback_form.html'):
                              'Votre feedback a bien été envoyé.', extra_tags="feedback")
         return HttpResponseRedirect(request.POST.get('next',
                                     request.META.get('HTTP_REFERER', '/')))
-    return render(request, template_name, {'feedback_form': form, 'locale' : loc})
+    return render(request, template_name, {'feedback_form': form})

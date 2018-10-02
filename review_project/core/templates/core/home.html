@@ -55,8 +55,68 @@
 </div>
 
 <div class="col-sm-12 col-md-10 offset-md-1">
+
+    <div class="row border bg-light">
+
+	<div class="col-12">
+	    <h1 class="text-center">Activité récente</h1>
+	</div>
+
+
+	<div class="col-12 {% if user.is_authenticated %}col-lg-6{% else %}col-lg-8 offset-lg-2{% endif %}">
+	    
+	    <h2 class="text-center">
+		Tout
+	    </h2>
+	    
+	    {% if all_feed %}	    
+	    <ul class="list-group infinite-container">
+		
+		{% for action in all_feed %}
+		<li class="list-group-item p-2">
+		    {% display_action action %}
+		</li>
+		{% endfor %}
+		
+	    </ul>
+	    <p class="text-right"> <a href="{% url 'live' %}">Voir l'historique</a>
+	    {% else %}
+	    <p class="text-center"> Aucune activité. </p>
+	    {% endif %}
+	    
+	    
+	</div>
+	
+	{% if user.is_authenticated %}
+	<div class="col-12 col-lg-6">
+	    
+	    <h2 class="text-center">
+		Mes abonnements
+	    </h2>
+
+	    {% if user_feed %}	    
+	    <ul class="list-group infinite-container">
+
+		{% for action in user_feed %}
+		<li class="list-group-item p-2">
+		    {% display_action action %}
+		</li>
+		{% endfor %}
+		
+	    </ul>
+	    <p class="text-right"><a href="{% url 'live' %}?feed=abonnements">Voir l'historique</a></p>
+	    {% else %}
+	    <p class="text-center"> Aucune activité de vos abonnements. </p>
+	    {% endif %}
+
+	</div>
+	{% endif %}
+	
+    </div>
+
+    <br><br>
     
-    <div class="row" id="app">
+    <div class="row border bg-light" id="app">
 
 	<div class="col-sm-12 col-lg-6">
 
@@ -278,64 +338,7 @@
 
     <br>
     <br>
-    
-    <div class="row border">
-
-	<div class="col-12">
-	    <h1 class="text-center">Activité</h1>
-	</div>
-
-
-	<div class="col-12 {% if user.is_authenticated %}col-lg-6{% else %}col-lg-8 offset-lg-2{% endif %}">
-	    
-	    <h2 class="text-center">
-		Tout
-	    </h2>
-	    
-	    {% if all_feed %}	    
-	    <ul class="list-group infinite-container">
-		
-		{% for action in all_feed %}
-		<li class="list-group-item infinite-item bg-light">
-		    {% display_action action %}
-		</li>
-		{% endfor %}
-		
-	    </ul>
-	    <a href="{% url 'live' %}">Voir l'historique</a>
-	    {% else %}
-	    <p class="text-center"> Aucune activité. </p>
-	    {% endif %}
-	    
-	    
-	</div>
-	
-	{% if user.is_authenticated %}
-	<div class="col-12 col-lg-6">
-	    
-	    <h2 class="text-center">
-		Mes abonnements
-	    </h2>
-
-	    {% if user_feed %}	    
-	    <ul class="list-group infinite-container">
-
-		{% for action in user_feed %}
-		<li class="list-group-item infinite-item bg-light">
-		    {% display_action action %}
-		</li>
-		{% endfor %}
-		
-	    </ul>
-	    <a href="{% url 'live' %}?feed=abonnements">Voir l'historique</a>
-	    {% else %}
-	    <p class="text-center"> Aucune activité de vos abonnements. </p>
-	    {% endif %}
-
-	</div>
-	{% endif %}
-	
-    </div>
+   
     
 </div>
 

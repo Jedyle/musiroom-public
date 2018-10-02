@@ -125,7 +125,7 @@ Toutes les discussions
 		{% endif %}
 	    </div>
 	    <div class="flex-grow-1">
-		<p class="text-muted mt-1 mb-1 {% if instance == None %}float-left{% endif %}"><a href="{% url 'profile' disc.author.username %}"><span class="m-0 company-header-avatar" style="background-image : url({{ disc.author.account.get_avatar }}); width : 25px; height : 25px;"></span></a> &nbsp; <a href="{% url 'profile' disc.author.username %}"> {{ disc.author }}</a> il y a {{ disc.created|timesince }}</p>
+		<p class="text-muted mt-1 mb-1 {% if instance == None %}float-left{% endif %}"><a href="{% url 'profile' disc.author.username %}"><span class="m-0 company-header-avatar" style="background-image : url({{ disc.author.account.get_avatar }}); width : 25px; height : 25px;"></span></a> &nbsp; <a href="{% url 'profile' disc.author.username %}"> {{ disc.author }}</a> il y a {{ disc.modified|timesince }}</p>
 
 		{% if instance == None %}
 		{% if disc.content_object %}

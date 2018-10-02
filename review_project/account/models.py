@@ -86,7 +86,7 @@ def comment_activity(comment, request, **kwargs):
 @receiver(badge_awarded)
 def notify_badge_awarded(badge_award, **kwargs):
     notify.send(badge_award.user, recipient=badge_award.user, verb="Vous avez reçu le badge", target = badge_award, to_str = "Vous avez reçu le badge " + badge_award.name + ".")
-    action.send(badge_award.user, verb='a recu le badge', action_object = badge_award, to_str="<a href='{}'>{}</a>".format(badge_award.user.get_absolute_url(), str(badge_award.user)) + ' a reçu le badge ' + badge_award.name)
+    action.send(badge_award.user, verb='a reçu le badge', action_object = badge_award, to_str="<a href='{}'>{}</a>".format(badge_award.user.get_absolute_url(), str(badge_award.user)) + ' a reçu le badge ' + badge_award.name)
 
 
 badges.register(MusicophileBadge)
