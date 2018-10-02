@@ -12,6 +12,7 @@ from django.contrib.contenttypes.models import ContentType
 from notifications.signals import notify
 from django.urls import reverse
 from actstream import action
+from review_project.utils import make_clickable_link as _link
 
 
 # Create your models here.
@@ -75,5 +76,5 @@ def save_review_handler(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=UserRating)
 def save_rating_handler(sender, instance, created, **kwargs):
-    action.send(instance.user, verb='a attribué la note de ' + str(instance.score) + ' à ', action_object=instance, target=instance.rating.content_object)
+    action.send(instance.user, verb='a attribue la note de ' + str(instance.score) + ' à ', action_object=instance, target=instance.rating.content_object, to_str= _link(instance.user) + ' a attribué la note de ' + str(instance.score) ' à l\album ' + _link(instance.rating.content_object))
         
