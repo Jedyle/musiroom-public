@@ -79,5 +79,5 @@ def rating_to_str(instance):
 
 @receiver(post_save, sender=UserRating)
 def save_rating_handler(sender, instance, created, **kwargs):
-    action.send(instance.user, verb='a attribue la note de ' + str(instance.score) + ' à ', action_object=instance, target=instance.rating.content_object, to_str= rating_to_str(instance))
+    action.send(instance.user, verb='a attribue la note de ' + str(instance.score) + ' a ', action_object=instance, target=instance.rating.content_object, to_str= rating_to_str(instance))
         
