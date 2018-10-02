@@ -12,10 +12,20 @@ def reload_tracks(mbid):
         album.save()
         return
 
+def reload_covers(mbid):
+    album = Album.objects.get(mbid = mbid)
+    if album.get_cover() == "":
+        parse_cover = ParseCover(mbid)
+        if parse_cover.load():
+            album.cover = parse_cover.get_cover_small()
+            album.save()
+            print(album)
+    
 
-def reload_all():
+def reload_all(method = reload_tracks):
     start = time.time()
     albums = Album.objects.all()
     for album in albums:
-        reload_tracks(album.mbid)
+        method(album.mbid)
     end = time.time()
+    return end-start
