@@ -24,6 +24,7 @@ from core import views
 urlpatterns = [
     url(r'^manage/', admin.site.urls),
     url(r'^$', views.home, name = 'home'),
+    url(r'^live$', views.feed, name='live'),
     url(r'^home_followees_reviews/', views.ajax_followees_reviews, name="home_followees_reviews"),
     url(r'^home_followees_ratings/', views.ajax_followees_ratings, name="home_followees_ratings"),
     url(r'^profil/',  include('account.urls')),
@@ -40,6 +41,7 @@ urlpatterns = [
     url(r'^discussions/', include('discussions.urls', namespace='discussions')),
     url(r'^autocomplete/', include('autocomplete_search.urls', namespace='autocomplete_search')),
     url(r"^badges/", include("pinax.badges.urls", namespace="pinax_badges")),
+    url(r'^activité/', include('actstream.urls')),
     ]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:

@@ -221,6 +221,32 @@ class PionnierBadge(Badge):
             return BadgeAwarded(level = 1)
 
 
+class Top10Badge(Badge):
+    slug = "top10"
+    levels = [
+        BadgeDetail(
+            name = "Top 10",
+            description = "Ce membre est fier d'afficher ses goûts musicaux sur la toile. Il a ajouté 10 oeuvres à son top albums."
+            ), 
+        ]
+
+    images = [
+        static('images/badges/Top_10.png'),
+        ]
+
+    multiple = False
+
+    events = [
+        "daily_award",
+        ]
+
+    def award(self, **state):
+        user = state["user"]
+        top = user.account.top_albums
+        if top.albums.count() >= 10:
+            return BadgeAwarded(level = 1)
+
+
 def regular_badge_update():
     users = User.objects.all()
 

@@ -26,7 +26,6 @@ from lists.models import ItemList, ListObject
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from pinax.badges.registry import badges
 
-
 # Create your views here.
 
 def send_email(request, user):
@@ -196,7 +195,6 @@ def notifications(request):
     rendered = render_to_string('account/notifications.html', context, request=request)
     p.object_list.mark_all_as_read()
     return HttpResponse(rendered)
-
 
 def search_account(request):
     m_type = request.GET.get('type')

@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     'discussions',
     'autocomplete_search',
     'pinax.badges',
+    'actstream',
     ]
 
 SITE_ID = 4
@@ -160,6 +161,10 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+
+LOCALE_PATHS = (
+    os.path.join(BASE_DIR, 'locale/'),
+)
 
 
 # Static files (CSS, JavaScript, Images)
@@ -289,3 +294,12 @@ CELERY_BEAT_SCHEDULE = {
         'schedule': crontab(minute=1, hour=2),
     },
 }
+
+
+#Activity
+
+ACTSTREAM_SETTINGS = {
+    'USE_JSONFIELD' : True
+    }
+
+ACTIVITY_ITEMS_PER_PAGE = 10

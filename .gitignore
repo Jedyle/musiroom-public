@@ -5,3 +5,5 @@ review_project/staticfiles/
 __pycache__
 review_project/settings/production.py
 media/
+migrations/
+*.html.py

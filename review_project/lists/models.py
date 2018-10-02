@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models.signals import post_save, post_delete
+from django.db.models.signals import pre_save, post_save, post_delete
 from django.dispatch import receiver
 from django.contrib.auth.models import User
 from albums.models import Album
@@ -9,6 +9,8 @@ from django_comments_xtd.models import XtdComment
 from django.contrib.contenttypes.models import ContentType
 from notifications.signals import notify
 from django.urls import reverse
+from actstream import action
+from review_project.utils import make_clickable_link as _link
 
 # Create your models here.
 
@@ -21,12 +23,14 @@ class ItemList(VoteModel, models.Model):
     modified = models.DateTimeField("Dernière modification", auto_now = True)
 
     def __str__(self):
-        return self.user.username + " : " + self.title
+        return self.title
 
     def get_absolute_url(self):
         return reverse('lists:display_list', args=[self.id])
 
     class Meta :
+        verbose_name='liste'
+        verbose_name_plural='listes'
         ordering = ['-modified']
 
 class ListObject(models.Model):
@@ -36,11 +40,10 @@ class ListObject(models.Model):
     order = models.IntegerField(default = -1)
 
     def __str__(self):
-        return str(self.item_list) + " - " + str(self.album)
+        return str(self.album)
 
     class Meta:
         ordering = ['order']
-
 
 @receiver(post_save, sender=ListObject)
 def save_list_handler(sender, instance, created, **kwargs):
@@ -50,6 +53,10 @@ def save_list_handler(sender, instance, created, **kwargs):
         instance.order = nb_items
         instance.save()
         itemlist.save()
+        action.send(itemlist.user, verb="a ajouté", action_object = instance.album, target=instance.item_list, to_str = add_item_activity(instance))
+
+def add_item_activity(instance):
+    return _link(instance.item_list.user) + " a ajouté l'album " + _link(instance.album) + " à sa liste " + _link(instance.item_list, instance.item_list.title)
 
 @receiver(post_delete, sender=ListObject)
 def delete_list_handler(sender, instance, **kwargs):

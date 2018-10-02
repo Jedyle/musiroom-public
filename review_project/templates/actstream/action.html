@@ -1,0 +1,52 @@
+{% load i18n %}
+{% load core_tags %}
+
+
+<div class="d-flex">
+    <div style="min-width:70px">
+	{% if action.actor.account.get_avatar %}
+	<div style="width:50px; height:50px; background-image: url({{ action.actor.account.get_avatar }}); background-size:cover; background-position : center;"></div>
+	{% endif %}
+    </div>
+    <div class="flex-grow-1">
+
+
+	{% if action.data.to_str %}
+
+	{% autoescape off %}
+	{{ action.data.to_str }}
+	{% endautoescape %}
+
+	{% else %}
+
+	{% if action.actor.get_absolute_url %}<a href="{{ action.actor.get_absolute_url }}">{{ action.actor }}</a>
+	{% else %}<a href="{{ action.actor_url }}">{{ action.actor }}</a>{% endif %}
+
+	{{ action.verb }}
+
+	{% if action.action_object %}
+
+	{% if action.action_object.get_absolute_url %}<a href="{{ action.action_object.get_absolute_url }}">{{ action.action_object }}</a>
+	{% else %}<a href="{{ action.action_object_url }}">{{ action.action_object }}</a>{% endif %}
+
+	{% endif %}
+
+	{% if action.action_object and action.target %}à{% endif %}
+
+	{% if action.target %}
+
+	{% if action.target.get_absolute_url %}<a href="{{ action.target.get_absolute_url }}">{{ action.target }}</a>
+	{% else %}<a href="{{ action.target_url }}">{{ action.target }}</a>{% endif %}
+
+	{% endif %}
+	{% endif %}
+
+	<p class="text-right">
+	
+	    <small>{{ action.timestamp|smart_date }}</small>
+	</p>
+	
+    </div>
+
+</div>
+

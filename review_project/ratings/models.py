@@ -11,6 +11,7 @@ from django_comments_xtd.models import XtdComment
 from django.contrib.contenttypes.models import ContentType
 from notifications.signals import notify
 from django.urls import reverse
+from actstream import action
 
 
 # Create your models here.
@@ -23,10 +24,16 @@ class Review(VoteModel, models.Model):
     rating = models.OneToOneField(UserRating, on_delete= models.CASCADE, related_name='review')
     
     def __str__(self):
+        if self.title :
+            return self.title + ' par ' + str(self.rating.user) +  ' sur l\'album ' + str(self.rating.rating.albums.get())
         return "Critique de " + str(self.rating.user) + ' sur l\'album ' + str(self.rating.rating.albums.get())
 
     def get_absolute_url(self):
         return reverse('albums:review', args=[self.rating.rating.albums.get().mbid, self.id])
+
+    class Meta:
+        verbose_name = 'critique'
+        verbose_name_plural = 'critiques'
 
 moderator.register(Review, UserLoggedInModerator)
 
@@ -60,4 +67,13 @@ def notify_comment_review(comment, request, **kwargs):
             parent_user = None
             users_in_thread = User.objects.filter(comment_comments__content_type = ContentType.objects.get_for_model(Review), comment_comments__object_pk = pk).exclude(pk = comment.user.pk).exclude(pk = user.pk).distinct()
             notify.send(sender = comment.user, recipient = users_in_thread, verb = "a commenté la critique", target = review, to_str = comment_review_notification_for_users(comment.user, review))
+
+@receiver(post_save, sender=Review)
+def save_review_handler(sender, instance, created, **kwargs):
+    if created:
+        action.send(instance.rating.user, verb='a écrit une critique : ', action_object=instance)
+
+@receiver(post_save, sender=UserRating)
+def save_rating_handler(sender, instance, created, **kwargs):
+    action.send(instance.user, verb='a attribué la note de ' + str(instance.score) + ' à ', action_object=instance, target=instance.rating.content_object)
         

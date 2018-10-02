@@ -10,6 +10,10 @@ from star_ratings.models import UserRating
 from django.urls import reverse
 from django.db.models import Max, Q
 from django.db.models import Prefetch
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from actstream.models import user_stream, Action
+from django.conf import settings
+from core.settings import DEFAULT_ACTIVITY_ITEMS_PER_PAGE
 
 # Create your views here.
 
@@ -18,12 +22,31 @@ def home(request):
     new_albums = Album.objects.filter(release_date__gt=time_threshold).filter(ratings__isnull = False).order_by('-ratings__count')[:12]
     reviews = compute_reviews_feed()
     ratings = compute_ratings_feed()
+    user_feed = compute_user_stream(request)
+    all_feed = compute_general_stream()
     context = {
         'albums' : new_albums,
         'reviews' : reviews,
         'ratings' : ratings,
+        'user_feed' : user_feed,
+        'all_feed' : all_feed,
         }
     return render(request, 'core/home.html', context)
+
+def compute_general_stream():
+    stream = Action.objects.all()
+    num_items = getattr(settings, 'ACTIVITY_ITEMS_PER_PAGE', DEFAULT_ACTIVITY_ITEMS_PER_PAGE)
+    p = Paginator(stream, num_items)
+    return p.page(1)
+
+
+def compute_user_stream(request):
+    if request.user.is_authenticated:
+        stream = user_stream(request.user)
+        num_items = getattr(settings, 'ACTIVITY_ITEMS_PER_PAGE', DEFAULT_ACTIVITY_ITEMS_PER_PAGE)
+        p = Paginator(stream, num_items)
+        return p.page(1)
+    return None
 
 DATE = datetime.now() - timedelta(days = 5)
 DATE_REVIEWS = datetime.now() - timedelta(days = 30)
@@ -109,3 +132,26 @@ def ajax_followees_ratings(request):
             'ratings' : ratings_data,
             })
     return JsonResponse({'users' : user_ratings})
+
+
+@login_required
+def feed(request):
+    page = request.GET.get('page', 1)
+    feed_type = request.GET.get('feed', 'tout')
+    if feed_type == 'abonnements':
+        stream = user_stream(request.user)
+    else:
+        stream = Action.objects.all()
+    num_items = getattr(settings, 'ACTIVITY_ITEMS_PER_PAGE', DEFAULT_ACTIVITY_ITEMS_PER_PAGE)
+    p = Paginator(stream, num_items)
+    try:
+        feed = p.page(page)
+    except PageNotAnInteger:
+        feed = p.page(1)
+    except EmptyPage:
+        feed = p.page(paginate.num_pages)
+    context = {
+        'feed' : feed,
+        'feed_type' : feed_type,
+        }
+    return render(request, 'core/feed.html', context)

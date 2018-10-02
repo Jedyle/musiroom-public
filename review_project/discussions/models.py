@@ -8,7 +8,8 @@ from django.contrib.contenttypes.models import ContentType
 from notifications.signals import notify
 from django.urls import reverse
 from vote.models import VoteModel
-
+from django.db.models.signals import post_save
+from actstream import action
 
 # Create your models here.
 
@@ -23,26 +24,39 @@ class Discussion(VoteModel, models.Model):
     content_object = GenericForeignKey('content_type', 'object_id')
 
     def __str__(self):
-        return self.author.username + ' - ' + self.title
+        return self.title
 
     def get_absolute_url(self):
         return reverse('discussions:display_discussion', args=[self.pk])
 
     class Meta:
-        verbose_name = "Discussion"
-        verbose_name_plural = "Discussions"
+        verbose_name = "discussion"
+        verbose_name_plural = "discussions"
         ordering = ["-created"]
         indexes = [
             models.Index(fields=['created'])
             ]
 
+@receiver(post_save, sender=Discussion)
+def create_discussion_handler(sender, instance, created, **kwargs):
+    if created:
+        if instance.content_object: #not null
+            action.send(instance.author, verb='a posté la discussion', action_object=instance, target=instance.content_object)
+        else:
+            action.send(instance.author, verb='a posté la discussion générale', action_object=instance) 
 
 def comment_discussion_notification(user, discussion):
-    res = "<a href='{}'>{}</a>".format(reverse('profile', args=[user.username]),user.username) + " a commenté votre discussion " + "<a href='{}'>{}</a>".format(discussion.get_absolute_url(), discussion.title) + " sur " + "<a href='{}'>{}</a>".format(discussion.content_object.get_absolute_url(), str(discussion.content_object))
+    if discussion.content_object:
+        res = "<a href='{}'>{}</a>".format(reverse('profile', args=[user.username]),user.username) + " a commenté votre discussion " + "<a href='{}'>{}</a>".format(discussion.get_absolute_url(), discussion.title) + " sur " + "<a href='{}'>{}</a>".format(discussion.content_object.get_absolute_url(), str(discussion.content_object))
+    else :
+        res = "<a href='{}'>{}</a>".format(reverse('profile', args=[user.username]),user.username) + " a commenté votre discussion " + "<a href='{}'>{}</a>".format(discussion.get_absolute_url(), discussion.title)
     return res
 
 def comment_discussion_notification_for_users(user, discussion):
-    res = "<a href='{}'>{}</a>".format(reverse('profile', args=[user.username]),user.username) + " a commenté la discussion " + "<a href='{}'>{}</a>".format(discussion.get_absolute_url(), discussion.title) + " sur " + "<a href='{}'>{}</a>".format(discussion.content_object.get_absolute_url(), str(discussion.content_object))
+    if discussion.content_object:
+        res = "<a href='{}'>{}</a>".format(reverse('profile', args=[user.username]),user.username) + " a commenté la discussion " + "<a href='{}'>{}</a>".format(discussion.get_absolute_url(), discussion.title) + " sur " + "<a href='{}'>{}</a>".format(discussion.content_object.get_absolute_url(), str(discussion.content_object))
+    else:
+        res = "<a href='{}'>{}</a>".format(reverse('profile', args=[user.username]),user.username) + " a commenté la discussion " + "<a href='{}'>{}</a>".format(discussion.get_absolute_url(), discussion.title)
     return res
 
 def comment_discussion_reply_notification(comment, parent):

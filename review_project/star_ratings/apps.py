@@ -10,6 +10,8 @@ class StarRatingsAppConfig(AppConfig):
     def ready(self):
         from .models import UserRating
         from .signals import calculate_ratings
+        from actstream import registry
 
         post_save.connect(calculate_ratings, sender=UserRating)
         post_delete.connect(calculate_ratings, sender=UserRating)
+        registry.register(self.get_model('UserRating'))

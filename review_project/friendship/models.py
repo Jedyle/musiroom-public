@@ -18,6 +18,9 @@ from friendship.signals import (
     followee_created, followee_removed, following_created, following_removed, block_created,block_removed
 )
 
+from django.db.models.signals import post_save, post_delete
+from django.dispatch import receiver
+
 AUTH_USER_MODEL = getattr(settings, 'AUTH_USER_MODEL', 'auth.User')
 
 CACHE_TYPES = {
@@ -483,6 +486,15 @@ class Follow(models.Model):
             raise ValidationError("Users cannot follow themselves.")
         super(Follow, self).save(*args, **kwargs)
 
+@receiver(post_save, sender=Follow)
+def follow_handler(sender, instance, created, **kwargs):
+    from actstream.actions import follow
+    follow(instance.follower, instance.followee)
+
+@receiver(post_delete, sender=Follow)
+def delete_follow_handler(sender, instance, using, **kwargs):
+    from actstream.actions import unfollow
+    unfollow(instance.follower, instance.followee)
 
 class BlockManager(models.Manager):
     """ Following manager """

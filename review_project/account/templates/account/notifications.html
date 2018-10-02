@@ -14,24 +14,22 @@ Notifications
 
     <br>
     
-    <div class="infinite-container">
-	<ul class="list-group">
-	    {% for notif in notifications %}
-	    <li class="list-group-item infinite-item bg-light">
-		{% if notif.unread %}
-		<strong><font color="green"> &#9679</font></strong>
-		{% else %}
-		&nbsp
-		{% endif %}
-		&nbsp
-		<small>{{ notif.timestamp }}</small> - 
-		{% autoescape off %}
-		{{ notif.data.to_str }}
-		{% endautoescape %}
-	    </li>
-	    {% endfor %}
-	</ul>
-</div>
+    <ul class="list-group infinite-container">
+	{% for notif in notifications %}
+	<li class="list-group-item infinite-item bg-light">
+	    {% if notif.unread %}
+	    <strong><font color="green"> &#9679</font></strong>
+	    {% else %}
+	    &nbsp
+	    {% endif %}
+	    &nbsp
+	    <small>{{ notif.timestamp }}</small> - 
+	    {% autoescape off %}
+	    {{ notif.data.to_str }}
+	    {% endautoescape %}
+	</li>
+	{% endfor %}
+    </ul>
 
 {% if notifications.has_next %}
 <a class="infinite-more-link" href="?page={{ notifications.next_page_number }}">Plus...</a>
