@@ -103,7 +103,10 @@ def delete_discussion(request, id):
     """
     Modifier redirect quand on aura les listes de discussions
     """
-    return redirect(reverse('discussions:search_discussion_for_object', args=[ContentType.objects.get_for_model(content_object).pk, content_object.pk]))
+    if discussion.content_type is not None:
+        return redirect(reverse('discussions:search_discussion_for_object', args=[ContentType.objects.get_for_model(content_object).pk, content_object.pk]))
+    else :
+        return redirect(reverse('discussions:search_discussion_for_object'))
 
 def search_discussion_for_object(request, content_id=None, object_id=None):
     author = request.GET.get('auteur')

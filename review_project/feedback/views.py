@@ -6,6 +6,7 @@ from feedback.forms import AnonymousFeedbackForm, FeedbackForm
 
 
 def leave_feedback(request, template_name='feedback/feedback_form.html'):
+    print('olé&çu')
     if request.user.is_authenticated:
         form = FeedbackForm(request.POST or None)
     else:
