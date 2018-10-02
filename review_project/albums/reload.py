@@ -14,7 +14,7 @@ def reload_tracks(mbid):
 
 def reload_covers(mbid):
     album = Album.objects.get(mbid = mbid)
-    if album.get_cover() == "":
+    if album.cover == "":
         parse_cover = ParseCover(mbid)
         if parse_cover.load():
             album.cover = parse_cover.get_cover_small()
