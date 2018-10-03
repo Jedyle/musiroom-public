@@ -31,7 +31,7 @@ class ItemList(VoteModel, models.Model):
     class Meta :
         verbose_name='liste'
         verbose_name_plural='listes'
-        ordering = ['-modified']
+        ordering = ['-vote_score']
 
 class ListObject(models.Model):
     item_list = models.ForeignKey(ItemList, on_delete=models.CASCADE)

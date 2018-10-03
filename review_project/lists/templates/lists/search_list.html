@@ -55,9 +55,10 @@ Toutes les listes
 	
 	<label for="tri" class="sr-only">Tri :   </label>
 	<select class="form-control mr-2" id="tri" name="tri">
-	    <option >dernières modifications</option>
+	    <option>les plus appréciées</option>
+	    <option value="recent" {% if tri == 'recent' %}selected{% endif %}>dernières modifications</option>
 	    <option value="votes" {% if tri == "votes" %}selected{% endif %}>les plus notées </option>
-	    <option value="score" {% if tri == "score" %}selected{% endif %}>les plus appréciées</option>
+
 	</select>
 
 	<input id="page" name="page" type="hidden" value="1">

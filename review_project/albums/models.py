@@ -114,6 +114,8 @@ class Album(models.Model):
     users_interested = models.ManyToManyField(User, related_name='interests', blank = True, through = 'UserInterest', through_fields=('album', 'user'))
 
     def __str__(self):
+        if self.album_type == 'UK':
+            return self.title + ' de ' +  ', '.join(str(item) for item in self.artists.all())
         return self.title + ' (' + self.get_album_type_display() + ') de ' +  ', '.join(str(item) for item in self.artists.all())
 
     def get_absolute_url(self):

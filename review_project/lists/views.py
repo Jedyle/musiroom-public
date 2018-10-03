@@ -1,3 +1,4 @@
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.http import JsonResponse, HttpResponseNotFound, QueryDict
@@ -90,6 +91,8 @@ def search_list_in_db(query, sort, page):
 
     if sort == 'score':
         list_list = list_list.order_by('-vote_score')
+    elif sort == 'recent':
+        list_list = list_list.order_by('-modified')
     elif sort == 'votes':
         list_list = list_list.annotate(nb_votes = F('num_vote_up') + F('num_vote_down')).order_by('-nb_votes')
     
@@ -105,7 +108,7 @@ def search_list_in_db(query, sort, page):
 def search_list(request):
     query = request.GET.get('query', '')
     page = request.GET.get('page', 1)
-    tri = request.GET.get('tri', '')
+    tri = request.GET.get('tri', 'score')
     list_list = search_list_in_db(query, tri, page)
     context = {
         'lists' : list_list[0],

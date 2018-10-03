@@ -48,8 +48,9 @@ class RatingManager(models.Manager):
         if existing_rating:
             if not app_settings.STAR_RATINGS_RERATE:
                 raise ValidationError(_('Already rated.'))
-            existing_rating.score = score
-            existing_rating.save()
+            if existing_rating.score != int(score):
+                existing_rating.score = score
+                existing_rating.save()
             return existing_rating.rating
         else:
             rating, created = self.get_or_create(content_type=ct, object_id=instance.pk)
