@@ -175,18 +175,16 @@ class ParseSimilarArtists:
         return (req.status_code == 200)
     
     def get_artists(self):
-        try:
-            artists = self.json['similarartists']['artist']
-        except KeyError:
-            return []
+        artists = self.json['similarartists']['artist']
         res = []
-        for i in range(6):
+        i = 0
+        while( (len(res) < min(6, len(artists))) and (i < len(artists)) ):
             try:
                 artist = artists[i]
                 name = artist['name']
                 mbid = artist['mbid']
                 image = artist['image'][-1]["#text"]
-                if not (image or mbid or artist):
+                if (image != "" and mbid != "" and artist != ""):
                     res.append({
                         'name' : name,
                         'mbid' : mbid,
@@ -194,6 +192,7 @@ class ParseSimilarArtists:
                         })
             except KeyError:
                 pass
+            i+=1
         return res
         
 class ParseAlbum:

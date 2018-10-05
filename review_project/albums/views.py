@@ -320,11 +320,7 @@ def create_artist_from_mbid(mbid, page, search):
 
 def ajax_get_similar_artists(request):
     mbid = request.GET.get('mbid')
-    similar_artists = None
-    # similar_artists = cache.get('similar_artists_' + mbid)
-    """
-    similar_artists is an array of json artists
-    """
+    similar_artists = cache.get('similar_artists_' + mbid)
     if similar_artists is None:
         parse = ParseSimilarArtists(mbid)
         if parse.load():
