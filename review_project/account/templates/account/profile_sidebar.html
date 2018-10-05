@@ -21,6 +21,11 @@
 	    {{ profile.get_age }} ans
 	</li>
 	{% endif %}
+	<li class="list-group-item text-center">
+	    {% with profile.user.date_joined as joined %}
+	    Inscrit le {{ joined.date }} ({{joined|timesince}})
+	    {% endwith %}
+	</li>
     </ul>
     {% if user.is_authenticated %}
     <div class="card-body">
