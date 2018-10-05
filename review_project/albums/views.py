@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.db import transaction
 from django.db.models import Count, Q, Avg
 from django.urls import reverse
-from .scraper import ParseAlbum, ParseArtist, ParseArtistPhoto, ParseCover, ParseSearchArtists, ParseSearchAlbums, get_page_list
+from .scraper import ParseAlbum, ParseArtist, ParseArtistPhoto, ParseCover, ParseSearchArtists, ParseSearchAlbums, ParseSimilarArtists, get_page_list
 from .models import Album, Artist, Genre, AlbumGenre, UserInterest
 from ratings.models import Review
 from ratings.utils import rating_for_followees, rating_for_followees_list
@@ -138,7 +138,6 @@ def album(request, mbid):
             context['followees_avg'] = followees_ratings['avg']
             context['followees_ratings'] = followees_ratings['ratings']
             context['is_interested'] = (request.user in album.users_interested.all())
-            print(context['is_interested'])
         return render(request, 'albums/album.html', context)
     except Album.DoesNotExist:
         parser = ParseAlbum(mbid)
@@ -312,6 +311,29 @@ def album_genres(request, mbid):
     context['album_genres_user'] = album_genres_user
     return render(request, 'albums/album_genres.html', context)
 
+def create_artist_from_mbid(mbid, page, search):
+    parser = ParseArtist(mbid, page=page, name=search)
+    if parser.load():
+        artist = Artist.objects.create(mbid = mbid, name = parser.get_name())
+        return artist
+    return None
+
+def ajax_get_similar_artists(request):
+    mbid = request.GET.get('mbid')
+    similar_artists = None
+    similar_artists = cache.get('similar_artists_' + mbid)
+    """
+    similar_artists is an array of json artists
+    """
+    if similar_artists is None:
+        parse = ParseSimilarArtists(mbid)
+        if parse.load():
+            similar = parse.get_artists()
+            similar_artists = [ dict(art, **{ 'url' : Artist(mbid = art['mbid']).get_absolute_url() }) for art in similar ]
+            cache.set('similar_artists_' + mbid, similar_artists, 5*60)
+    return JsonResponse({'artists' : similar_artists})
+            
+
 def artist(request, mbid):
     try:
         page = request.GET.get('page')
@@ -338,12 +360,11 @@ def artist(request, mbid):
         context['artist_name'] = artist.name
         context['genres'] = genres
     except Artist.DoesNotExist:
-        parser = ParseArtist(mbid, page=page, name=search)
-        if not parser.load():
-            return HttpResponseNotFound()
-        else:
-            artist = Artist.objects.create(mbid = mbid, name = parser.get_name())
+        artist = create_artist_from_mbid(mbid, page, search)
+        if artist:
             context['artist'] = artist
+        else :
+            return HttpResponseNotFound()
     return render(request, 'albums/artist.html', context)
 
 def ajax_artist(request, mbid):
@@ -380,7 +401,7 @@ def ajax_artist(request, mbid):
         'user' : request.user,
         }
     html = render_to_string('albums/ajax_artist.html', context)
-    return JsonResponse({'html' : html, 'albums' : discog})
+    return JsonResponse({'html' : html, 'albums' : discog, 'mbid' : mbid})
 
 def ajax_artist_page_ratings(request):
     albums = request.GET.get('albums')
@@ -649,8 +670,6 @@ def album_data(request):
             avg = '-'
         else:
             avg = floatformat(avg, 1)
-
-        print(album.users_interested.filter(pk = request.user.pk).exists())
 
         data = {
             'title' : album.title,

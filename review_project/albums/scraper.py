@@ -163,6 +163,28 @@ class ParseArtistPhoto:
         except:
             return ""
 
+class ParseSimilarArtists:
+    def __init__(self, artist_id, protocol = PROTOCOL, url = LASTFM_API_URL):
+        self.artist_id = artist_id
+        self.url = protocol + url + "?method=artist.getsimilar" + "&api_key=" + LASTFM_API_KEY + "&format=json" + "&mbid=" + self.artist_id + "&limit=6"
+
+    def load(self):
+        req = requests.get(self.url)
+        if req.status_code == 200:
+            self.json = req.json()
+        return (req.status_code == 200)
+    
+    def get_artists(self):
+        artists = self.json['similarartists']['artist']
+        res = []
+        for artist in artists:
+            res.append({
+                'name' : artist['name'],
+                'mbid' : artist['mbid'],
+                'image' : artist['image'][-1]["#text"],
+                })
+        return res
+
 class ParseAlbum:
     def __init__(self, album_id, protocol = PROTOCOL, url =  MUSICBRAINZ_URL, album_folder = ALBUM):
         self.album_id = album_id
@@ -339,7 +361,7 @@ class ParseCover:
             return ""
         except:
             return ""
-    
+
         
 class ParseArtist:
     def __init__(self, artist_id, page = 1, name = "", url = PROTOCOL + MUSICBRAINZ_URL + ARTIST):
@@ -415,7 +437,6 @@ class ParseArtist:
                         pass
                 discog.append((release_type, album_list))
         return discog
-            
 
 
 def test_album(album_id):

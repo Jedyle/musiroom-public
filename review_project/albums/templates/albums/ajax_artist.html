@@ -1,12 +1,41 @@
 <h1 class="text-center" id="artiste">{{ artist_name }}</h1>
 
+<br>
+
+<div class="row border bg-light" id="similar" v-cloak>
+    <h3 class="col-12 text-center">Artistes similaires</h3>
+
+    <div class="col-12 spinner" v-if="loading" v-cloak></div>
+	
+    <div class="col-4 col-lg-2 d-none regular-gutter d-sm-block" v-for="artist in similar_artists" v-cloak>
+	<a :alt="artist.name" target="_blank" :href="artist.url">
+	    <figure class="figure m-1">
+		<img :title="artist.name" class="figure-img responsive" :src="artist.image" :alt="artist.name">
+		<figcaption class="figure-caption">[[ artist.name ]]</figcaption>
+	    </figure>
+	</a>
+    </div>
+
+    <div class="col-12 d-block d-sm-none">
+	<p class="text-center">
+	    <template v-for="(artist, index) in similar_artists">
+		<a  :alt="artist.name" target="_blank" :href="artist.url"> [[ artist.name ]]</a> <span v-if="index != similar_artists.length-1">,</span>
+	    </template>
+	</p>
+    </div>
+    
+
+</div>
+
+<br>
+
 <form class="form-inline" method="get" action="{{path}}">
 
-    <input type="text" class="form-control" name="nom" placeholder="Filtrer par nom exact..." value="{{search}}">
+    <input type="text" class="form-control mt-1" name="nom" placeholder="Filtrer par nom exact..." value="{{search}}">
 
     <input type="hidden" name="page" value="1">
 
-    <button type="submit" class="btn color-sanguine">Filtrer</button>
+    <button type="submit" class="btn color-sanguine mt-1 ml-1">Filtrer</button>
     
 </form>
 

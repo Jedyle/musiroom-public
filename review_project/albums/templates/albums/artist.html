@@ -81,6 +81,10 @@ Artiste
 
 	 var albums = extractMBID(response.data.albums);
 	 loadRatings(albums);
+
+	 loadSimilar(response.data.mbid);
+
+	 
 	 
      }
      ).catch(error => {
@@ -198,11 +202,35 @@ Artiste
      ).catch(error => {console.log(error)})
      
  }
+
+
+ function loadSimilar(mbid){
+     new Vue({
+	 el : '#similar',
+	 delimiters : ['[[', ']]'],
+	 data : {
+	     similar_artists : [],
+	     loading : true,
+	 },
+	 mounted(){
+	     axios.get(
+		 "{% url 'albums:get_similar_artists' %}",
+		 {
+		     params : {
+			 mbid : mbid,
+		     }
+		 }).then(response => {
+		     this.similar_artists = response.data.artists;
+		     this.loading = false;
+		 }).catch(error => {
+		     console.log(error)
+		 });
+	 }
+     });
+ }
+ 
  
 </script>
 
-<script>
-
-</script>
 
 {% endblock %}

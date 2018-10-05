@@ -47,7 +47,6 @@ class DiscussionModelTest(TestCase):
     def test_discussion_creation(self):
         disc = self.create_discussion(author = self.user, content_object = self.instance)
         self.assertTrue(isinstance(disc, Discussion))
-        self.assertEqual(disc.__str__(), disc.author.username + ' - ' + disc.title)
         self.assertEqual(disc.content_object, self.instance)
         self.assertEqual(disc.get_absolute_url(), reverse('discussions:display_discussion', args=[disc.pk]))
 
