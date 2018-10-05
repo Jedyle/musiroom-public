@@ -2,7 +2,8 @@ import re
 
 from django import template
 from django.urls import reverse, NoReverseMatch
-from datetime import date
+from datetime import date, datetime
+from django.utils import timezone
 
 register = template.Library()
 
@@ -28,5 +29,5 @@ def parse_links(value):
 @register.filter
 def smart_date(value):
     if value.date() < date.today():
-        return value
-    return value.time()
+        return timezone.localtime(value)
+    return timezone.localtime(value).time()
