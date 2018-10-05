@@ -43,13 +43,21 @@ var discussions = {
     
 	<ul class='list-group'>
 	<li class='list-group-item' v-for='disc in filteredDisc' :key='disc.disc_id'>
-	<a :href="disc.link"> [[ disc.title ]]</a> (sur <a :href='disc.content_object_url'>[[ disc.content_object ]]</a>)
-	</li>
+	<a :href="disc.link"> [[ disc.title ]]</a> (<template v-if='disc.content_object'>sur </template><a :href='disc.content_object_url'>[[ displayContentObject(disc.content_object) ]]</a>)
+    </li>
 	</ul>
-
+	
     </div>
-
+	
     `,
+    methods : {
+	displayContentObject(content){
+	    if (content){
+		return content
+	    }
+	    return "discussion générale"
+	}
+    },
     computed: {
 	filteredDisc : function() {
 	    return this.discussions.filter(disc => {

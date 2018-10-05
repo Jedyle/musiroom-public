@@ -14,7 +14,7 @@ Discussion : {{ discussion.title }}
 <div class="jumbotron jumbotron-fluid">
 
     <div class="container">
-	    <h3>
+	    <h3 class="text-center">
 		<a href="{% url 'discussions:search_discussion_for_object' %}">Discussions</a>
 		>
 		{% if discussion.content_object %}
@@ -32,9 +32,9 @@ Discussion : {{ discussion.title }}
 
 {% block content %}
 
+{% if discussion.content_object.get_preview %}
 <div class="col-12 col-sm-4 col-md-3 col-lg-2">
 
-    {% if discussion.content_object.get_preview %}
     <div class="card">
 	<img class="card-img-top" id="ID{{album.mbid}}" src="{% static 'images/loading.gif' %}" data-src="{{ discussion.content_object.get_preview }}" alt="{{ discussion.content_object }}">
 	
@@ -43,11 +43,11 @@ Discussion : {{ discussion.title }}
 	    <p>{{ discussion.content_object|content_type }}</p>
 	</div>
     </div>
-    {% endif %}
     
 </div>
+{% endif %}
 
-<div class="col-12 col-sm-8 col-md-9 col-lg-7 bg-light mt-3 mt-md-0 pl-0">
+<div class="col-12 {% if discussion.content_object.get_preview %}col-sm-8 col-md-9 col-lg-7{% else %}col-md-10 offset-md-1 col-lg-8 offset-lg-2{% endif %} bg-light mt-3 mt-md-0 pl-0">
 
     <div class="d-flex">
 	<div style="min-width:45px" class="mr-1" id="app">

@@ -210,12 +210,18 @@ def ajax_get_discussions_for_user(request):
         discussions = Discussion.objects.filter(author__username = username)
         discs = []
         for disc_elt in discussions:
+            if disc_elt.content_object:
+                content_object = str(disc_elt.content_object)
+                content_object_url = disc_elt.content_object.get_absolute_url()
+            else:
+                content_object = None
+                content_object_url = reverse('discussions:search_discussion_for_object', args=[0,0])
             discs.append({
                 'title' : disc_elt.title,
                 'link' : disc_elt.get_absolute_url(),
                 'disc_id' : disc_elt.id,
-                'content_object' : str(disc_elt.content_object),
-                'content_object_url' : disc_elt.content_object.get_absolute_url(),
+                'content_object' : content_object,
+                'content_object_url' : content_object_url,
                 })
         return JsonResponse({'discussions' : discs})
     return HttpResponseNotFound()  
