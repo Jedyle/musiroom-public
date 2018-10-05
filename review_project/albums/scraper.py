@@ -175,15 +175,18 @@ class ParseSimilarArtists:
         return (req.status_code == 200)
     
     def get_artists(self):
-        artists = self.json['similarartists']['artist']
-        res = []
-        for artist in artists:
-            res.append({
-                'name' : artist['name'],
-                'mbid' : artist['mbid'],
-                'image' : artist['image'][-1]["#text"],
-                })
-        return res
+        try:
+            artists = self.json['similarartists']['artist']
+            res = []
+            for artist in artists:
+                res.append({
+                    'name' : artist['name'],
+                    'mbid' : artist['mbid'],
+                    'image' : artist['image'][-1]["#text"],
+                    })
+                return res
+        except KeyError:
+            return []
 
 class ParseAlbum:
     def __init__(self, album_id, protocol = PROTOCOL, url =  MUSICBRAINZ_URL, album_folder = ALBUM):
