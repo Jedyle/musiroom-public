@@ -166,7 +166,7 @@ class ParseArtistPhoto:
 class ParseSimilarArtists:
     def __init__(self, artist_id, protocol = PROTOCOL, url = LASTFM_API_URL):
         self.artist_id = artist_id
-        self.url = protocol + url + "?method=artist.getsimilar" + "&api_key=" + LASTFM_API_KEY + "&format=json" + "&mbid=" + self.artist_id + "&limit=6"
+        self.url = protocol + url + "?method=artist.getsimilar" + "&api_key=" + LASTFM_API_KEY + "&format=json" + "&mbid=" + self.artist_id
 
     def load(self):
         req = requests.get(self.url)
@@ -177,17 +177,25 @@ class ParseSimilarArtists:
     def get_artists(self):
         try:
             artists = self.json['similarartists']['artist']
-            res = []
-            for artist in artists:
-                res.append({
-                    'name' : artist['name'],
-                    'mbid' : artist['mbid'],
-                    'image' : artist['image'][-1]["#text"],
-                    })
-                return res
         except KeyError:
             return []
-
+        res = []
+        for i in range(6):
+            try:
+                artist = artists[i]
+                name = artist['name']
+                mbid = artist['mbid']
+                image = artist['image'][-1]["#text"]
+                if not (image or mbid or artist):
+                    res.append({
+                        'name' : name,
+                        'mbid' : mbid,
+                        'image' : image,
+                        })
+            except KeyError:
+                pass
+        return res
+        
 class ParseAlbum:
     def __init__(self, album_id, protocol = PROTOCOL, url =  MUSICBRAINZ_URL, album_folder = ALBUM):
         self.album_id = album_id
