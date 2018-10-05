@@ -2,8 +2,8 @@
 
 <br>
 
-<div class="row border bg-light" id="similar" v-cloak>
-    <h3 class="col-12 text-center">Artistes similaires</h3>
+<div class="row border bg-light" id="similar" v-cloak v-show="similar_artists.length > 0">
+    <h3 class="col-12 text-center" >Artistes similaires</h3>
 
     <div class="col-12 spinner" v-if="loading" v-cloak></div>
 	
