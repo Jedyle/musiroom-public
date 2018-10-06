@@ -4,7 +4,11 @@
 {% load ratings %}
 
 {% block title %}
-{{ album.title }}
+Listes avec {{ album.title }}
+{% endblock %}
+
+{% block meta_description %}
+Listes de membres contenant {{ album.title }}.
 {% endblock %}
 
 {% block extrahead %}

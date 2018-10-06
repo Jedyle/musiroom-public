@@ -6,6 +6,10 @@ Résultats d'albums pour la requete : {{ query }}
 
 {% endblock %}
 
+{% block meta_description %}
+Avec {% for elt in albums %}{{elt.title}}, {% endfor %}
+{% endblock %}
+
 {% block search_value %}
 {{ query }}
 {% endblock %}

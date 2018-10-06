@@ -10,6 +10,10 @@
 {{review.title}} - Critique de {{ review.rating.user }} sur {{ album.title }}
 {% endblock %}
 
+{% block meta_description %}
+{{ review.content|striptags|truncatechars:200 }}
+{% endblock %}
+
 {% block extrahead %}
 <link rel="stylesheet" href="{% static 'albums/css/style.css' %}">
 <link rel="stylesheet" href="{% static 'css/css-loader.css' %}">

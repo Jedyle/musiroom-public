@@ -1,12 +1,15 @@
-from pinax.badges.base import Badge, BadgeAwarded, BadgeDetail
-from pinax.badges.registry import badges
-from star_ratings.models import UserRating
-from ratings.models import Review
-from django.contrib.auth.models import User
 from datetime import datetime, timedelta, time
 from django.contrib.staticfiles.templatetags.staticfiles import static
+from django.contrib.auth.models import User
+
+from pinax.badges.base import Badge, BadgeAwarded, BadgeDetail
+from pinax.badges.registry import badges
+
+from star_ratings.models import UserRating
+from ratings.models import Review
 from albums.models import AlbumGenre
 from discussions.models import Discussion
+
 
 class MusicophileBadge(Badge):
     slug = "musicophile"
@@ -252,3 +255,10 @@ def regular_badge_update():
 
     for user in users:
         badges.possibly_award_badge('daily_award', user=user)
+
+badges.register(MusicophileBadge)
+badges.register(CritiqueBadge)
+badges.register(ContributeurBadge)
+badges.register(PionnierBadge)
+badges.register(PipeletteBadge)
+badges.register(Top10Badge)
