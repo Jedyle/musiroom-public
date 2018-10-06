@@ -13,14 +13,14 @@ from .constants import (MODERATION_STATUS_REJECTED,
                         MODERATION_STATUS_PENDING)
 from .diff import get_changes_between_models
 try:
-    from .filterspecs import RegisteredContentTypeListFilter
+    from .filterspecs import RegisteredContentTypeListFilter, StatusFilter
 except ImportError:
     # Django < 1.4
     available_filters = ('content_type', 'status')
 else:
     # Django >= 1.4
     available_filters = (
-        ('content_type', RegisteredContentTypeListFilter), 'status')
+        ('content_type', RegisteredContentTypeListFilter), StatusFilter)
 from .forms import BaseModeratedObjectForm
 from .helpers import automoderate
 from .models import ModeratedObject
@@ -125,7 +125,6 @@ class ModerationAdmin(admin.ModelAdmin):
                     fields = '__all__'
 
         return ModeratedObjectForm
-
 
 class ModeratedObjectAdmin(admin.ModelAdmin):
     date_hierarchy = 'created'
