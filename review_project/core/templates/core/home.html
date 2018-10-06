@@ -24,7 +24,9 @@
 
 {% block content %}
 
-<div class="col-sm-12 col-md-10 offset-md-1">    
+<div class="col-sm-12 col-md-10 offset-md-1">
+
+    {{ perms.django_comments.can_moderate }}
     
     <h1 class="text-center">Nouveautés</h1>
 

@@ -27,7 +27,7 @@
           <a class="mutedlink" href="{% url 'comments-flag' item.comment.pk %}">
             <span class="fas fa-flag" title="Signaler"></span></a>          
           {% endif %}
-          {% if perms.comments.can_moderate %}
+          {% if perms.django_comments.can_moderate %}
           <a class="mutedlink" href="{% url 'comments-delete' item.comment.pk %}"><span class="far fa-trash-alt" title="{% trans 'remove comment' %}"></span></a>
           {% if item.flagged_count %}
           <span class="badge badge-warning" title="{% blocktrans count counter=item.flagged_count %}A user has flagged this comment as inappropriate.{% plural %}{{ counter }} users have flagged this comment as inappropriate.{% endblocktrans %}">{{ item.flagged_count }}</span>
