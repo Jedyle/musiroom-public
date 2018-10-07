@@ -9,6 +9,8 @@ from django.urls import reverse
 
 class GenreAdmin(ModerationAdmin):
     verbose_name = "Genre"
+    search_fields = ['name']
+    list_filter = ('parent')
 
 admin.site.register(Genre, GenreAdmin)
 
