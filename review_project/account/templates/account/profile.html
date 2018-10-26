@@ -24,27 +24,6 @@ Profil de {{profile.user.username}}
 <div class="row">
     <div class="col-sm-12 col-md-12 col-lg-10">
 
-	<!-- <ul class="nav nav-pills">
-	     <li class="nav-item">
-	     <a class="nav-link" :class="{ 'active' : (currentView === 'profile') }" href="#" @click.prevent="currentView = 'profile'">Profil</a>
-	     </li>
-	     <li class="nav-item">
-	     <a class="nav-link" :class="{ 'active' : (currentView === 'ratings') }" href="#" @click.prevent="currentView = 'ratings'">Notes</a>
-	     </li>
-	     <li class="nav-item">
-	     <a class="nav-link" :class="{ 'active' : (currentView === 'reviews') }" href="#" @click.prevent="currentView = 'reviews'">Critiques</a>
-	     </li>
-	     <li class="nav-item">
-	     <a class="nav-link" :class="{ 'active' : (currentView === 'lists') }" href="#" @click.prevent="currentView = 'lists'">Listes</a>
-	     </li>
-	     <li class="nav-item">
-	     <a class="nav-link" :class="{ 'active' : (currentView === 'discussions') }" href="#" @click.prevent="currentView = 'discussions'">Discussions</a>
-	     </li>
-	     <li class="nav-item">
-	     <a class="nav-link" :class="{ 'active' : (currentView === 'contacts') }" href="#" @click.prevent="currentView = 'contacts'">Contacts</a>
-	     </li>
-	     </ul>
-	-->
 	<ul class="nav nav-pills" v-cloak>
 	    <li class="nav-item">
 		<a class="nav-link" :class="{ 'active' : (currentView === 'profile') }" href="#" @click.prevent="currentView = 'profile'">Profil</a>
@@ -68,7 +47,7 @@ Profil de {{profile.user.username}}
 	
 	<hr>
 
-	<h3 class="text-center" v-cloak>[[displayCurrentView]]</h3>
+	<h3 class="text-center" v-cloak>[[ displayCurrentView ]]</h3>
 
 	<hr>
 	
@@ -196,7 +175,7 @@ Profil de {{profile.user.username}}
 	 'togglefollow' : toggleFollowButton
      },
      data : {
-	 content : 'Coucou',
+	 content : '',
      }
 
  })

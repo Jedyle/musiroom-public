@@ -1,16 +1,11 @@
-from django.template.loader import render_to_string
-from django.shortcuts import render, get_object_or_404, render_to_response, redirect
+from django.shortcuts import render, get_object_or_404, redirect
 
 from .models import Account
-from django.contrib.auth.models import User
-from django.http import HttpResponse, HttpResponseRedirect
-from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
+from django.http import HttpResponse
+from django.contrib.auth.forms import PasswordChangeForm
 from .forms import RegistrationForm, EditUserForm, EditAccountForm, PasswordConfirmForm
 from django.contrib.auth.models import User
 from django.db import transaction
-from django.contrib.sites.shortcuts import get_current_site
-from django.utils.encoding import force_bytes, force_text
-from django.contrib.auth import login, authenticate
 from django.contrib.sites.shortcuts import get_current_site
 from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
@@ -21,14 +16,17 @@ from django.contrib.auth.decorators import login_required
 from friendship.models import Follow
 from star_ratings.models import UserRating
 from ratings.models import Review
-from ratings.charts import UserRatingsBarChart
 from lists.models import ItemList, ListObject
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from pinax.badges.registry import badges
 
-# Create your views here.
 
-def send_email(request, user):
+def send_activation_email(request, user):
+    """
+    Send an activation email to the newly registrated user
+    :param request: the request object
+    :param user: a (not active) user
+    :return: nothing, sends an activation email to the user
+    """
     current_site = get_current_site(request)
     mail_subject = 'Activez votre compte.'
     message = render_to_string('account/acc_active_email.html', {
@@ -41,17 +39,30 @@ def send_email(request, user):
     email = EmailMessage(mail_subject, message, to=[to_email])
     email.send()
 
-def resend_email(request,username):
+
+def resend_email(request, username):
+    """
+    Resend an activation email if the first one has not been received
+    :param request: request object
+    :param username: the user's username
+    :return: renders a template depending on the user's status (active or inactive)
+    """
     user = User.objects.get(username = username)
     if request.user.is_authenticated and request.user != user:
         return redirect('/')
     if user.is_active:
         return render(request, 'account/already_confirmed.html', {})
-    send_email(request, user)
+    send_activation_email(request, user)
     return render(request, 'account/confirm_email.html', {'email': user.email, 'user' : user})
+
 
 @transaction.atomic
 def register(request):
+    """
+    Registers a user (saves it in db, create its associated profile, top albums and sends a confirmation email
+    :param request: request
+    :return: renders a template
+    """
     if request.user.is_authenticated :
         return redirect('/')
     if request.method == 'POST':
@@ -61,19 +72,27 @@ def register(request):
             addr = form.cleaned_data.get('email')
             password = form.cleaned_data.get('password')
             user = User.objects.create_user(username=username, password=password, email=addr, is_active=False)
-            profil = Account(user = user)
+            profile = Account(user = user)
             top_albums = ItemList(user = user, title = "Top Albums de " + user.username, ordered = True)
             top_albums.save()
-            profil.top_albums = top_albums
-            profil.save()
-            send_email(request, user)
+            profile.top_albums = top_albums
+            profile.save()
+            send_activation_email(request, user)
             return render(request, 'account/confirm_email.html', {'email': addr, 'user' : user})
         else:
             return render(request, 'account/registration_form.html', {'form': form, 'error' : True})
     else:
         return render(request, 'account/registration_form.html', {'form': RegistrationForm()})
 
+
 def activate(request, uidb64, token):
+    """
+    Sets the user status as active after he clicked on a confirmation link, and if the token is correct
+    :param request:
+    :param uidb64:
+    :param token:
+    :return:
+    """
     try:
         uid = force_text(urlsafe_base64_decode(uidb64))
         user = User.objects.get(pk=uid)
@@ -89,16 +108,24 @@ def activate(request, uidb64, token):
         else:
             return redirect('registration_complete')
 
+
 def registration_complete(request):
     return render(request, 'account/registration_complete.html')
+
 
 @login_required
 def loggedin(request):
     return redirect('/')
 
+
 def profile(request, username):
+    """
+
+    :param request:
+    :param username:
+    :return:
+    """
     user = get_object_or_404(User, username = username)
-    
     profile = user.account
     if request.user.is_authenticated:
         is_followed = Follow.objects.follows(user, request.user)
@@ -117,6 +144,7 @@ def profile(request, username):
         'nb_ratings' : UserRating.objects.filter(user = user).count(),
         }
     return render(request, 'account/profile.html', context)
+
 
 @login_required
 @transaction.atomic
@@ -141,6 +169,7 @@ def edit_profile(request):
         context['success'] = None
     return render(request, 'account/edit_profile_form.html', context)
 
+
 @login_required
 @transaction.atomic
 def edit_settings(request):
@@ -158,6 +187,7 @@ def edit_settings(request):
         context['password_form'] = PasswordChangeForm(user = request.user)
         context['password_success'] = None
         return render(request, 'account/edit_settings_form.html', context)    
+
 
 @login_required
 @transaction.atomic
@@ -178,6 +208,7 @@ def delete_account(request):
     else:
         return render(request, 'account/delete.html', {'form' : PasswordConfirmForm()})
 
+
 @login_required
 def notifications(request):
     page = request.GET.get('page')
@@ -195,6 +226,7 @@ def notifications(request):
     rendered = render_to_string('account/notifications.html', context, request=request)
     p.object_list.mark_all_as_read()
     return HttpResponse(rendered)
+
 
 def search_account(request):
     m_type = request.GET.get('type')
