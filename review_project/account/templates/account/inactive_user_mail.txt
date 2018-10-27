@@ -1,0 +1,8 @@
+Vous nous manquez, {{ user }} !
+
+Votre compte sur La Musithèque est inactif depuis plus de 30 jours. Que diriez vous de retourner y faire un tour ? De nouvelles fonctionnalités apparaissent chaque semaine, et la communauté s'aggrandit de jour en jour. Peut être encore plus grâce à vous ?
+
+Vous pouvez dès maintenant discuter avec les autres membres, remplir votre profil, noter et critiquer des albums et plein d'autres choses encore !
+
+En espérant vous revoir très vite !
+L'équipe https://lamusitheque.com .
