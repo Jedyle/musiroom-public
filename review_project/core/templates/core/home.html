@@ -61,9 +61,6 @@
 	<div class="col-12">
 	    <h1 class="text-center">Activité récente</h1>
 	</div>
-
-	<hr>
-	<hr>
 	
 	<div class="col-12 {% if user.is_authenticated %}col-lg-6{% else %}col-lg-8 offset-lg-2{% endif %}">
 	    
@@ -75,7 +72,7 @@
 	    <ul class="list-group infinite-container">
 		
 		{% for action in all_feed %}
-		<li class="list-group-item p-2">
+		<li class="list-group-item">
 		    {% display_action action %}
 		</li>
 		{% endfor %}
@@ -100,7 +97,7 @@
 	    <ul class="list-group infinite-container">
 
 		{% for action in user_feed %}
-		<li class="list-group-item p-2">
+		<li class="list-group-item">
 		    {% display_action action %}
 		</li>
 		{% endfor %}
