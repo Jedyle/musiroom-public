@@ -12,7 +12,7 @@ from django.dispatch import receiver
 from django.urls import reverse
 from jsonfield.fields import JSONField
 from discussions.register import discussions_registry
-
+from django.utils.functional import cached_property
 
 # Create your models here.
 
@@ -114,6 +114,15 @@ class Album(models.Model):
     users_interested = models.ManyToManyField(User, related_name='interests', blank = True, through = 'UserInterest', through_fields=('album', 'user'))
 
     def __str__(self):
+        return self.title
+
+    def verbose_name(self):
+        if self.album_type == 'UK':
+            return self.title
+        return "{} ({})".format(self.title, self.get_album_type_display())
+
+    @cached_property
+    def very_verbose_name(self):
         if self.album_type == 'UK':
             return self.title + ' de ' +  ', '.join(str(item) for item in self.artists.all())
         return self.title + ' (' + self.get_album_type_display() + ') de ' +  ', '.join(str(item) for item in self.artists.all())

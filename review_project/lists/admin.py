@@ -11,5 +11,5 @@ class ListObjectInline(admin.TabularInline):
 
 @admin.register(ItemList)
 class ItemListAdmin(admin.ModelAdmin):
-    inlines = [ListObjectInline]
+    inlines = []
     extra = 1

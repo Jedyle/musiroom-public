@@ -30,7 +30,7 @@
 
     <br>
 
-    {% cache 5 new_albums user.is_authenticated %}
+    {% cache 500 new_albums user.is_authenticated %}
     <div class="row">
 	{% for album in albums %}
 
@@ -54,7 +54,7 @@
     {% endcache %}
 </div>
 
-<div class="col-sm-12 col-md-10 offset-md-1">
+<div class="col-sm-12 col-md-10 offset-md-1" id="feed">
 
     <div class="row border bg-light">
 
@@ -410,6 +410,14 @@
 	     }
 	 }
      }
+ })
+
+ var vm_feed = new Vue({
+     delimiters : ['[[', ']]'],
+     el : '#feed',
+     components : {
+	 album_popover,
+     },     
  })
  
 </script>

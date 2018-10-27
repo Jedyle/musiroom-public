@@ -12,6 +12,9 @@ def content_type(obj):
         return None
     return ContentType.objects.get_for_model(obj)
 
+@register.filter
+def is_instance_of(obj, string):
+    return str(ContentType.objects.get_for_model(obj)) == string
 
 @register.filter
 def content_type_pk(obj):

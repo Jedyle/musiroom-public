@@ -12,7 +12,7 @@ from django.contrib.contenttypes.models import ContentType
 from notifications.signals import notify
 from django.urls import reverse
 from actstream import action
-from review_project.utils import make_clickable_link as _link
+from review_project.utils import make_clickable_link as _link, make_popover_link as _pop
 
 
 # Create your models here.
@@ -26,7 +26,7 @@ class Review(VoteModel, models.Model):
     
     def __str__(self):
         if self.title :
-            return self.title + ' par ' + str(self.rating.user) +  ' sur l\'album ' + str(self.rating.rating.albums.get())
+            return self.title
         return "Critique de " + str(self.rating.user) + ' sur l\'album ' + str(self.rating.rating.albums.get())
 
     def get_absolute_url(self):
@@ -69,13 +69,21 @@ def notify_comment_review(comment, request, **kwargs):
             users_in_thread = User.objects.filter(comment_comments__content_type = ContentType.objects.get_for_model(Review), comment_comments__object_pk = pk).exclude(pk = comment.user.pk).exclude(pk = user.pk).distinct()
             notify.send(sender = comment.user, recipient = users_in_thread, verb = "a commenté la critique", target = review, to_str = comment_review_notification_for_users(comment.user, review))
 
+def review_to_str(instance):
+    res = _link(instance.rating.user) + " a écrit " + _link(instance, 'une critique') + ' sur l\'album ' + _pop(instance.rating.rating.content_object)
+    return res
+
 @receiver(post_save, sender=Review)
 def save_review_handler(sender, instance, created, **kwargs):
     if created:
-        action.send(instance.rating.user, verb='a écrit une critique : ', action_object=instance)
+        action.send(instance.rating.user,
+                    verb='a écrit une critique',
+                    action_object=instance,
+                    to_str = review_to_str(instance))
 
 def rating_to_str(instance):
-    return _link(instance.user) + ' a attribué la note de ' + str(instance.score) + ' à ' + _link(instance.rating.content_object)
+    album = instance.rating.content_object
+    return _link(instance.user) + ' a attribué la note de ' + str(instance.score) + ' à ' + _pop(album)
 
 @receiver(post_save, sender=UserRating)
 def save_rating_handler(sender, instance, created, **kwargs):

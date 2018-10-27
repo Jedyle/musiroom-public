@@ -129,7 +129,18 @@ Toutes les discussions
 
 		{% if instance == None %}
 		{% if disc.content_object %}
-		<p class="float-right pr-2 mb-0"><small>sur <a href="{% url 'discussions:search_discussion_for_object' disc.content_object|content_type_pk disc.object_id %}">{{ disc.content_object }}</a> <span class="d-none d-md-inline">- {{disc.content_object|content_type}}</span></small></p>
+		{% with content_object=disc.content_object %}
+		<p class="float-right pr-2 mb-0"><small>sur
+		    {% if content_object|is_instance_of:'Album' %}
+		    <album_popover class="d-inline" mbid="{{content_object.mbid}}">
+			<a slot="preview" href="{% url 'discussions:search_discussion_for_object' content_object|content_type_pk disc.object_id %}">{{ content_object }}</a>
+		    </album_popover>
+		    <span class="d-none d-md-inline">- {{content_object|content_type}}</span>
+		    {% else %}		    
+		    <a href="{% url 'discussions:search_discussion_for_object' disc.content_object|content_type_pk disc.object_id %}">{{ content_object }}</a> <span class="d-none d-md-inline">- {{content_object|content_type}}</span>
+		    {% endif %}
+		</small></p>
+		{% endwith %}
 		{% else %}
 		<p class="float-right pr-2 mb-0"><small><a href="{% url 'discussions:search_discussion_for_object' 0 0 %}">Discussion générale</a> <span class="d-none d-md-inline"></span></small></p>
 		{% endif %}
@@ -177,14 +188,36 @@ Toutes les discussions
 
 {% if user.is_authenticated %}
 
+<script> 
+ var album_data_url = "{% url 'albums:album_data' %}"
+</script>
+
+<!-- Editor itself -->
+<script src="{% static 'trumbowyg/trumbowyg/dist/trumbowyg.min.js' %}"></script>
+
+<script src="https://unpkg.com/vue-trumbowyg@3"></script>
+<script src="{% static 'trumbowyg/trumbowyg/dist/langs/fr.min.js' %}"></script>
+
 <script src="{% static 'js/utilities.js' %}"></script>
+<script src="{% static 'ratings/js/reviewTab.js' %}"></script>
+<script src="{% static 'lists/js/listsTab.js' %}"></script>
+<script src="{% static 'js/modal.js' %}"></script>
+<script src="{% static 'ratings/js/reviewModal.js' %}"></script>
+
+<script src="{% static 'star-ratings/js/star-rating-popover.min.js' %}"></script>
+<script src="{% static 'albums/js/toggleUserInterest.js' %}"></script>
+<script src="{% static 'js/popover.js' %}"></script>
+<script src="{% static 'albums/js/album_popover.js' %}"></script>
 
 <script src="{% static 'discussions/js/discussionVote.js' %}"></script>
 <script>
  let vm = new Vue({
      el: '#app',
      delimiters : ['[[', ']]'],
-     components : {discussion_vote},
+     components : {
+	 discussion_vote,
+	 album_popover,
+     },
  });
  
 </script>

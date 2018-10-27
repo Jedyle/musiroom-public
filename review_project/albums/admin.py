@@ -48,11 +48,9 @@ class GenreAdmin(ModerationAdmin):
 
 admin.site.register(Genre, GenreAdmin)
 
-class ArtistAlbumInline(admin.TabularInline):
-    model = Album.artists.through
-    verbose_name = "Album"
-    verbose_name_plural = "Albums"
-    extra = 0
+
+class AlbumArtistInline(admin.TabularInline):
+    model = Artist.albums.through
 
 class AlbumGenreInline(admin.TabularInline):
     model = Album.genres.through
@@ -62,13 +60,17 @@ class AlbumGenreInline(admin.TabularInline):
 
 @admin.register(Artist)
 class ArtistAdmin(admin.ModelAdmin):
-    inlines = [ArtistAlbumInline,]
+    inlines = [
+        AlbumArtistInline,
+        ]
+    extra = 1
     verbose_name = "Artiste"
     search_fields = ['name']
+    exclude = ('albums',)
 
 @admin.register(Album)
 class AlbumAdmin(admin.ModelAdmin):
-    inlines = [AlbumGenreInline, ArtistAlbumInline]
+    inlines = [AlbumGenreInline, AlbumArtistInline]
     extra = 1
     search_fields = ['title']
 

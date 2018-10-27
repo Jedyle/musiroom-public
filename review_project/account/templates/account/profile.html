@@ -82,7 +82,7 @@ Profil de {{profile.user.username}}
 		    <ul class="list-group">
 			{% for item in top_10 %}
 			<li class="list-group-item">
-			    <img src="{% static 'images/loading.gif' %}" data-src="{{ item.album.get_cover }}" style="height : 50px"> &nbsp <a href="{% url 'albums:album' item.album.mbid %}">{{ item.album }}</a>
+			    <img src="{% static 'images/loading.gif' %}" data-src="{{ item.album.get_cover }}" style="height : 50px"> &nbsp <a href="{% url 'albums:album' item.album.mbid %}">{{ item.album.very_verbose_name }}</a>
 			</li>
 			{% endfor %}
 		    </ul>
