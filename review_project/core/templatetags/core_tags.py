@@ -21,6 +21,9 @@ def active_url(context, url):
         return ''
     return 'active' if re.search(pattern, path) else ''
 
+@register.inclusion_tag('popover_scripts.html')
+def include_popover_scripts():
+    return {}
 
 @register.filter
 def parse_links(value):

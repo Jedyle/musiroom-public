@@ -4,6 +4,7 @@
 
 {% load album_tags %}
 {% load cache %}
+{% load core_tags %}
 
 {% block title %}
 
@@ -129,25 +130,10 @@ Top 100 albums
 
 <script> 
  var album_data_url = "{% url 'albums:album_data' %}"
-
- axios.defaults.xsrfHeaderName = "X-CSRFToken"; 
  
 </script>
 
-<!-- Modal -->
-<script src="{% static 'trumbowyg/trumbowyg/dist/trumbowyg.min.js' %}"></script>
-<script src="https://unpkg.com/vue-trumbowyg@3"></script>
-<script src="{% static 'trumbowyg/trumbowyg/dist/langs/fr.min.js' %}"></script>
-<script src="{% static 'js/utilities.js' %}"></script>
-<script src="{% static 'ratings/js/reviewTab.js' %}"></script>
-<script src="{% static 'lists/js/listsTab.js' %}"></script>
-<script src="{% static 'js/modal.js' %}"></script>
-<script src="{% static 'ratings/js/reviewModal.js' %}"></script>
-
-<script src="{% static 'star-ratings/js/star-rating-popover.min.js' %}"></script>
-<script src="{% static 'albums/js/toggleUserInterest.js' %}"></script>
-<script src="{% static 'js/popover.js' %}"></script>
-<script src="{% static 'albums/js/album_popover.js' %}"></script>
+{% include_popover_scripts %}
 
 <script src="{% static 'ratings/js/assign_popover.js' %}"></script>
 {% endblock %}

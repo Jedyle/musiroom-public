@@ -266,6 +266,8 @@
 
 	<script src="{% static 'lists/js/add_album.js' %}"></script>
 
+	<script src="{% static 'js/utilities.js' %}"></script>
+
 	<script>
 
 	 axios.defaults.xsrfHeaderName = "X-CSRFToken"; 
@@ -281,10 +283,12 @@
 	<script src="{% static 'js/autocomplete-search.js' %}"></script>
 
 	{% endcompress %}
-	
+
+	{% compress js %}
 	{% block scripts %}
 
 	{% endblock %}
+	{% endcompress %}
 
 
     </body>
