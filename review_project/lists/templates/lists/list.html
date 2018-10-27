@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% load staticfiles %}
+{% load core_tags %}
 {% load comments %}
 {% load comments_xtd %}
 
@@ -177,7 +178,13 @@
 		></paginate>
 	    </div>
 
-	    <vote type="{{ user_vote }}" :upvotes="{{ infos.num_vote_up }}" :downvotes="{{ infos.num_vote_down }}" url_votes="{% url 'lists:ajax_vote' %}" element_id="{{ infos.id }}" :can_vote="{% if can_edit != False %}false{% else %}true{% endif %}"></vote>
+	    <div class="row">
+		<div class="col-12 col-sm-5 offset-sm-7 float-right">
+		    {% social_share request.current_path %}
+		</div>
+	    </div>
+
+	    <vote class="mt-3" type="{{ user_vote }}" :upvotes="{{ infos.num_vote_up }}" :downvotes="{{ infos.num_vote_down }}" url_votes="{% url 'lists:ajax_vote' %}" element_id="{{ infos.id }}" :can_vote="{% if can_edit != False %}false{% else %}true{% endif %}"></vote>
 	    
 	    <modal container_class="little-modal-container" :show="showModal" v-cloak v-if="infos.can_edit">
 
