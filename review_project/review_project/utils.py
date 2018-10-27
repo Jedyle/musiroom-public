@@ -7,7 +7,7 @@ def make_clickable_link(object, title = None, options = ''):
         return ""
 
 def wrap_album_popover(string, html_class, mbid):
-    return "<album_popover mbid='{}' class='{}'>".format(mbid, html_class) + string + "</album_popover>"
+    return " <album_popover mbid='{}' class='{}'>".format(mbid, html_class) + string + "</album_popover>"
 
 
 def make_popover_link(object, title=None):
