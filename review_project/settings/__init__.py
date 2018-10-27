@@ -90,6 +90,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.locale.LocaleMiddleware',
+    'account.middleware.UpdateLastActivityMiddleware',
 ]
 
 INTERNAL_IPS = ['127.0.0.1']
@@ -211,6 +212,7 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'darknessjdl@gmail.com'
 EMAIL_HOST_PASSWORD = 'dumbpassword3'
 EMAIL_PORT = 587
+DEFAULT_FROM_EMAIL="La Musithèque <darknessjdl@gmail.com>"
 
 #Media
 
@@ -313,6 +315,10 @@ CELERY_BEAT_SCHEDULE = {
         'task': 'account.tasks.update_badges',
         'schedule': crontab(minute=1, hour=2),
     },
+    'notif-inactive-users' : {
+        'task' : 'account.tasks.send_email_to_inactive_user',
+        'schedule': crontab(day_of_month=1),
+        }
 }
 
 

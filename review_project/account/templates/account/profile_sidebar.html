@@ -1,4 +1,7 @@
 {% load staticfiles %}
+{% load account %}
+{% load core_tags %}
+
 <div class="card">
     <img class="card-img-top" src="{{ profile.get_avatar }}" alt="Avatar">
     <div class="card-body">
@@ -21,6 +24,13 @@
 	    {{ profile.get_age }} ans
 	</li>
 	{% endif %}
+	<li class="list-group-item text-center">
+	    {% if profile|is_active %}
+	    Connecté
+	    {% else %}
+	    Dernière activité : il y a {{profile.last_activity|timesince}}
+	    {% endif %}
+	</li>
 	<li class="list-group-item text-center">
 	    {% with profile.user.date_joined as joined %}
 	    Inscrit le {{ joined.date }} ({{joined|timesince}})

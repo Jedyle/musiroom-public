@@ -47,6 +47,8 @@ class Account(models.Model):
     display_sex = models.BooleanField("Afficher sexe", default = False)
     top_albums = models.ForeignKey(ItemList, blank=True, null=True, on_delete=models.PROTECT)
 
+    last_activity = models.DateTimeField('Dernière activité', auto_now_add=True)
+
     def __str__(self):
         return self.user.username
 
