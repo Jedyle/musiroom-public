@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'debug_toolbar',
+    'compressor',
     'django_unused_media',
     'django_forms_bootstrap',
     'rest_framework',

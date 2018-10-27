@@ -7,6 +7,7 @@
 {% load core_tags %}
 
 {% load notifications_tags %}
+{% load compress %}
 
 {% notifications_unread as notif_unread_count %}
 {% postman_unread as message_unread_count %}
@@ -36,12 +37,13 @@
 
 	<meta name="description"
 	      content="{% block meta_description %}
-		    Critiques et communauté de passionnés de musique
+		    Critiques d'albums et communauté de passionnés de musique
 		    {% endblock %}"
 	/>
 	
 	<link rel="shortcut icon" href="{% static 'images/favicon.ico' %}">
-
+	
+	{% compress css %} 
 	<!-- Required Stylesheets -->
 	<link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
 	<link rel="stylesheet" href="{% static 'css/fontawesome-all.css' %}">
@@ -54,7 +56,7 @@
 	<link rel="stylesheet" href="{% static 'css/modal.css' %}">
 
 	<link href="{% static 'css/trumbowyg.min.css' %}" rel="stylesheet">
-
+	{% endcompress %}
 	
 	<!-- Required scripts -->
 
@@ -251,6 +253,7 @@
 	</footer>
 	<!-- Footer -->
 
+	{% compress js %}
 	<script src="{% static 'js/jquery.min.js' %}"></script>
 
 	<script type="text/javascript" src="{% static 'js/popper.min.js' %}"></script>
@@ -280,6 +283,8 @@
 	{% block scripts %}
 
 	{% endblock %}
+
+	{% endcompress %}
 
     </body>
 </html>
