@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'debug_toolbar',
     'compressor',
+    'imagecompressor',
     'django_unused_media',
     'django_forms_bootstrap',
     'rest_framework',
