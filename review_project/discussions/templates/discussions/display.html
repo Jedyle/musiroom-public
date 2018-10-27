@@ -78,6 +78,14 @@ Discussion : {{ discussion.title }}
 		{{ discussion.content|linebreaks|urlize }}
 	    </div>
 
+	    <hr>
+
+	    <div class="row">
+		<div class="col-12 col-sm-5 offset-sm-7 float-right">
+		    {% social_share discussion %}
+		</div>
+	    </div>
+	    
 	</div>
 
     </div>
