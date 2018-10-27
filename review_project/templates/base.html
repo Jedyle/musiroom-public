@@ -252,6 +252,8 @@
 
 	</footer>
 	<!-- Footer -->
+
+	{% compress js %}
 	<script src="{% static 'js/jquery.min.js' %}"></script>
 
 	<script type="text/javascript" src="{% static 'js/popper.min.js' %}"></script>
@@ -281,6 +283,8 @@
 	{% block scripts %}
 
 	{% endblock %}
+
+	{% endcompress %}
 
     </body>
 </html>
