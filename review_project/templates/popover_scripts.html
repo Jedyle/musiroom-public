@@ -1,13 +1,9 @@
 {% load staticfiles %}
-{% load compress %}
 
-{% compress js %}
 <script src="{% static 'trumbowyg/trumbowyg/dist/trumbowyg.min.js' %}"></script>
-{% endcompress %}
 
 <script src="https://unpkg.com/vue-trumbowyg@3"></script>
 
-{% compress js %}
 <script src="{% static 'trumbowyg/trumbowyg/dist/langs/fr.min.js' %}"></script>
 <script src="{% static 'ratings/js/reviewTab.js' %}"></script>
 <script src="{% static 'lists/js/listsTab.js' %}"></script>
@@ -17,4 +13,3 @@
 <script src="{% static 'albums/js/toggleUserInterest.js' %}"></script>
 <script src="{% static 'js/popover.js' %}"></script>
 <script src="{% static 'albums/js/album_popover.js' %}"></script>
-{% endcompress %}
