@@ -63,7 +63,7 @@
 	    
 		{{ review.content|linebreaks }}
 
-	    {% endautoescape %} 
+	    {% endautoescape %}
 
 
 	    <!-- Author box -->
@@ -87,7 +87,13 @@
 	    </div>
 	    <!-- Author box -->
 
-	    <vote type="{{ user_vote }}" :upvotes="{{ review.num_vote_up }}" :downvotes="{{ review.num_vote_down }}" url_votes="{% url 'reviews:ajax_vote' %}" element_id="{{ review.id }}" :can_vote="{% if user.is_authenticated and user != r_user %}true{% else %}false{% endif %}"></vote>
+	    <div class="row">
+		<div class="col-12 col-sm-5 offset-sm-7 float-right">
+		    {% social_share review %}
+		</div>
+	    </div>
+
+	    <vote class="mt-3" type="{{ user_vote }}" :upvotes="{{ review.num_vote_up }}" :downvotes="{{ review.num_vote_down }}" url_votes="{% url 'reviews:ajax_vote' %}" element_id="{{ review.id }}" :can_vote="{% if user.is_authenticated and user != r_user %}true{% else %}false{% endif %}"></vote>
 
 	    {% get_comment_count for review as comment_count %}
 

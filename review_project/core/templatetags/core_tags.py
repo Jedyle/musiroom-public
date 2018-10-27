@@ -25,6 +25,11 @@ def active_url(context, url):
 def include_popover_scripts():
     return {}
 
+@register.inclusion_tag('share_box.html', takes_context=True)
+def social_share(context, obj):
+    context['object'] = obj
+    return context
+
 @register.filter
 def parse_links(value):
     return re.sub(r'(https://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+)', r"<a target='_blank' href='\1'>\1</a>", value)

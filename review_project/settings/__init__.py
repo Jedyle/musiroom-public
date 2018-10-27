@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     'autocomplete_search',
     'pinax.badges',
     'actstream',
+    'django_social_share',
     ]
 
 STATICFILES_FINDERS = (
