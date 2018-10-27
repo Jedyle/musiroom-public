@@ -79,11 +79,11 @@
 		
 	    </ul>
 	    <p class="text-right"> <a href="{% url 'live' %}">Voir l'historique</a>
-	    {% else %}
-	    <p class="text-center"> Aucune activité. </p>
-	    {% endif %}
-	    
-	    
+		{% else %}
+		<p class="text-center"> Aucune activité. </p>
+		{% endif %}
+		
+		
 	</div>
 	
 	{% if user.is_authenticated %}
@@ -337,7 +337,7 @@
 
     <br>
     <br>
-   
+    
     
 </div>
 
@@ -348,7 +348,11 @@
 
 {% if user.is_authenticated %}
 
-<script> 
+<script>
+ var album_update_cover_url = "{% url 'albums:update_cover' %}"
+ var default_album_cover = "{% static 'albums/images/default_cover.png' %}"
+ var home_followees_reviews_url = "{% url 'home_followees_reviews' %}"
+ var home_followees_ratings_url = "{% url 'home_followees_ratings' %}"
  var album_data_url = "{% url 'albums:album_data' %}"
 </script>
 
@@ -376,87 +380,11 @@
 
 <script src="{% static 'core/js/followees_ratings.js' %}"></script>
 
-<script>
+<script src="{% static 'js/last_ratings_vue.js' %}"></script>
 
- 
- var vm = new Vue({
-     delimiters : ['[[', ']]'],
-     el : '#app',
-     data : {
-	 currentView : 'all_reviews',
-	 currentViewRating : 'all_ratings',
-     },
-     components : {
-	 followees_ratings,
-	 followees_reviews,
-	 album_popover,
-     },
-     computed : {
-	 currentProperties : function(){
-	     if (this.currentView === 'followees_reviews'){
-		 return {
-		     url : "{% url 'home_followees_reviews' %}",
-		 }
-	     }
-	 },
-	 currentPropertiesRating : function(){
-	     if (this.currentViewRating === 'followees_ratings'){
-		 return {
-		     url : "{% url 'home_followees_ratings' %}",
-		 }
-	     }
-	 }
-     }
- })
+<script src="{% static 'js/feed_vue.js' %}"></script>
 
- var vm_feed = new Vue({
-     delimiters : ['[[', ']]'],
-     el : '#feed',
-     components : {
-	 album_popover,
-     },     
- })
- 
-</script>
-
-<script>
-
- axios.defaults.xsrfHeaderName = "X-CSRFToken"; 
-
- var albums_ratings = document.getElementsByClassName('item-user-rating')
-
- Array.prototype.forEach.call(albums_ratings, function(el) {
-     var mbid = el.id;
-     new Vue({
-	 el : '#' + mbid,
-	 delimiters : ['[[', ']]'],
-	 components : {
-	     album_popover,
-	 },
-	 mounted : function(){
-	     this.$refs.popover.onerror = function(e){
-		 e.preventDefault();
-		 this.src = "{% static 'albums/images/default_cover.png' %}"
-
-		 axios({
-		     method : 'post',
-		     url : "{% url 'albums:update_cover' %}",
-		     data : getFormData({
-			 mbid : mbid.replace('ID', '')
-		     })
-		 }).then(response => {
-		     
-		 }).catch(error => {
-		     console.log(error);
-		 })
-		 
-	     }
-	     this.$refs.popover.src = this.$refs.popover.getAttribute('data_src');
-	 }
-     });
- });
-
-</script>
+<script src="{% static 'js/new_albums_vue.js' %}"></script>
 
 {% else %}
 

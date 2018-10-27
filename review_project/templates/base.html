@@ -265,6 +265,8 @@
 
 	<script>
 
+	 axios.defaults.xsrfHeaderName = "X-CSRFToken"; 
+
 	 var default_cover_url = "{% static 'albums/images/default_cover.png' %}";
 	 var update_cover_url = "{% url 'albums:update_cover' %}";
 	 var select_val = `{% block search_selected %}album{% endblock %}`;
