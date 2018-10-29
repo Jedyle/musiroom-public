@@ -18,8 +18,8 @@ from core.settings import DEFAULT_ACTIVITY_ITEMS_PER_PAGE
 # Create your views here.
 
 def home(request):
-    time_threshold = datetime.now() - timedelta(days=60)
-    new_albums = Album.objects.filter(release_date__gt=time_threshold).filter(ratings__isnull = False).order_by('-ratings__count')[:12]
+    time_threshold = datetime.now() - timedelta(days=30)
+    new_albums = Album.objects.filter(release_date__gt=time_threshold).filter(ratings__isnull = False).exclude(cover = "").exclude(cover__isnull=True).order_by('-ratings__count')[:12]
     reviews = compute_reviews_feed()
     ratings = compute_ratings_feed()
     user_feed = compute_user_stream(request)
