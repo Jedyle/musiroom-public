@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+
+{% load bootstrap_tags %}
+
+{% block title %}
+Exporter mes données depuis autre site
+{% endblock %}
+
+
+{% block body_title %}
+<div class="jumbotron jumbotron-fluid">
+    <div class="container">
+	<h1 class="text-center display-4" style=>Exportez vos données</h1>
+	<p class="lead text-center">Vous avez un compte Senscritique ? Ne passez pas des jours à recopier vos notes d'albums ! Chez La Musithèque, on exporte vos données automatiquement en quelques clics ;)</p>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block content %}
+
+<div class="col-sm-12 col-md-10 offset-md-1 col-lg-6 offset-lg-3 bg-light">
+
+
+    <h2 class="text-center">Configurez l'export</h2>
+    <hr>
+    
+    <form @submit="submitExport" method="post" action="{{request.path}}" id="export_form" v-cloak>
+
+	{% csrf_token %}
+	
+	<div class="form-group row">
+	    {{form.sc_username.errors}}
+	    <div class="col-12">
+		<label for="sc_username">URL de votre compte Senscritique</label>
+	    </div>
+	    <div class="col-12 col-sm-6">
+		<input type="text" v-model="username" class="form-control" id="sc_username" aria-describedby="sc_username_help"  name="{{form.sc_url.name}}" placeholder=" Entrez votre pseudo">
+		<small style="text-decoration:underline" id="sc_url_help" class="form-text text-muted">{{form.sc_url.help_text}}</small>
+	    </div>
+	    <div class="col-12 col-sm-6">
+		<button class="btn btn-secondary" @click.prevent="getSCUser">[[ searchUser ]]</button>
+		<div class="d-flex mt-3 border p-1" v-if="user_exists">
+		    <div style="width : 100px" v-show="user_exists">
+			<img height="70" width="70" :src="user_data.avatar">
+		    </div>
+		    <div class="flex-grow-1">
+			<p><font color="green"><strong>Nous utiliserons ce pseudo</strong></font></p>
+			<a target="_blank" :href="user_data.url">[[ user_data.username ]]</a>
+		    </div>
+		</div>
+		<div v-else-if="user_has_tested">
+		    <p><font color="red"><strong>Ce pseudo n'existe pas ou est privé</strong></font></p>
+		</div>
+	    </div>
+	</div>
+	<div class="form-group">
+	    <div class="form-check">
+		{{ form.erase.errors }}
+		<label class="form-check-label">
+		    <input type="checkbox" id="{{form.erase.id}}" class="form-check-input" name="{{form.erase.name}}" value="true">
+		    
+		    Ecraser mes notes en cas de conflit
+		</label>
+	    </div>
+	    <small id="erase_help" class="form-text text-muted">{{form.erase.help_text}}</small>
+
+	</div>
+	<div class="form-group">
+	    <p class="d-inline mb-0">Exporter : </p>
+	    {{ form.fields.errors }}
+	    {% for choice in form.fields.field.choices %}
+	    <label class="pl-1 mb-0">
+		<input type="checkbox" class="d-inline" name="{{form.fields.name}}" value="{{choice.0}}" checked>
+		{{ choice.1 }}
+	    </label>	    
+	    {% endfor %}
+	    <small class="form-text text-muted">{{ form.fields.help_text }}</small>
+	</div>
+
+	<div>
+	    <strong><font color="red">[[ errors ]]</font></strong>
+	</div>
+
+	<br>	
+	<button type="submit" class="btn color-sanguine">Récupérer mes données</button>
+	<br>
+	
+    </form>
+    
+
+</div>
+
+
+{% endblock %}
+
+
+{% block scripts %}
+
+<script>
+ var export_vm = new Vue({
+     el : '#export_form',
+     delimiters : ['[[', ']]'],
+     data : {
+	 username : '',
+	 selected_username : '',
+	 user_exists : false,
+	 user_has_tested : false,
+	 user_data : {},
+	 sc_user_loading : false,
+	 errors : ''
+     },
+     methods : {
+	 getSCUser() {
+	     this.sc_user_loading = true
+	     var url_split = this.username.split('/')
+	     axios.get(
+		 '/exports/senscritique/donnees',
+		 {
+		     params : {
+			 user : url_split[url_split.length - 1]
+		     }
+		 }).then(response => {
+		     this.user_data = response.data
+		     this.user_exists = true
+		     this.sc_user_loading = false
+		     this.user_has_tested = true
+		     this.selected_username = this.username
+		 }).catch(error => {
+		     this.user_exists = false
+		     this.sc_user_loading = false
+		     this.user_has_tested = true
+		 })
+	 },
+	 submitExport(e){
+	     if (!this.user_has_tested){
+		 this.errors = 'Vérifiez votre pseudo en cliquant sur le bouton \'Vérifier mon pseudo\'.'
+		 e.preventDefault()
+	     }
+	     else if (!this.user_exists){
+		 this.errors = 'Cet utilisateur n\'existe pas sur Senscritique. Valider l\'URL entrée en cliquant sur le bouton \'Vérifier mon pseudo\'.'
+		 e.preventDefault()
+	     }
+	     else if (this.username != this.selected_username){
+		 this.errors = 'Vous avez entré une URL que vous n\'avez pas vérifiée.'
+		 e.preventDefault()
+	     }
+	     else if (!confirm("Êtes-vous sur de vouloir exporter les données de ce compte Senscritique ? Cette action est irréversible, mais vous aurez accès à un rapport une fois la tâche terminée")){
+		 e.preventDefault()
+	     }
+	 }
+     },
+     computed : {
+	 searchUser(){
+	     if (this.sc_user_loading){
+		 return "..."
+	     }
+	     else {
+		 return "Vérifier mon pseudo"
+	     }
+	 }
+     }
+ }
+ )
+</script>
+
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% load bootstrap_tags %}
+
+{% block title %}
+Exporter mes données depuis autre site
+{% endblock %}
+
+
+{% block body_title %}
+<div class="jumbotron jumbotron-fluid">
+    <div class="container">
+	<h1 class="text-center display-4">Vos notes sont en train d'être récupérées.</h1>
+
+	<p class="lead text-center">Cette tâche peut être assez longue (1 à 2 heures). Vous recevrez une notification lorsqu'elle sera terminée.</p>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block content %}
+
+<div class="col-sm-12 col-md-10 offset-md-1 col-lg-6 offset-lg-3">
+    <p class="text-center">
+	En attendant, pourquoi ne pas aller <a href="{% url 'discussions:search_discussion_for_object' %}">discuter</a> ?
+	
+    </p>
+
+    
+</div>
+
+
+{% endblock %}

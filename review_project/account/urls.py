@@ -24,4 +24,5 @@ urlpatterns = [
     url(r'^supprimer/$', views.delete_account, name='delete_account'),
     url(r'^u/(?P<username>[\w_-]{3,})$', views.profile, name='profile'),
     url(r'^notifications/$', views.notifications, name='notifications'),
+    url(r'^exports/$', views.user_exports, name='user_exports'),
 ]

@@ -66,6 +66,7 @@ INSTALLED_APPS = [
     'pinax.badges',
     'actstream',
     'django_social_share',
+    'export_ratings',
     ]
 
 STATICFILES_FINDERS = (

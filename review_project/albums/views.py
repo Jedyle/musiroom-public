@@ -82,7 +82,7 @@ NB_LISTS = 10
 def load_album_if_not_exists(mbid):        
     parser = ParseAlbum(mbid)
     if not parser.load():
-        return HttpResponseNotFound()
+        return None, None
     else:
         parse_cover = ParseCover(mbid)
         if parse_cover.load():
@@ -92,6 +92,7 @@ def load_album_if_not_exists(mbid):
         album, created = Album.objects.get_or_create(mbid = mbid, title = parser.get_title(), release_date=parser.get_release_date(), cover = cover_url, album_type = parser.get_type(), tracks=parser.get_track_list())
         authors = get_artists_in_db(parser.get_artists())
         for author in authors :
+            
             album.artists.add(author)
 
         tags = parser.get_tags()

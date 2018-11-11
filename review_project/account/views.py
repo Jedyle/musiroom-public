@@ -18,6 +18,7 @@ from star_ratings.models import UserRating
 from ratings.models import Review
 from lists.models import ItemList, ListObject
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from export_ratings.models import ExportReport
 
 
 def send_activation_email(request, user):
@@ -186,7 +187,12 @@ def edit_settings(request):
     else:
         context['password_form'] = PasswordChangeForm(user = request.user)
         context['password_success'] = None
-        return render(request, 'account/edit_settings_form.html', context)    
+        return render(request, 'account/edit_settings_form.html', context)
+
+@login_required
+def user_exports(request):
+    exports = request.user.exports.all().order_by('-created_at')
+    return render(request, 'account/user_exports.html', {'exports' : exports})    
 
 
 @login_required

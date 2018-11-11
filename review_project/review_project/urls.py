@@ -42,6 +42,7 @@ urlpatterns = [
     url(r'^autocomplete/', include('autocomplete_search.urls', namespace='autocomplete_search')),
     url(r"^badges/", include("pinax.badges.urls", namespace="pinax_badges")),
     url(r'^activité/', include('actstream.urls')),
+    url(r'^exports/', include('export_ratings.urls')),
     ]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:
