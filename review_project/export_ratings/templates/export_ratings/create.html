@@ -36,7 +36,7 @@ Exporter mes données depuis autre site
 	    </div>
 	    <div class="col-12 col-sm-6">
 		<input type="text" v-model="username" class="form-control" id="sc_username" aria-describedby="sc_username_help"  name="{{form.sc_url.name}}" placeholder=" Entrez l'URL de votre compte">
-		<small style="text-decoration:underline" id="sc_url_help" class="form-text text-muted">{{form.sc_url.help_text}}</small>
+		<small id="sc_url_help" class="form-text text-muted">{{form.sc_url.help_text}}</small>
 	    </div>
 	    <div class="col-12 col-sm-6">
 		<button class="btn btn-secondary" @click.prevent="getSCUser">[[ searchUser ]]</button>
