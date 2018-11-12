@@ -64,13 +64,14 @@ def collection_url(type_id):
     return COLLECTION_URL.format(type_id)
 
 class ParseSCPage:
-    def __init__(self, user, type_id):
+    def __init__(self, user, type_id, driver):
         self.url = PROTOCOL + SENSCRITIQUE_URL + user + '/' + collection_url(type_id)
-
-    def load_page(self, page):
         with warnings.catch_warnings():
             warnings.simplefilter('ignore')
-            self.driver = webdriver.PhantomJS()
+            self.driver = driver
+
+
+    def load_page(self, page):
         self.driver.get(self.url + "page-{}".format(page))
 
     def get_page_data(self):
@@ -165,8 +166,8 @@ def search_best_result(album_data, release_type):
     return None
 
 
-def parse_data_for_type(user, type_id, filename, errorfile):
-    parser = ParseSCPage(user, type_id)
+def parse_data_for_type(user, type_id, filename, errorfile, driver):
+    parser = ParseSCPage(user, type_id, driver)
     parser.load_page(1)
     elements = parser.get_page_data()
     collection = []
@@ -176,11 +177,9 @@ def parse_data_for_type(user, type_id, filename, errorfile):
             album_data = parse_album_data(element)
             best_result = search_best_result(album_data, TYPES[type_id])
             if best_result:
-                print('success ', best_result)
                 with open(filename, 'a') as infile:
                     infile.write("{} {}\n".format(best_result['album_mbid'], album_data['rating']))
             else :
-                print('not found', album_data)
                 with open(errorfile, 'a') as error:
                     error.write("{}///{}///{}\n".format(album_data['album'], ", ".join(album_data['artists']), album_data['rating'] ))                          
         page+=1
@@ -189,10 +188,10 @@ def parse_data_for_type(user, type_id, filename, errorfile):
     return collection
 
 
-def parse_all_data(user, filename, errorfile, types = [LP_ID, EP_ID, LIVE_ID, COMPILATION_ID, SINGLE_ID, OST_ID]):
+def parse_all_data(user, filename, errorfile, driver=webdriver.PhantomJS(), types = [LP_ID, EP_ID, LIVE_ID, COMPILATION_ID, SINGLE_ID, OST_ID]):
     res = {}
     for type_el in types:
-        res[TYPES[type_el]] = parse_data_for_type(user, type_el, filename, errorfile)
+        res[TYPES[type_el]] = parse_data_for_type(user, type_el, filename, errorfile, driver)
     return res
 
 
