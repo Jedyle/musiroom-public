@@ -7,6 +7,7 @@ from bs4 import BeautifulSoup
 import datetime
 import json
 from difflib import SequenceMatcher
+from datetime import datetime
 
 
 PROTOCOL = "https://"
@@ -76,40 +77,6 @@ class ParseSCPage:
         collection = self.driver.find_elements_by_class_name('elco-collection-item')
         return collection #work on that
 
-def parse_data_for_type(user, type_id):
-    parser = ParseSCPage(user, type_id)
-    parser.load_page(1)
-    elements = parser.get_page_data()
-    collection = []
-    page = 1
-    while elements :
-        for element in elements:
-            rating = element.find_element_by_css_selector('.elco-collection-rating.user').get_attribute('innerText')
-            product_detail = element.find_element_by_class_name('elco-product-detail') 
-            album = product_detail.find_element_by_class_name('elco-anchor').get_attribute('innerText')
-            try:
-                release_year = product_detail.find_element_by_class_name('elco-date').get_attribute('innerText').replace('(', '').replace(')', '')
-            except NoSuchElementException:
-                release_year = ''
-            artists = [ el.get_attribute('innerText') for el in product_detail.find_elements_by_class_name('elco-baseline-a') ]
-            collection.append({
-                "album" : remove_type(album),
-                "artists" : artists,
-                "release_year" : release_year,
-                "rating" : rating,
-                })
-        page+=1
-        parser.load_page(page)
-        elements = parser.get_page_data()
-    return collection
-
-
-def parse_all_data(user, types = [LP_ID, EP_ID, LIVE_ID, COMPILATION_ID, SINGLE_ID, OST_ID]):
-    res = {}
-    for type_el in types:
-        res[TYPES[type_el]] = parse_data_for_type(user, type_el)
-    return res
-
 
 class ParseSearch:
     def __init__(self, query, protocol = PROTOCOL, search = SEARCH, url = MUSICBRAINZ_URL):
@@ -161,6 +128,23 @@ class ParseSearch:
             return []
 
 
+def parse_album_data(element):
+    rating = element.find_element_by_css_selector('.elco-collection-rating.user').get_attribute('innerText')
+    product_detail = element.find_element_by_class_name('elco-product-detail') 
+    album = product_detail.find_element_by_class_name('elco-anchor').get_attribute('innerText')
+    try:
+        release_year = product_detail.find_element_by_class_name('elco-date').get_attribute('innerText').replace('(', '').replace(')', '')
+    except NoSuchElementException:
+        release_year = ''
+    artists = [ el.get_attribute('innerText') for el in product_detail.find_elements_by_class_name('elco-baseline-a') ]
+    return {
+        "album" : remove_type(album),
+        "artists" : artists,
+        "release_year" : release_year,
+        "rating" : rating,
+        }    
+
+
 def similar(a, b):
     return SequenceMatcher(None, a, b).ratio()
 
@@ -181,26 +165,38 @@ def search_best_result(album_data, release_type):
     return None
 
 
-def associate_best_results(export):
-    success = []
-    failures = []
-    for key in export:
-        for data in export[key]:
-            el = search_best_result(data, key)
-            if el is None:
-                failures.append(data)
-            else:
-                success.append({
-                    'mbid' : el['album_mbid'],
-                    'rating' : data['rating'],
-                    'title' : data['album'],
-                    'artists' : data['artists']
-                    })
-    return success, failures
+def parse_data_for_type(user, type_id, filename, errorfile):
+    parser = ParseSCPage(user, type_id)
+    parser.load_page(1)
+    elements = parser.get_page_data()
+    collection = []
+    page = 1
+    while elements :
+        for element in elements:
+            album_data = parse_album_data(element)
+            best_result = search_best_result(album_data, TYPES[type_id])
+            if best_result:
+                print('success ', best_result)
+                with open(filename, 'a') as infile:
+                    infile.write("{} {}\n".format(best_result['album_mbid'], album_data['rating']))
+            else :
+                print('not found', album_data)
+                with open(errorfile, 'a') as error:
+                    error.write("{}///{}///{}\n".format(album_data['album'], ", ".join(album_data['artists']), album_data['rating'] ))                          
+        page+=1
+        parser.load_page(page)
+        elements = parser.get_page_data()
+    return collection
 
 
+def parse_all_data(user, filename, errorfile, types = [LP_ID, EP_ID, LIVE_ID, COMPILATION_ID, SINGLE_ID, OST_ID]):
+    res = {}
+    for type_el in types:
+        res[TYPES[type_el]] = parse_data_for_type(user, type_el, filename, errorfile)
+    return res
 
-def compute_export(username, config):
+
+def compute_file(username, config, temp_dir = ""):
     types = []
     for key in config:
         if config[key]:
@@ -209,10 +205,22 @@ def compute_export(username, config):
                 types.append(el)
             except KeyError:
                 pass
-    export = parse_all_data(username, types = types)
-    success, failures = associate_best_results(export)
-    return success, failures
+
+    filename = temp_dir + username + "success" + str(datetime.now()).replace(' ', '-')
+    errorfile = temp_dir + username + "fails" + str(datetime.now()).replace(' ', '-')
+
+    with open(filename, 'w'):
+        pass
+    with open(errorfile, 'w'):
+        pass
+    
+    export = parse_all_data(username, filename, errorfile, types = types)
+    return filename, errorfile
             
 
+def read_file(file):
+    with open(file, 'r') as infile:
+        for line in infile:
+            print(line.split(' ')[0], int(line.split(' ')[1]))
 
         
