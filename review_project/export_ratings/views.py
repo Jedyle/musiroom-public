@@ -6,6 +6,8 @@ from .forms import SCExportForm
 from .models import ExportReport
 from .decorators import paginate
 from .tasks import export_from_sc
+from .constants import MIN_EXPORT_TIMEDIFF
+from django.utils import timezone
 
 # Create your views here.
 
@@ -19,6 +21,16 @@ def create_export(request):
             config = { el:True for el in form.cleaned_data['fields'] }
             erase = form.cleaned_data['erase']
 
+
+        
+            user_exports = request.user.exports.order_by('-created_at')
+            if user_exports.count() > 0 :
+                now = timezone.now()
+                last_export = user_exports[0].created_at
+                print(now, last_export)
+                delta = now - last_export
+                if delta.seconds < MIN_EXPORT_TIMEDIFF:
+                    return render(request, 'export_ratings/unauthorized.html', {})
 
             # launch task
             export_from_sc.delay(username = user, sc_username = sc_user, config=config, erase_old=erase)

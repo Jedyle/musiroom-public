@@ -188,13 +188,11 @@ def parse_data_for_type(user, type_id, filename, errorfile, driver):
     return collection
 
 
-def parse_all_data(user, filename, errorfile, driver=webdriver.PhantomJS(), types = [LP_ID, EP_ID, LIVE_ID, COMPILATION_ID, SINGLE_ID, OST_ID]):    
+def parse_all_data(user, filename, errorfile, driver, types = [LP_ID, EP_ID, LIVE_ID, COMPILATION_ID, SINGLE_ID, OST_ID]):    
     res = {}
     for type_el in types:
-        print(type_el)
         res[TYPES[type_el]] = parse_data_for_type(user, type_el, filename, errorfile, driver)
-    driver.close()
-    return res
+    return res, driver
 
 
 def compute_file(username, config, temp_dir = ""):
@@ -214,14 +212,21 @@ def compute_file(username, config, temp_dir = ""):
         pass
     with open(errorfile, 'w'):
         pass
+
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        driver = webdriver.PhantomJS()
     
-    export = parse_all_data(username, filename, errorfile, types = types)
+    export, driver = parse_all_data(username, filename, errorfile, driver = driver, types = types)
+
+    driver.close()
+
     return filename, errorfile
             
 
-def read_file(file):
-    with open(file, 'r') as infile:
-        for line in infile:
-            print(line.split(' ')[0], int(line.split(' ')[1]))
+# def read_file(file):
+#     with open(file, 'r') as infile:
+#         for line in infile:
+#             print(line.split(' ')[0], int(line.split(' ')[1]))
 
         
