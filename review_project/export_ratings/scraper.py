@@ -191,6 +191,7 @@ def parse_data_for_type(user, type_id, filename, errorfile, driver):
 def parse_all_data(user, filename, errorfile, driver=webdriver.PhantomJS(), types = [LP_ID, EP_ID, LIVE_ID, COMPILATION_ID, SINGLE_ID, OST_ID]):
     res = {}
     for type_el in types:
+        print(type_el)
         res[TYPES[type_el]] = parse_data_for_type(user, type_el, filename, errorfile, driver)
     return res
 

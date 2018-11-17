@@ -41,11 +41,13 @@ def rate(user, successfile, erase_old):
     conflicts = []
     with open(successfile, 'r') as infile:
         for line in infile:
+            print(line)
             mbid, rating = line.split(' ')
             try:
                 album = Album.objects.get(mbid = mbid)
             except Album.DoesNotExist:
                 album = load_album_if_not_exists(mbid)[0]
+            print(album)
             if album is not None:
                 if not UserRating.objects.has_rated(album, user):
                     Rating.objects.rate(album, rating, user=user)
@@ -68,7 +70,10 @@ def rate(user, successfile, erase_old):
 @task
 def export_from_sc(username, sc_username, config, erase_old):
     
-    successfile, errorfile = compute_file(sc_username, config, temp_dir = "tmp/")
+    #successfile, errorfile = compute_file(sc_username, config, temp_dir = "tmp/")
+
+    successfile = "tmp/Ripaillouxsuccess2018-11-16-20:54:55.527330"
+    errorfile = "tmp/Ripaillouxfails2018-11-16-20:54:55.527385"
 
     print('Exports done', successfile, errorfile)
 
