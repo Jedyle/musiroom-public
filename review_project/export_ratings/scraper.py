@@ -1,5 +1,5 @@
 from selenium import webdriver
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, WebDriverException
 import warnings
 import os
 import requests
@@ -188,11 +188,12 @@ def parse_data_for_type(user, type_id, filename, errorfile, driver):
     return collection
 
 
-def parse_all_data(user, filename, errorfile, driver=webdriver.PhantomJS(), types = [LP_ID, EP_ID, LIVE_ID, COMPILATION_ID, SINGLE_ID, OST_ID]):
+def parse_all_data(user, filename, errorfile, driver=webdriver.PhantomJS(), types = [LP_ID, EP_ID, LIVE_ID, COMPILATION_ID, SINGLE_ID, OST_ID]):    
     res = {}
     for type_el in types:
         print(type_el)
         res[TYPES[type_el]] = parse_data_for_type(user, type_el, filename, errorfile, driver)
+    driver.close()
     return res
 
 

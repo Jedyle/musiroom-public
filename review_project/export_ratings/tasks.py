@@ -70,10 +70,7 @@ def rate(user, successfile, erase_old):
 @task
 def export_from_sc(username, sc_username, config, erase_old):
     
-    #successfile, errorfile = compute_file(sc_username, config, temp_dir = "tmp/")
-
-    successfile = "tmp/Ripaillouxsuccess2018-11-16-20:54:55.527330"
-    errorfile = "tmp/Ripaillouxfails2018-11-16-20:54:55.527385"
+    successfile, errorfile = compute_file(sc_username, config, temp_dir = "tmp/")
 
     print('Exports done', successfile, errorfile)
 
