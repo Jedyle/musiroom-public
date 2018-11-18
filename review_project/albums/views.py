@@ -80,7 +80,6 @@ NB_LISTS = 10
 
 
 def load_album_if_not_exists(mbid):
-    print("load1")
     parser = ParseAlbum(mbid)
     if not parser.load():
         return None, None

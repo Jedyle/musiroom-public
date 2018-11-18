@@ -220,6 +220,7 @@ def compute_file(username, config, temp_dir = ""):
     export, driver = parse_all_data(username, filename, errorfile, driver = driver, types = types)
 
     driver.close()
+    driver.quit()
 
     return filename, errorfile
             
