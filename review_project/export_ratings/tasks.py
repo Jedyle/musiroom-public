@@ -9,7 +9,7 @@ from notifications.signals import notify
 from review_project.utils import make_clickable_link as _link
 from django.db import transaction, IntegrityError
 from django.utils import timezone
-from .constants import MIN_EXPORT_TIMEDIFF
+from django.core.cache import cache
 import json
 import os
 
@@ -61,21 +61,33 @@ def rate(user, successfile, erase_old):
     return new_ratings, conflicts
     
 
+def single_task_by_user(timeout, errorfunc):
+    def task_exc(func):
+        def wrapper(*args, **kwargs):
+            username = kwargs.get('username')
+            if username:
+                lock_id = "celery-single-task-by-user" + func.__name__ + username 
+                acquire_lock = lambda: cache.add(lock_id, "true", timeout)
+                release_lock = lambda: cache.delete(lock_id)
+                if acquire_lock():
+                    try:
+                        func(*args, **kwargs)
+                    finally:
+                        release_lock()
+                else:
+                    errorfunc(*args, **kwargs)
+        return wrapper
+    return task_exc
+
+def notify_not_exported(username, *args, **kwargs):
+    user = User.objects.get(username = username)
+    notify.send(sender = user, recipient = user, verb="export trop tôt", to_str="Votre export n'a pas été effectué. Veuillez n'effectuer qu'un export à la fois. Seul votre premier export sera pris en compte.")
+
 @task
+@single_task_by_user(60*60, notify_not_exported)
 def export_from_sc(username, sc_username, config, erase_old):
 
     user = User.objects.get(username=username)
-
-    # user_exports = user.exports.order_by('-created_at')
-    # if user_exports.count() > 0 :
-    #     now = timezone.now()
-    #     last_export = user_exports[0].created_at
-    #     print(now, last_export)
-    #     delta = now - last_export
-    #     if delta.seconds < MIN_EXPORT_TIMEDIFF:
-    #         notify.send(sender = user, recipient = user, verb="export trop tôt", to_str="Votre export n'a pas été effectué. Veuillez attendre au moins 24h entre deux exports.")
-    #         return None
-
 
     successfile, errorfile = compute_file(sc_username, config, temp_dir = "tmp/")
 

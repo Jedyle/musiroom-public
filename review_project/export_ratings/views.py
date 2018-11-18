@@ -6,7 +6,7 @@ from .forms import SCExportForm
 from .models import ExportReport
 from .decorators import paginate
 from .tasks import export_from_sc
-from .constants import MIN_EXPORT_TIMEDIFF
+from .settings import get_min_export_timediff
 from django.utils import timezone
 
 # Create your views here.
@@ -29,8 +29,9 @@ def create_export(request):
                 last_export = user_exports[0].created_at
                 print(now, last_export)
                 delta = now - last_export
-                if delta.seconds < MIN_EXPORT_TIMEDIFF:
-                    return render(request, 'export_ratings/unauthorized.html', {})
+                min_timediff = get_min_export_timediff()
+                if delta.seconds < min_timediff :
+                    return render(request, 'export_ratings/unauthorized.html', {'min_time' : min_timediff})
 
             # launch task
             export_from_sc.delay(username = user, sc_username = sc_user, config=config, erase_old=erase)

@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 
+{% load core_tags %}
 {% load bootstrap_tags %}
 
 {% block title %}
@@ -12,7 +13,7 @@ Export non autorisé
     <div class="container">
 	<h1 class="text-center display-4">Vous avez fait un export récemment.</h1>
 
-	<p class="lead text-center">Veuillez attendre 24h entre deux exports.</p>
+	<p class="lead text-center">Veuillez attendre {{ min_time|sectotime }} entre deux exports.</p>
     </div>
 </div>
 {% endblock %}
