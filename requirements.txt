@@ -54,6 +54,7 @@ pyasn1-modules==0.2.2
 Pygments==2.2.0
 pyparsing==2.2.2
 python-akismet==0.4.1
+python-dateutil==2.7.5
 pytz==2018.5
 rcssmin==1.0.6
 requests==2.19.1
