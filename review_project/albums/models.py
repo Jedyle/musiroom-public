@@ -91,7 +91,7 @@ class Genre(models.Model):
 
 class Album(models.Model):
     mbid = models.CharField(db_index=True,max_length = 36, unique = True)
-    title = models.CharField(max_length = 150)
+    title = models.CharField(max_length = 500)
     release_date = models.DateField(blank = True, null = True)
     cover = models.CharField(max_length = 100, null = True)
     tracks = JSONField(null = True)
