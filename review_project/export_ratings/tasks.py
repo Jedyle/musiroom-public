@@ -10,6 +10,7 @@ from review_project.utils import make_clickable_link as _link
 from django.db import transaction, IntegrityError
 from django.utils import timezone
 from django.core.cache import cache
+from .settings import get_min_export_timediff
 import json
 import os
 
@@ -88,6 +89,18 @@ def notify_not_exported(username, *args, **kwargs):
 def export_from_sc(username, sc_username, config, erase_old):
 
     user = User.objects.get(username=username)
+
+    user_exports = user.exports.order_by('-created_at')
+    if user_exports.count() > 0 :
+        now = timezone.now()
+        last_export = user_exports[0].created_at
+        delta = now - last_export
+        min_timediff = get_min_export_timediff()
+        if delta.seconds < min_timediff :
+            notify_not_exported(username)
+            return None
+
+    print("Task " + username + " " + sc_username)
 
     successfile, errorfile = compute_file(sc_username, config, temp_dir = "tmp/")
 
