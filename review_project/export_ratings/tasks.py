@@ -100,7 +100,7 @@ def export_from_sc(username, sc_username, config, erase_old):
         last_export = user_exports[0].created_at
         delta = now - last_export
         min_timediff = get_min_export_timediff()
-        if delta.seconds < min_timediff :
+        if delta.total_seconds() < min_timediff :
             notify_not_exported(username)
             return None
 
