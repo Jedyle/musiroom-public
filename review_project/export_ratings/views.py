@@ -30,7 +30,7 @@ def create_export(request):
                 print(now, last_export)
                 delta = now - last_export
                 min_timediff = get_min_export_timediff()
-                if delta.seconds < min_timediff :
+                if delta.total_seconds() < min_timediff :
                     return render(request, 'export_ratings/unauthorized.html', {'min_time' : min_timediff})
 
             # launch task
