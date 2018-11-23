@@ -28,4 +28,4 @@ def paginate(per_page = 10, key = 'data'):
 
     return decorator
             
-        
+

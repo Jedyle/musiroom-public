@@ -10,7 +10,11 @@ from review_project.utils import make_clickable_link as _link
 from django.db import transaction, IntegrityError
 from django.utils import timezone
 from django.core.cache import cache
+from django.db.models.signals import post_save
 from .settings import get_min_export_timediff
+from .contextmanagers import temp_disconnect_signal
+from actstream import action
+from ratings.models import save_rating_handler
 import json
 import os
 
@@ -108,7 +112,9 @@ def export_from_sc(username, sc_username, config, erase_old):
 
     try:
         with transaction.atomic():
-            new_ratings, conflicts = rate(user, successfile, erase_old)       
+            with temp_disconnect_signal(post_save, sender=UserRating, receiver=save_rating_handler):
+                new_ratings, conflicts = rate(user, successfile, erase_old)       
+
             failures = get_failures(errorfile)
 
             json_output = {
@@ -124,6 +130,7 @@ def export_from_sc(username, sc_username, config, erase_old):
             report.save()
             report.report.save(name = "", content=report_file)
             notify.send(sender = user, recipient = user, verb = "a exporté ses données", target = report, to_str = export_success_str(report))
+            action.send(user, verb="a exporté ses données depuis Senscritique !")
     except (OSError, IntegrityError, NameError, KeyError, ValueError) as e:
         notify.send(sender = user, recipient = user, verb = "une erreur est survenue", to_str= "Une erreur est survenue lors de l'export. Veuillez recommencez l'opération ou contacter un administrateur.")
 
