@@ -17,6 +17,7 @@ from .utils import compute_artists_links
 from account.views import search_account
 from lists.models import ItemList
 import re
+from django.views.decorators.cache import cache_page
 from django.core.cache import cache
 from django.contrib.contenttypes.models import ContentType
 from django.template.defaultfilters import floatformat
@@ -486,6 +487,7 @@ def genre(request, slug):
     return render(request, 'albums/genre.html', context)
 
 
+@cache_page(60*60)
 def genres(request):
     genres_tree = Genre.objects.generate_tree()
     context = {
