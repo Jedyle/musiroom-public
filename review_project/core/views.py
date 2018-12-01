@@ -24,9 +24,6 @@ def home(request):
     ratings = compute_ratings_feed()
     user_feed = compute_user_stream(request)
     all_feed = compute_general_stream()
-    print(user_feed)
-    print(reviews)
-    print(ratings)
     context = {
         'albums' : new_albums,
         'reviews' : reviews,
