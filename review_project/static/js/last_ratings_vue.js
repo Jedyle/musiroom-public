@@ -27,3 +27,15 @@
 	 }
      }
  })
+
+
+ var vm_bis = new Vue({
+     delimiters : ['[[', ']]'],
+     el : '#app_bis',
+     data : {
+	 currentViewActivity : 'all',
+     },
+     components : {
+	album_popover,
+    }, 
+ })

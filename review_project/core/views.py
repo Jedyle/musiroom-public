@@ -24,6 +24,9 @@ def home(request):
     ratings = compute_ratings_feed()
     user_feed = compute_user_stream(request)
     all_feed = compute_general_stream()
+    print(user_feed)
+    print(reviews)
+    print(ratings)
     context = {
         'albums' : new_albums,
         'reviews' : reviews,
@@ -31,7 +34,10 @@ def home(request):
         'user_feed' : user_feed,
         'all_feed' : all_feed,
         }
-    return render(request, 'core/home.html', context)
+    if request.user.is_authenticated:
+        return render(request, 'core/home.html', context)
+    else:
+        return render(request, 'core/home_guest.html', context)
 
 def compute_general_stream():
     stream = Action.objects.all()
@@ -54,7 +60,7 @@ DATE_REVIEWS = datetime.now() - timedelta(days = 30)
 def compute_reviews_feed():
     users = User.objects.filter(userrating__review__isnull=False, userrating__review__date_publication__gt=DATE_REVIEWS).distinct().annotate(last_date = Max('userrating__review__date_publication')).order_by('-last_date').select_related('account')
 
-    user_list = users[:10]
+    user_list = users[:4]
 
     user_reviews = []
     for user in user_list:
@@ -68,7 +74,7 @@ def compute_reviews_feed():
 
 def compute_ratings_feed():
     users = User.objects.filter(userrating__isnull=False, userrating__modified__gt=DATE).annotate(last_date = Max('userrating__modified')).order_by('-last_date').select_related('account')
-    user_list = users[:10]
+    user_list = users[:4]
 
     user_ratings = []
     for user in user_list:
@@ -84,7 +90,7 @@ def compute_ratings_feed():
 @login_required
 def ajax_followees_reviews(request):
     users = User.objects.filter(followers__follower = request.user, userrating__review__isnull=False, userrating__review__date_publication__gt=DATE_REVIEWS).annotate(last_date = Max('userrating__review__date_publication')).order_by('-last_date').select_related('account')
-    user_list = users[:10]
+    user_list = users[:4]
 
     user_reviews = []
     for user in user_list:
@@ -111,7 +117,7 @@ def ajax_followees_reviews(request):
 @login_required
 def ajax_followees_ratings(request):
     users = User.objects.filter(followers__follower = request.user, userrating__isnull=False, userrating__modified__gt=DATE).annotate(last_date = Max('userrating__modified')).order_by('-last_date').select_related('account')
-    user_list = users[:10]
+    user_list = users[:4]
 
     user_ratings = []
     for user in user_list:

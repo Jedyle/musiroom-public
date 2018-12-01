@@ -11,344 +11,305 @@
 <link type="text/css" rel="stylesheet" href="{% static 'css/bootstrap-vue.css' %}"/>
 {% endblock %}
 
+{% block bg %}
+w3-light-gray
+{% endblock %}
+
 {% block body_title %}
-{% if not user.is_authenticated %}
-<div class="jumbotron jumbotron-fluid" style="background-image : url({% static 'images/home-vinyl.jpg' %}); background-size : cover;">
-    <div class="container">
-	<h1 class="display-4 text-center" style="color : white">Rejoignez des passionnés de musique.</h1>
-	<p class="lead text-center" style="color : white">Découvrez, notez, critiquez.</p>
-	<p class="lead text-center"><a href="{% url 'register' %}" class="btn btn-lg btn-light">Inscrivez-vous</a></p>
-	<p class="lead text-center" style="color:white">Nouveau : vous avez un compte Senscritique ? Exportez vos notes sur La Musithèque !</p>
-    </div>
-</div>
-{% endif %}
+
 {% endblock %}
 
 {% block content %}
 
-<div class="col-sm-12 col-md-10 offset-md-1">
-    
-    <h1 class="text-center">Dernières nouveautés</h1>
+<div class="col-12">
 
-    <br>
-
-    {% cache 500 new_albums user.is_authenticated %}
     <div class="row">
-	{% for album in albums %}
 
-	{% if album.cover != "" %}
+	<div class="col-12 col-md-8 offset-md-2 bg-light">
+	    
+	    <h1 class="text-center">Dernières nouveautés</h1>
 
-	{% if user.is_authenticated %}
-	<div class="col-4 col-sm-4 col-md-3 col-lg-2 regular-gutter item-user-rating" id="ID{{album.mbid}}">
-	    <album_popover mbid="{{album.mbid}}"><a slot="preview" href="{% url 'albums:album' album.mbid %}" class="thumbnail"><img class="responsive" src="{% static 'images/loading.gif' %}" data_src="{{ album.get_cover }}" alt="{{ album.title }}" ref="popover"></a></album_popover>
+	    <br>
 
+	    {% cache 500 new_albums %}
+	    <div class="row">
+		{% for album in albums %}
+
+		{% if album.cover != "" %}
+
+		<div class="col-4 col-sm-4 col-md-3 col-lg-2 regular-gutter item-user-rating" id="ID{{album.mbid}}">
+		    <album_popover mbid="{{album.mbid}}"><a slot="preview" href="{% url 'albums:album' album.mbid %}" class="thumbnail"><img class="responsive" src="{% static 'images/loading.gif' %}" data_src="{{ album.get_cover }}" alt="{{ album.title }}" ref="popover"></a></album_popover>
+
+		</div>
+		
+		
+		{% endif %}
+		
+		{% endfor %}
+	    </div>
+	    {% endcache %}
 	</div>
-	{% else %}
-	<div class="col-4 col-sm-4 col-md-3 col-lg-2 regular-gutter">
-	    <a title="{{album.title}}" href="{% url 'albums:album' album.mbid %}" class="thumbnail"><img class="responsive" src="{% static 'images/loading.gif' %}" alt="{{ album.title }}" data-src="{{ album.get_cover }}"></a>
-	</div>
-	{% endif %}    
-	
-	{% endif %}
-	
-	{% endfor %}
+
     </div>
-    {% endcache %}
+    
 </div>
 
-<div class="col-sm-12 col-md-10 offset-md-1">
+<div class="col-12">
 
-    <div class="row border bg-light" id="feed">
+    <div class="row">
 
-	<div class="col-12">
-	    <h1 class="text-center">Activité récente</h1>
-	</div>
-	
-	<div class="col-12 {% if user.is_authenticated %}col-lg-6{% else %}col-lg-8 offset-lg-2{% endif %}">
-	    
-	    <h2 class="text-center">
-		Tout
-	    </h2>
-	    
-	    {% if all_feed %}	    
-	    <ul class="list-group">
+	<div class="col-sm-12 col-md-8 offset-md-2 bg-silver">
+
+	    <div class="row pb-3">
 		
-		{% for action in all_feed %}
-		<li class="list-group-item">
-		    {% display_action action %}
-		</li>
-		{% endfor %}
-		
-	    </ul>
-	    <p class="text-right"> <a href="{% url 'live' %}">Voir l'historique</a>
-		{% else %}
-		<p class="text-center"> Aucune activité. </p>
-		{% endif %}
-		
-		
-	</div>
-	
-	{% if user.is_authenticated %}
-	<div class="col-12 col-lg-6">
-	    
-	    <h2 class="text-center">
-		Mes abonnements
-	    </h2>
 
-	    {% if user_feed %}	    
-	    <ul class="list-group">
+		<div class="col-12 col-lg-6" id="app_bis" v-cloak>
 
-		{% for action in user_feed %}
-		<li class="list-group-item">
-		    {% display_action action %}
-		</li>
-		{% endfor %}
-		
-	    </ul>
-	    <p class="text-right"><a href="{% url 'live' %}?feed=abonnements">Voir l'historique</a></p>
-	    {% else %}
-	    <p class="text-center"> Aucune activité de vos abonnements. </p>
-	    {% endif %}
+		    <h2 class="text-center">Activité récente</h2>
 
-	</div>
-	{% endif %}
-	
-    </div>
-
-    <br><br>
-    
-    <div class="row border bg-light pb-3" id="app">
-
-	<div class="col-sm-12 col-lg-6">
-
-	    <h2 class="text-center">Dernières critiques</h2>
-
-	    {% if user.is_authenticated %}
-
-	    <ul class="nav nav-tabs">
-		<li class="nav-item">
-		    <a class="nav-link" :class="{ 'active' : (currentView === 'all_reviews') }" href="#" @click.prevent="currentView = 'all_reviews'">Toutes</a>
-		</li>
-		<li class="nav-item">
-		    <a class="nav-link" :class="{ 'active' : (currentView === 'followees_reviews') }" href="#" @click.prevent="currentView = 'followees_reviews'">Mes abonnements</a>
-		</li>
-	    </ul>
-
-	    {% endif %}
-	    
-	    {% if user.is_authenticated %}
-	    <div v-show="currentView === 'all_reviews'" v-cloak>
-		{% endif %}
-
-		{% cache 60 new_reviews user.is_authenticated %}
-		<ul class="list-group">
-
-		    {% for review in reviews %}
-		    {% if review.reviews|length == 1 %}
-		    {% with album=review.reviews.0.rating.rating.content_object rev=review.reviews.0 %}
-		    <li class="list-group-item">
-			<div class="d-flex">
-			    <div style="min-width:70px">
-				<div style="width:50px; height:50px; background-image: url({{ review.account.get_avatar }}); background-size:cover; background-position : center;"></div></div>
-				<div class="flex-grow-1">
-				    <a href="{% url 'albums:review' album.mbid rev.id %}">
-					{{ rev.title }}
-				    </a> par
-				    <a href="{% url 'profile' review.user.username %}">
-					{{review.user}}
-				    </a>
-				    sur l'album
-				    {% if user.is_authenticated %}
-				    <album_popover style="display:inline" class="mt-0" mbid="{{album.mbid}}">mbid : {{album.mbid}}
-					<a slot="preview" href="{% url 'albums:album' album.mbid %}">
-					    {{album.title}}
-					</a>
-				    </album_popover>
-				    {% else %}
-				    <a slot="preview" href="{% url 'albums:album' album.mbid %}">
-					{{album.title}}
-				    </a>
-				    {% endif %}
-				</div>
-			</div>
-		    </li>
-		    {% endwith %}
-		    {% else %}
-		    <li class="list-group-item" v-b-toggle="'rev-{{review.user}}'">
-			<div class="d-flex">
-			    <div style="min-width:70px">
-				<div style="width:50px; height:50px; background-image: url({{ review.account.get_avatar }}); background-size:cover; background-position : center;"></div></div>
-				<div class="flex-grow-1">
-				    <a @click.stop href="{% url 'profile' review.user.username %}">{{review.user}}</a> a critiqué {% if review.reviews|length >= 15 %}plus de {% endif %}{{review.reviews|length}} albums.
-				    <a href="#" @click.prevent><span class="menu-ico-collapse"><i class="fa fa-chevron-down"></i></span></a>
-				</div>
-			</div>
-		    </li>
-		    <b-collapse id="rev-{{review.user}}">
-			{% for rev in review.reviews %}
-			{% with album=rev.rating.rating.content_object %}
-			<li class="list-group-item sub-item">
-
-			    <div class="d-flex">
-				<div style="min-width:30px">
-				</div>
-				<div style="min-width:50px">
-				    <div style=" width:30px; height:30px; background-image: url({{ review.account.get_avatar }}); background-size:cover; background-position : center;"></div>
-				</div>
-				<div class="flex-grow-1">
-
-				    <a href="{% url 'albums:review' album.mbid rev.id %}">
-					{{ rev.title }}
-				    </a> 
-				    à propos de l'album
-				    {% if user.is_authenticated %}
-				    <album_popover style="display:inline" class="mt-0" mbid="{{album.mbid}}">mbid : {{album.mbid}}
-					<a slot="preview" href="{% url 'albums:album' album.mbid %}">
-					    {{album.title}}
-					</a>
-				    </album_popover>
-				    {% else %}
-				    <a slot="preview" href="{% url 'albums:album' album.mbid %}">
-					{{album.title}}
-				    </a>
-				    {% endif %}
-				</div>
-			    </div>
-			    
+		    <ul class="nav nav-tabs">
+			<li class="nav-item">
+			    <a class="nav-link" :class="{ 'active' : (currentViewActivity === 'all') }" href="#" @click.prevent="currentViewActivity = 'all'">Tout</a>
 			</li>
-			{% endwith %}
-			{% endfor %}
-		    </b-collapse>
-		    
-		    
-		    {% endif %}
-		    {% endfor %}
-		</ul>
-		{% endcache %}
+			<li class="nav-item">
+			    <a class="nav-link" :class="{ 'active' : (currentViewActivity === 'followees') }" href="#" @click.prevent="currentViewActivity = 'followees'">Mes abonnements</a>
+			</li>
+		    </ul>
 
 
-		<p class="text-right"><a href="{% url 'reviews:latest_reviews' %}">Voir plus</a></p>
-
-		{% if user.is_authenticated %}
-	    </div>
-	    {% endif %}
-
-	    {% if user.is_authenticated %}
-	    <keep-alive>
-		<component :is="currentView" v-bind="currentProperties"></component>
-	    </keep-alive>
-	    {% endif %}
-	    
-	</div>
-
-	<div class="col-sm-12 col-lg-6">
-
-	    <h2 class="text-center">Dernières notes</h2>
-
-	    {% if user.is_authenticated %}
-
-	    <ul class="nav nav-tabs">
-		<li class="nav-item">
-		    <a class="nav-link" :class="{ 'active' : (currentViewRating === 'all_ratings') }" href="#" @click.prevent="currentViewRating = 'all_ratings'">Toutes</a>
-		</li>
-		<li class="nav-item">
-		    <a class="nav-link" :class="{ 'active' : (currentViewRating === 'followees_ratings') }" href="#" @click.prevent="currentViewRating = 'followees_ratings'">Mes abonnements</a>
-		</li>
-	    </ul>
-
-	    {% endif %}
-	    
-	    {% if user.is_authenticated %}
-	    <div v-show="currentViewRating === 'all_ratings'" v-cloak>
-		{% endif %}
-
-		{% cache 60 new_ratings user.is_authenticated %}
-
-		<ul class="list-group">
-
-		    {% for rating in ratings %}
-		    {% if rating.ratings|length <= 1 %}
-		    {% with album=rating.ratings.0.rating.content_object rating_=rating.ratings.0 %}
-		    <li class="list-group-item">
-			<div class="d-flex">
-			    <div style="min-width:70px">
-				<div style="width:50px; height:50px; background-image: url({{ rating.account.get_avatar }}); background-size:cover; background-position : center;"></div>
-			    </div>
-			    <div class="flex-grow-1">
-				<a href="{% url 'profile' rating.user.username %}">{{rating.user}}</a> à donné la note de <strong>{{rating_.score}}</strong> à l'album {% if user.is_authenticated %}<album_popover style="display:inline" class="mt-0" mbid="{{album.mbid}}"><a slot="preview" href="{% url 'albums:album' album.mbid %}">{{album.title}}</a></album_popover>{% else %}<a href="{% url 'albums:album' album.mbid %}">{{album.title}}</a>{% endif %}
-			    </div>
-
-			</div>
+		    <div v-show="currentViewActivity == 'all'">
+			{% if all_feed %}	    
+			<ul class="list-group">
+			    
+			    {% for action in all_feed %}
+			    <li class="list-group-item">
+				{% display_action action %}
+			    </li>
+			    {% endfor %}
+			    
+			</ul>
+			<p class="text-right"> <a href="{% url 'live' %}">Voir l'historique</a>
+			</p>
+			{% else %}
+			<p class="text-center"> Aucune activité. </p>
+			{% endif %}
 			
-		    </li>
-		    {% endwith %}
-		    {% else %}
+		    </div>
 
-		    <li class="list-group-item" v-b-toggle="'rat-{{rating.user}}'">
-			<div class="d-flex">
-			    <div style="min-width:70px">
-				<div style="width:50px; height:50px; background-image: url({{ rating.account.get_avatar }}); background-size:cover; background-position : center;"></div></div>
-				<div class="flex-grow-1">
-				    <a @click.stop href="{% url 'profile' rating.user.username %}">{{rating.user}}</a> a noté {% if rating.ratings|length >= 15 %}plus de {% endif %}{{rating.ratings|length}} albums.
-				    <a href="#" @click.prevent><span class="menu-ico-collapse"><i class="fa fa-chevron-down"></i></span></a>
-				</div>
-			</div>
-		    </li>
-		    <b-collapse id="rat-{{rating.user}}">
-			{% for rat in rating.ratings %}
-			{% with album=rat.rating.content_object %}
-			<li class="list-group-item sub-item">
+		    <div v-show="currentViewActivity == 'followees'">
 
-			    <div class="d-flex">
-				<div style="min-width:30px">
-				</div>
-				<div style="min-width:50px">
-				    <div style=" width:30px; height:30px; background-image: url({{ rating.account.get_avatar }}); background-size:cover; background-position : center;"></div>
-				</div>
-				<div class="flex-grow-1">
-				    <a href="{% url 'profile' rating.user.username %}">{{rating.user}}</a> à donné la note de <strong>{{rat.score}}</strong> à l'album {% if user.is_authenticated %}<album_popover style="display:inline" class="mt-0" mbid="{{album.mbid}}"><a slot="preview" href="{% url 'albums:album' album.mbid %}">{{album.title}}</a></album_popover>{% else %}<a href="{% url 'albums:album' album.mbid %}">{{album.title}}</a>{% endif %}
-				</div>
-			    </div>
+			{% if user_feed %}	    
+			<ul class="list-group">
+
+			    {% for action in user_feed %}
+			    <li class="list-group-item">
+				{% display_action action %}
+			    </li>
+			    {% endfor %}
 			    
+			</ul>
+			<p class="text-right"><a href="{% url 'live' %}?feed=abonnements">Voir l'historique</a></p>
+			{% else %}
+			<p class="text-center"> Aucune activité de vos abonnements. </p>
+			{% endif %}
+
+		    </div>
+
+		</div>
+
+		<div class="col-sm-12 col-lg-6" id="app" v-cloak>
+
+		    <h2 class="text-center">Dernières critiques</h2>
+
+		    <ul class="nav nav-tabs">
+			<li class="nav-item">
+			    <a class="nav-link" :class="{ 'active' : (currentView === 'all_reviews') }" href="#" @click.prevent="currentView = 'all_reviews'">Toutes</a>
 			</li>
-			{% endwith %}
-			{% endfor %}
-		    </b-collapse>
+			<li class="nav-item">
+			    <a class="nav-link" :class="{ 'active' : (currentView === 'followees_reviews') }" href="#" @click.prevent="currentView = 'followees_reviews'">Mes abonnements</a>
+			</li>
+		    </ul>
+
+		    <div v-show="currentView === 'all_reviews'" v-cloak>
+
+			<ul class="list-group">
+
+			    {% for review in reviews %}
+			    {% if review.reviews|length == 1 %}
+			    {% with album=review.reviews.0.rating.rating.content_object rev=review.reviews.0 %}
+			    <li class="list-group-item">
+				<div class="d-flex">
+				    <div style="min-width:70px">
+					<div style="width:50px; height:50px; background-image: url({{ review.account.get_avatar }}); background-size:cover; background-position : center;"></div></div>
+					<div class="flex-grow-1">
+					    <a href="{% url 'albums:review' album.mbid rev.id %}">
+						{{ rev.title }}
+					    </a> par
+					    <a href="{% url 'profile' review.user.username %}">
+						{{review.user}}
+					    </a>
+					    sur l'album
+					    <album_popover style="display:inline" class="mt-0" mbid="{{album.mbid}}">mbid : {{album.mbid}}
+						<a slot="preview" href="{% url 'albums:album' album.mbid %}">
+						    {{album.title}}
+						</a>
+					    </album_popover>
+					</div>
+				</div>
+			    </li>
+			    {% endwith %}
+			    {% else %}
+			    <li class="list-group-item" v-b-toggle="'rev-{{review.user}}'">
+				<div class="d-flex">
+				    <div style="min-width:70px">
+					<div style="width:50px; height:50px; background-image: url({{ review.account.get_avatar }}); background-size:cover; background-position : center;"></div></div>
+					<div class="flex-grow-1">
+					    <a @click.stop href="{% url 'profile' review.user.username %}">{{review.user}}</a> a critiqué {% if review.reviews|length >= 15 %}plus de {% endif %}{{review.reviews|length}} albums.
+					    <a href="#" @click.prevent><span class="menu-ico-collapse"><i class="fa fa-chevron-down"></i></span></a>
+					</div>
+				</div>
+			    </li>
+			    <b-collapse id="rev-{{review.user}}">
+				{% for rev in review.reviews %}
+				{% with album=rev.rating.rating.content_object %}
+				<li class="list-group-item sub-item">
+
+				    <div class="d-flex">
+					<div style="min-width:30px">
+					</div>
+					<div style="min-width:50px">
+					    <div style=" width:30px; height:30px; background-image: url({{ review.account.get_avatar }}); background-size:cover; background-position : center;"></div>
+					</div>
+					<div class="flex-grow-1">
+
+					    <a href="{% url 'albums:review' album.mbid rev.id %}">
+						{{ rev.title }}
+					    </a> 
+					    à propos de l'album
+					    <album_popover style="display:inline" class="mt-0" mbid="{{album.mbid}}">mbid : {{album.mbid}}
+						<a slot="preview" href="{% url 'albums:album' album.mbid %}">
+						    {{album.title}}
+						</a>
+					    </album_popover>
+					</div>
+				    </div>
+				    
+				</li>
+				{% endwith %}
+				{% endfor %}
+			    </b-collapse>
+			    
+			    
+			    {% endif %}
+			    {% endfor %}
+			</ul>
+
+
+			<p class="text-right"><a href="{% url 'reviews:latest_reviews' %}">Voir plus</a></p>
+
+		    </div>
+
+		    <keep-alive>
+			<component :is="currentView" v-bind="currentProperties"></component>
+		    </keep-alive>
+
+
+
+
+		    <h2 class="text-center">Dernières notes</h2>
+
+
+		    <ul class="nav nav-tabs">
+			<li class="nav-item">
+			    <a class="nav-link" :class="{ 'active' : (currentViewRating === 'all_ratings') }" href="#" @click.prevent="currentViewRating = 'all_ratings'">Toutes</a>
+			</li>
+			<li class="nav-item">
+			    <a class="nav-link" :class="{ 'active' : (currentViewRating === 'followees_ratings') }" href="#" @click.prevent="currentViewRating = 'followees_ratings'">Mes abonnements</a>
+			</li>
+		    </ul>
+
 		    
-		    {% endif %}
-		    {% endfor %}
-		</ul>
+		    <div v-show="currentViewRating === 'all_ratings'" v-cloak>
 
-		{% endcache %}
+			<ul class="list-group">
 
-		{% if user.is_authenticated %}
+			    {% for rating in ratings %}
+			    {% if rating.ratings|length <= 1 %}
+			    {% with album=rating.ratings.0.rating.content_object rating_=rating.ratings.0 %}
+			    <li class="list-group-item">
+				<div class="d-flex">
+				    <div style="min-width:70px">
+					<div style="width:50px; height:50px; background-image: url({{ rating.account.get_avatar }}); background-size:cover; background-position : center;"></div>
+				    </div>
+				    <div class="flex-grow-1">
+					<a href="{% url 'profile' rating.user.username %}">{{rating.user}}</a> à donné la note de <strong>{{rating_.score}}</strong> à l'album <album_popover style="display:inline" class="mt-0" mbid="{{album.mbid}}"><a slot="preview" href="{% url 'albums:album' album.mbid %}">{{album.title}}</a></album_popover>
+				    </div>
+
+				</div>
+				
+			    </li>
+			    {% endwith %}
+			    {% else %}
+
+			    <li class="list-group-item" v-b-toggle="'rat-{{rating.user}}'">
+				<div class="d-flex">
+				    <div style="min-width:70px">
+					<div style="width:50px; height:50px; background-image: url({{ rating.account.get_avatar }}); background-size:cover; background-position : center;"></div></div>
+					<div class="flex-grow-1">
+					    <a @click.stop href="{% url 'profile' rating.user.username %}">{{rating.user}}</a> a noté {% if rating.ratings|length >= 15 %}plus de {% endif %}{{rating.ratings|length}} albums.
+					    <a href="#" @click.prevent><span class="menu-ico-collapse"><i class="fa fa-chevron-down"></i></span></a>
+					</div>
+				</div>
+			    </li>
+			    <b-collapse id="rat-{{rating.user}}">
+				{% for rat in rating.ratings %}
+				{% with album=rat.rating.content_object %}
+				<li class="list-group-item sub-item">
+
+				    <div class="d-flex">
+					<div style="min-width:30px">
+					</div>
+					<div style="min-width:50px">
+					    <div style=" width:30px; height:30px; background-image: url({{ rating.account.get_avatar }}); background-size:cover; background-position : center;"></div>
+					</div>
+					<div class="flex-grow-1">
+					    <a href="{% url 'profile' rating.user.username %}">{{rating.user}}</a> à donné la note de <strong>{{rat.score}}</strong> à l'album <album_popover style="display:inline" class="mt-0" mbid="{{album.mbid}}"><a slot="preview" href="{% url 'albums:album' album.mbid %}">{{album.title}}</a></album_popover>
+					</div>
+				    </div>
+				    
+				</li>
+				{% endwith %}
+				{% endfor %}
+			    </b-collapse>
+			    
+			    {% endif %}
+			    {% endfor %}
+			</ul>
+
+		    </div>
+
+		    <keep-alive>
+			<component :is="currentViewRating" v-bind="currentPropertiesRating"></component>
+		    </keep-alive>
+
+		</div>
+
+
+
+		
 	    </div>
-	    {% endif %}
-
-	    {% if user.is_authenticated %}
-	    <keep-alive>
-		<component :is="currentViewRating" v-bind="currentPropertiesRating"></component>
-	    </keep-alive>
-	    {% endif %}
+	    
 	    
 	</div>
 
-	
     </div>
-
-
-    <br>
-    <br>
-    
-    
 </div>
+
 
 
 {% endblock content %}
 
 {% block scripts %}
-
-{% if user.is_authenticated %}
 
 <script>
  var album_update_cover_url = "{% url 'albums:update_cover' %}"
@@ -405,23 +366,5 @@
 
  
 </script>
-
-{% else %}
-
-<script src="{% static 'js/polyfill.min.js' %}"></script>
-<script src="{% static 'js/bootstrap-vue.min.js' %}"></script>
-
-
-<script>
-
- var vm = new Vue({
-     delimiters : ['[[', ']]'],
-     el : '#app',
- })
- 
-</script>
-
-
-{% endif %}
 
 {% endblock %}

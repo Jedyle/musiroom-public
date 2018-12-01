@@ -1,0 +1,272 @@
+{% extends 'base.html' %}
+
+{% load i18n %}
+{% load staticfiles %}
+{% load cache %}
+{% load activity_tags %}
+{% load core_tags %}
+{% load compress %}
+
+{% block extrahead %}
+<link type="text/css" rel="stylesheet" href="{% static 'css/bootstrap-vue.css' %}"/>
+
+<style>
+ /* Full height image header */
+ .bgimg-1 {
+     background-position: center;
+     background-size: cover;
+     background-image: url("{% static 'images/home-vinyl.jpg' %}");
+     min-height: 100%;
+ }
+ .w3-bar .w3-button {
+     padding: 16px;
+ }
+</style>
+
+{% endblock %}
+
+
+{% block main_bg %}
+w3-light-gray
+{% endblock %}
+
+{% block body_title %}
+
+<!-- Header with full-height image -->
+
+<br>
+
+<div class="jumbotron jumbotron-fluid bgimg-1">
+    <div class="container">
+	<h1 class="display-4 text-center" style="color : white">Rejoignez des passionnés de musique.</h1>
+	<p class="lead text-center" style="color : white">Découvrez, notez, critiquez.</p>
+	<p class="lead text-center"><a href="/profil/inscription/" class="btn btn-lg btn-light">Inscrivez-vous</a></p>
+	<p class="lead text-center" style="color:white">Nouveau : vous avez un compte Senscritique ? Exportez vos notes sur La Musithèque !</p>
+    </div>
+</div>
+
+
+{% endblock %}
+
+{% block content %}
+
+<div class="col-sm-12 col-md-10 offset-md-1">
+    
+
+    <div class="row bg-white">
+
+	<div class="col-12">
+	    <h1 class="text-center">Découvrez les dernières nouveautés</h1>
+
+	    <br>
+	</div>
+	
+	{% for album in albums %}
+
+	{% if album.cover != "" %}
+
+	<div class="col-4 col-sm-4 col-md-3 col-lg-2 regular-gutter">
+	    <a title="{{album.title}}" href="{% url 'albums:album' album.mbid %}" class="thumbnail"><img class="responsive" src="{% static 'images/loading.gif' %}" alt="{{ album.title }}" data-src="{{ album.get_cover }}"></a>
+	</div>    
+	
+	{% endif %}
+	
+	{% endfor %}
+    </div>
+    
+    <div class="row bg-light">
+
+	<div class="col-12">
+	    <br>
+	    <br>
+
+	</div>
+	<div class="col-3 w3-center">
+	    <i class="fas fa-headphones teal w3-margin-bottom w3-jumbo w3-center"></i>
+	    <p class="w3-large">Découvrez</p>
+	    <p>Explorez la collection d'oeuvres du site et trouvez sans cesse de nouvelles choses à écouter.</p>
+	</div>
+	<div class="col-3 w3-center">
+	    <i class="far fa-star w3-margin-bottom w3-jumbo"></i>
+	    <p class="w3-large">Critiquez</p>
+	    <p>Tenez à jour votre musithèque. Notez, critiquez et écrivez sur les albums que vous avez écoutés.</p>
+	</div>
+	<div class="col-3 w3-center">
+	    <i class="fas fa-users sanguine w3-margin-bottom w3-jumbo"></i>
+	    <p class="w3-large">Rejoignez le réseau</p>
+	    <p>Suivez les membres dont l'avis vous importe. Discutez de musique entre passionnés sur le forum. Partagez vos découvertes sur le site et en dehors.</p>
+	</div>
+	<div class="col-3 w3-center">
+	    <i class="fas fa-comment w3-margin-bottom w3-jumbo"></i>
+	    <p class="w3-large">Votre avis compte</p>
+	    <p>Nous travaillons sans cesse pour vous offrir la meilleure expérience utilisateur. Nous sommes très récéptif à vos suggestions pour améliorer le site.</p>
+	</div>
+
+	<div class="col-12">
+	    <br>
+
+
+	</div>
+    </div>
+
+    {% if all_feed %}	    
+    <div class="row bg-white" id="app">
+
+	<div class="col-6">
+	    <h2 class="text-center">Dernière activité</h2>
+		
+		<ul class="list-group">
+		    
+		    {% for action in all_feed %}
+		    <li class="list-group-item">
+			{% display_action action %}
+		    </li>
+		    {% endfor %}
+		    
+		</ul>
+		<p class="text-right"> <a href="{% url 'live' %}">Voir l'historique</a>
+		</p>
+	</div>
+
+
+	<div class="col-6">
+	<h2 class="text-center">Dernières critiques</h2>
+
+	    <ul class="list-group" v-cloak>
+
+		{% for review in reviews %}
+		{% if review.reviews|length == 1 %}
+		{% with album=review.reviews.0.rating.rating.content_object rev=review.reviews.0 %}
+		<li class="list-group-item">
+		    <div class="d-flex">
+			<div style="min-width:70px">
+			    <div style="width:50px; height:50px; background-image: url({{ review.account.get_avatar }}); background-size:cover; background-position : center;"></div></div>
+			    <div class="flex-grow-1">
+				<a href="{% url 'albums:review' album.mbid rev.id %}">{{ rev.title }}</a> par <a href="{% url 'profile' review.user.username %}">{{review.user}}</a>
+				sur l'album
+				<a slot="preview" href="{% url 'albums:album' album.mbid %}">{{album.title}}</a>
+			    </div>
+		    </div>
+		</li>
+		{% endwith %}
+		{% else %}
+		<li class="list-group-item" v-b-toggle="'rev-{{review.user}}'">
+		    <div class="d-flex">
+			<div style="min-width:70px">
+			    <div style="width:50px; height:50px; background-image: url({{ review.account.get_avatar }}); background-size:cover; background-position : center;"></div></div>
+			    <div class="flex-grow-1">
+				<a @click.stop href="{% url 'profile' review.user.username %}">{{review.user}}</a> a critiqué {% if review.reviews|length >= 15 %}plus de {% endif %}{{review.reviews|length}} albums.
+				<a href="#" @click.prevent><span class="menu-ico-collapse"><i class="fa fa-chevron-down"></i></span></a>
+			    </div>
+		    </div>
+		</li>
+		<b-collapse id="rev-{{review.user}}">
+		    {% for rev in review.reviews %}
+		    {% with album=rev.rating.rating.content_object %}
+		    <li class="list-group-item sub-item">
+			<div class="d-flex">
+			    <div style="min-width:30px">
+			    </div>
+			    <div style="min-width:50px">
+				<div style=" width:30px; height:30px; background-image: url({{ review.account.get_avatar }}); background-size:cover; background-position : center;"></div>
+			    </div>
+			    <div class="flex-grow-1">
+				<a href="{% url 'albums:review' album.mbid rev.id %}">{{ rev.title }}</a> à propos de l'album
+				<a slot="preview" href="{% url 'albums:album' album.mbid %}">{{album.title}}</a>
+			    </div>
+			</div>
+		    </li>
+		    {% endwith %}
+		    {% endfor %}
+		</b-collapse>
+		{% endif %}
+		{% endfor %}
+	    </ul>
+
+	    <p class="text-right"><a href="{% url 'reviews:latest_reviews' %}">Voir plus</a></p>
+
+	    <h2 class="text-center">Dernières notes</h2>
+		<ul class="list-group" v-cloak>
+		    {% for rating in ratings %}
+		    {% if rating.ratings|length <= 1 %}
+		    {% with album=rating.ratings.0.rating.content_object rating_=rating.ratings.0 %}
+		    <li class="list-group-item">
+			<div class="d-flex">
+			    <div style="min-width:70px">
+				<div style="width:50px; height:50px; background-image: url({{ rating.account.get_avatar }}); background-size:cover; background-position : center;"></div>
+			    </div>
+			    <div class="flex-grow-1">
+				<a href="{% url 'profile' rating.user.username %}">{{rating.user}}</a> à donné la note de <strong>{{rating_.score}}</strong> à l'album <a href="{% url 'albums:album' album.mbid %}">{{album.title}}</a>
+			    </div>
+			</div>
+		    </li>
+		    {% endwith %}
+		    {% else %}
+
+		    <li class="list-group-item" v-b-toggle="'rat-{{rating.user}}'">
+			<div class="d-flex">
+			    <div style="min-width:70px">
+				<div style="width:50px; height:50px; background-image: url({{ rating.account.get_avatar }}); background-size:cover; background-position : center;"></div></div>
+				<div class="flex-grow-1">
+				    <a @click.stop href="{% url 'profile' rating.user.username %}">{{rating.user}}</a> a noté {% if rating.ratings|length >= 15 %}plus de {% endif %}{{rating.ratings|length}} albums.
+				    <a href="#" @click.prevent><span class="menu-ico-collapse"><i class="fa fa-chevron-down"></i></span></a>
+				</div>
+			</div>
+		    </li>
+		    <b-collapse id="rat-{{rating.user}}">
+			{% for rat in rating.ratings %}
+			{% with album=rat.rating.content_object %}
+			<li class="list-group-item sub-item">
+
+			    <div class="d-flex">
+				<div style="min-width:30px">
+				</div>
+				<div style="min-width:50px">
+				    <div style=" width:30px; height:30px; background-image: url({{ rating.account.get_avatar }}); background-size:cover; background-position : center;"></div>
+				</div>
+				<div class="flex-grow-1">
+				    <a href="{% url 'profile' rating.user.username %}">{{rating.user}}</a> à donné la note de <strong>{{rat.score}}</strong> à l'album <a href="{% url 'albums:album' album.mbid %}">{{album.title}}</a>
+				</div>
+			    </div>
+			    
+			</li>
+			{% endwith %}
+			{% endfor %}
+		    </b-collapse>
+		    
+		    {% endif %}
+		    {% endfor %}
+		</ul>
+
+	</div>
+	
+    </div>
+    
+    {% endif %}
+    
+    
+    
+</div>
+
+
+
+
+
+{% endblock content %}
+
+{% block scripts %}
+
+<script src="{% static 'js/polyfill.min.js' %}"></script>
+<script src="{% static 'js/bootstrap-vue.min.js' %}"></script>
+
+
+<script>
+
+ var vm = new Vue({
+     delimiters : ['[[', ']]'],
+     el : '#app',
+ })
+ 
+</script>
+
+{% endblock %}
