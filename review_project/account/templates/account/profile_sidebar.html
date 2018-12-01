@@ -9,10 +9,12 @@
 	{% if is_followed is True %}<p class="text-center"><span class="label label-success">Vous suit</span></p>{% endif %}
     </div>
     <ul class="list-group list-group-flush">
-	{% if profile.user.first_name or profile.user.last_name and profile.display_name %}
+	{% if  profile.display_name %}
+	{% if profile.user.first_name or profile.user.last_name and %}
 	<li class="list-group-item text-center">
 	    {{ profile.user.first_name }} {{ profile.user.last_name }}
 	</li>
+	{% endif %}
 	{% endif %}
 	{% if profile.sex != 'N' and profile.display_sex %}
 	<li class="list-group-item text-center">
