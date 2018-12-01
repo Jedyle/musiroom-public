@@ -266,36 +266,39 @@ class ParseAlbum:
         tables = soup.find_all('table', {'class' : 'tbl'})
         lists = []
         for table in tables:
-            subh = table.tbody.find('tr', {'class' : 'subh'}).find_all('th')
-            title_index = 0
-            duration_index = 0
-            for i in range(len(subh)):
-                if subh[i].text == 'Title':
-                    title_index = i
-                if subh[i].text == 'Length':
-                    duration_index = i
-                    
-            tracks = table.tbody.find_all('tr')[1:]
-            cd = []
-            for track in tracks:
-                try:
-                    cols = track.find_all('td')
-                    title = cols[title_index].a.text
-                    cd.append({
-                        'title' : title,
-                        'duration' : cols[duration_index].text,
-                        })
-                except IndexError:
-                    pass
-            name = table.find_all('span', {'class' : 'medium-name' })
-            if name:
-                title = name[0].text
-            else:
-                title = ""
-            lists.append({
-                'medium_title' : title,
-                'tracks' : cd,
-                })
+            try: 
+                subh = table.tbody.find('tr', {'class' : 'subh'}).find_all('th')
+                title_index = 0
+                duration_index = 0
+                for i in range(len(subh)):
+                    if subh[i].text == 'Title':
+                        title_index = i
+                    if subh[i].text == 'Length':
+                        duration_index = i
+
+                tracks = table.tbody.find_all('tr')[1:]
+                cd = []
+                for track in tracks:
+                    try:
+                        cols = track.find_all('td')
+                        title = cols[title_index].a.text
+                        cd.append({
+                            'title' : title,
+                            'duration' : cols[duration_index].text,
+                            })
+                    except IndexError:
+                        pass
+                name = table.find_all('span', {'class' : 'medium-name' })
+                if name:
+                    title = name[0].text
+                else:
+                    title = ""
+                lists.append({
+                    'medium_title' : title,
+                    'tracks' : cd,
+                    })
+            except Exception:
+                pass
         return {'track_list' : lists}
 
     def get_type(self):
