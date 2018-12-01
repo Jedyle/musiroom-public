@@ -48,6 +48,7 @@
 	<link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
 	<link rel="stylesheet" href="{% static 'css/fontawesome-all.css' %}">
 	<link rel="stylesheet" href="{% static 'css/w3.min.css' %}">
+	<link rel="stylesheet" href="{% static 'css/navbar_style.css' %}">
 	<link rel="stylesheet" href="{% static 'css/style.css' %}">
 
 	<link rel="stylesheet" href="{% static 'css/css-loader.css' %}">
@@ -80,7 +81,7 @@
 	
 	<header>
 
-	    <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
+	    <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark pl-0 pl-lg-3">
 		<a class="navbar-brand color-sanguine" href="/">La Musithèque</a>
 
 		{% if user.is_authenticated %}
