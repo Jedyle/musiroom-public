@@ -318,7 +318,7 @@ CELERY_BEAT_SCHEDULE = {
     },
     'notif-inactive-users' : {
         'task' : 'account.tasks.send_email_to_inactive_user',
-        'schedule': crontab(day_of_month=1),
+        'schedule': crontab(day_of_month=1, hour=1, minute=1),
         }
 }
 
