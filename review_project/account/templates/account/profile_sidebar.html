@@ -10,7 +10,7 @@
     </div>
     <ul class="list-group list-group-flush">
 	{% if  profile.display_name %}
-	{% if profile.user.first_name or profile.user.last_name and %}
+	{% if profile.user.first_name or profile.user.last_name %}
 	<li class="list-group-item text-center">
 	    {{ profile.user.first_name }} {{ profile.user.last_name }}
 	</li>
