@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% load bootstrap_tags %}
+
+{% block title %}
+Inscrivez-vous
+{% endblock %}
+
+{% block body_title %}
+
+<div class="jumbotron jumbotron-fluid">
+    <div class="container">
+        <h1 class="text-center rounded display-4">Rejoignez La Musithèque</h1>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block content %}
+
+<div class="col-md-12 col-lg-6 offset-lg-3 bg-light border">
+    <h1 class="text-center">Inscrivez-vous</h1>
+
+    {% if error == True %}
+    <div class="alert alert-danger">
+        Un ou plusieurs champs sont incorrects.
+    </div>
+    {% endif %}
+
+    <form action="{% url 'register' %}" method="post">
+        {% csrf_token %}
+        {{form|as_bootstrap}}
+        <input class="form-control" type="submit" value="Valider"/>
+
+    </form>
+
+    <br><br>
+</div>
+
+{% endblock %}

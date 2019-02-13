@@ -1,0 +1,332 @@
+{% extends 'account/profile_base.html' %}
+
+{% load staticfiles %}
+{% load core_tags %}
+{% load pinax_badges_tags %}
+{% load custom_badges_tags %}
+
+{% block extrahead %}
+<link type="text/css" rel="stylesheet" href="{% static 'css/bootstrap-vue.css' %}"/>
+{% endblock %}
+
+{% block title %}
+Profil de {{profile.user.username}}
+{% endblock %}
+
+{% block profile_sidebar %}
+
+{% include 'account/profile_sidebar.html' with profile=profile follows=follows is_followed=is_followed %}
+
+{% endblock %}
+
+{% block profile_content %}
+
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-10">
+
+        <ul class="nav nav-pills sanguine" v-cloak>
+            <li class="nav-item">
+                <a class="nav-link" :class="{ 'active' : (currentView === 'profile') }" href="#"
+                   @click.prevent="currentView = 'profile'">Profil</a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true"
+                   aria-expanded="false">[[ currentDropDown ]]</a>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" :class="{ 'active' : (currentView === 'ratings') }" href="#"
+                       @click.prevent="currentView = 'ratings'">Notes</a>
+                    <a class="dropdown-item" :class="{ 'active' : (currentView === 'reviews') }" href="#"
+                       @click.prevent="currentView = 'reviews'">Critiques</a>
+                    <a class="dropdown-item" :class="{ 'active' : (currentView === 'lists') }" href="#"
+                       @click.prevent="currentView = 'lists'">Listes</a>
+                    <a class="dropdown-item" :class="{ 'active' : (currentView === 'interests') }" href="#"
+                       @click.prevent="currentView = 'interests'">Envies</a>
+                </div>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" :class="{ 'active' : (currentView === 'discussions') }" href="#"
+                   @click.prevent="currentView = 'discussions'">Discussions</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" :class="{ 'active' : (currentView === 'contacts') }" href="#"
+                   @click.prevent="currentView = 'contacts'">Contacts</a>
+            </li>
+        </ul>
+
+        <hr>
+
+        <h3 class="text-center" v-cloak>[[ displayCurrentView ]]</h3>
+
+        <hr>
+
+        <div v-show="currentView === 'profile'">
+            <br>
+
+            <div class="bg-light">
+                {{ profile.description|linebreaks|urlize }}
+            </div>
+
+            {% if profile.user == user %}
+            <a class="btn btn-success" href="{% url 'lists:create_list' %}">Nouvelle liste</a>
+
+            <br>
+            {% endif %}
+            <br>
+
+
+            <ul>
+                <li>{{ nb_ratings }} albums notés</li>
+                <li>{{ nb_reviews }} critiques</li>
+            </ul>
+
+            <div class="row">
+
+                <div class="col-12 col-md-6">
+
+                    {% if top_10|length != 0 %}
+
+                    <h3 class="text-center">Ses albums préférés</h3>
+
+                    <ul class="list-group">
+                        {% for item in top_10 %}
+                        <li class="list-group-item">
+                            <img src="{% static 'images/loading.gif' %}" data-src="{{ item.album.get_cover }}"
+                                 style="height : 50px"> &nbsp <a href="{% url 'albums:album' item.album.mbid %}">{{
+                            item.album.very_verbose_name }}</a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+
+                    <p class="text-right mt-2"><a href="{% url 'lists:display_list' profile.top_albums.id %}">Voir son
+                        top</a></p>
+
+                    {% endif %}
+
+                </div>
+
+                <div class="col-12 col-md-6" id="badges">
+                    {% distinct_badges_for_user profile.user as badges %}
+                    <h3 class="text-center">Badges ({{ badges.count }})</h3>
+
+                    <div class="row">
+                        {% for badge in badges %}
+                        {% with badge.description as desc %}
+                        <div class="col-4 regular-gutter">
+                            <a href="#" @click.prevent v-b-popover.focus="`{{ badge.description }}`"
+                               title="{{badge.name}}"><img title="{{badge.name}}" class="responsive"
+                                                           src="{{ badge|badge_image }}"></a>
+                        </div>
+                        {% endwith %}
+                        {% endfor %}
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <keep-alive>
+            <component :is="currentView" v-bind="currentProperties"></component>
+        </keep-alive>
+
+    </div>
+</div>
+
+<br>
+
+
+{% endblock %}
+
+
+{% block scripts %}
+
+<script>
+ //variables
+
+ var album_data_url = "{% url 'albums:album_data' %}"
+ 
+
+</script>
+
+<script src="{% static 'js/polyfill.min.js' %}"></script>
+<script src="{% static 'js/bootstrap-vue.min.js' %}"></script>
+
+<!-- Modal -->
+<script src="{% static 'trumbowyg/trumbowyg/dist/trumbowyg.min.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue-trumbowyg@3"></script>
+<script src="{% static 'trumbowyg/trumbowyg/dist/langs/fr.min.js' %}"></script>
+<script src="{% static 'js/utilities.js' %}"></script>
+<script src="{% static 'ratings/js/reviewTab.js' %}"></script>
+<script src="{% static 'lists/js/listsTab.js' %}"></script>
+<script src="{% static 'js/modal.js' %}"></script>
+<script src="{% static 'ratings/js/reviewModal.js' %}"></script>
+
+<script src="{% static 'js/vuejs-paginate.js' %}"></script>
+<script src="{% static 'js/circle_thumbnail.js' %}"></script>
+<script src="{% static 'ajax_follower/js/toggleFollowButton.js' %}"></script>
+<script src="{% static 'star-ratings/js/star-rating-popover.min.js' %}"></script>
+<script src="{% static 'albums/js/toggleUserInterest.js' %}"></script>
+<script src="{% static 'js/popover.js' %}"></script>
+<script src="{% static 'albums/js/album_popover.js' %}"></script>
+<script src="{% static 'ajax_follower/js/contacts.js' %}"></script>
+<script src="{% static 'lists/js/lists.js' %}"></script>
+<script src="{% static 'discussions/js/discussions.js' %}"></script>
+<script src="{% static 'ratings/js/reviewPreviewUser.js' %}"></script>
+<script src="{% static 'ratings/js/ratingPreview.js' %}"></script>
+<script src="{% static 'ratings/js/reviewList.js' %}"></script>
+<script src="{% static 'albums/js/interestsPreview.js' %}"></script>
+
+<script>
+
+ axios.defaults.xsrfHeaderName = "X-CSRFToken";
+ 
+
+ var vue_sidebar_profile = new Vue({
+     delimiters : ['[[', ']]'],
+     el : '#sidebar-profile-app',
+     components : {
+	 'togglefollow' : toggleFollowButton
+     },
+     data : {
+	 content : '',
+     }
+
+ })
+
+
+ var ratings = {
+     delimiters : ['[[', ']]'],
+     components : {
+	 ratingpreview, reviewslist
+     },
+     template : `
+	 <div>
+	     <reviewslist
+		 :component="ratingpreview"
+			 reviewlisturl="{% url 'reviews:user_rating_list' profile.user.username %}"
+		 :sort_methods="[ { id : 'byrating_desc', name : 'les meilleures notes' }, { id : 'byrating_asc', name : 'les moins bonnes notes' }, { id : 'bylastmodif', name : 'dernières modifications' }]">
+	     </reviewslist>
+	 </div>
+     `,
+     mounted : function(){
+     }
+ }
+
+ var reviews = {
+     delimiters : ['[[', ']]'],
+     components : {
+	 reviewpreviewuser, reviewslist
+     },
+     template : `
+	 <div>
+	     <reviewslist
+		 :component="reviewpreviewuser"
+			 reviewlisturl="{% url 'reviews:user_review_list' profile.user.username %}"
+		 :sort_methods="[ { id : 'byrating_desc', name : 'les meilleures notes' }, { id : 'byrating_asc', name : 'les moins bonnes notes' }, { id : 'byscore_desc', name : 'les plus populaires' }, { id : 'bylastmodif', name : 'les plus récentes' }]">
+	     </reviewslist>
+	 </div>
+     `,
+     mounted : function(){
+     }
+ }
+
+ var interests = {
+     delimiters : ['[[', ']]'],
+     components : {
+	 interestspreview, reviewslist
+     },
+     template : `
+	 <div>
+	     <reviewslist
+		 :component="interestspreview"
+			 reviewlisturl="{% url 'reviews:user_interest_list' profile.user.username %}"
+		 :sort_methods="[{ id : 'bylastmodif', name : 'les plus récentes' }]">
+	     </reviewslist>
+	 </div>
+     `,
+     mounted : function(){
+     }
+ }
+ 
+ var vue_content_profile = new Vue({
+     delimiters : ['[[', ']]'],
+     el : '#content-profile-app',
+     data : {
+	 currentView : 'profile',
+     },
+     computed : {
+	 currentProperties : function(){
+	     if (this.currentView === 'contacts'){
+		 return {
+		     url : "{% url 'ajax_follower:ajax_contacts' profile.user.username %}",
+		 }
+	     }
+	     else if (this.currentView === 'lists'){
+		 return {
+		     url : "{% url 'lists:ajax_user_lists' %}",
+		     user_is_profile : {% if profile.user == user %}true{% else %}false{% endif %},
+		     create_url : "{% url 'lists:create_list' %}",
+		     username : "{{ profile.user.username}}",
+		 }
+	     }
+	     else if (this.currentView === 'discussions'){
+		 return {
+		     url : "{% url 'discussions:ajax_user_discussions' %}",
+		     user_is_profile : {% if profile.user == user %}true{% else %}false{% endif %},
+		     create_url : "{% url 'discussions:create_discussion' %}",
+		     username : "{{ profile.user.username}}",
+		 }
+	     }
+	 },
+	 displayCurrentView : function(){
+	     switch(this.currentView){
+		 case 'contacts' :
+		     return 'Contacts';
+		 case 'lists':
+		     return 'Listes';
+		 case 'discussions':
+		     return 'Discussions';
+		 case 'profile':
+		     return 'Profil';
+		 case 'ratings' :
+		     return 'Notes';
+		 case 'reviews':
+		     return 'Critiques';
+		 case 'interests':
+		     return 'Envies';
+		 default:
+		     return 'Musithèque';
+	     }
+	 },
+	 currentDropDown : function(){
+	     switch(this.currentView){
+		 case 'ratings':
+		     return 'Notes';
+		 case 'reviews':
+		     return 'Critiques';
+		 case 'lists':
+		     return 'Listes';
+		 case 'interests':
+		     return 'Envies';
+		 default:
+		     return 'Musithèque';
+	     }
+	 }
+     },
+     components : {
+	 ratings,
+	 reviews,
+	 lists,
+	 interests,
+	 discussions,
+	 contacts,
+	 album_popover,
+	 popover,
+     }
+ })
+ 
+
+</script>
+
+{% endblock %}
