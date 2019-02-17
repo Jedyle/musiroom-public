@@ -3,7 +3,8 @@ from django.apps import apps as django_apps
 
 
 class AccountConfig(AppConfig):
-    name = 'account'
+    name = 'profile'
+    label = 'profile'
 
     def ready(self):
         from actstream import registry

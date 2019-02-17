@@ -5,7 +5,7 @@ from django.http import JsonResponse, HttpResponseNotFound
 from django.urls import reverse
 from notifications.signals import notify
 
-from account.utils import same_notifications
+from profile.utils import same_notifications
 from friendship.models import Follow
 
 

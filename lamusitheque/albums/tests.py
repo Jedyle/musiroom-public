@@ -22,7 +22,7 @@ ex : Cult of Luna & Julie Christmas, le lien ne pointe que vers CoL
 
 class AlbumViewTest(TestCase):
 
-    # chaque user créé a un account, et les deux sont liés
+    # chaque user créé a un profile, et les deux sont liés
 
     def setUp(self):
         album = Album.objects.create(mbid='f5093c06-23e3-404f-aeaa-40f72885ee3a',
@@ -69,7 +69,7 @@ class AlbumViewTest(TestCase):
 
 class ArtistViewTest(TestCase):
 
-    # chaque user créé a un account, et les deux sont liés
+    # chaque user créé a un profile, et les deux sont liés
 
     def setUp(self):
         album = Album.objects.create(mbid='f5093c06-23e3-404f-aeaa-40f72885ee3a',

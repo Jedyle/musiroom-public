@@ -55,7 +55,7 @@ DATE = datetime.now() - timedelta(days = 5)
 DATE_REVIEWS = datetime.now() - timedelta(days = 30)
 
 def compute_reviews_feed():
-    users = User.objects.filter(userrating__review__isnull=False, userrating__review__date_publication__gt=DATE_REVIEWS).distinct().annotate(last_date = Max('userrating__review__date_publication')).order_by('-last_date').select_related('account')
+    users = User.objects.filter(userrating__review__isnull=False, userrating__review__date_publication__gt=DATE_REVIEWS).distinct().annotate(last_date = Max('userrating__review__date_publication')).order_by('-last_date').select_related('profile')
 
     user_list = users[:4]
 
@@ -64,13 +64,13 @@ def compute_reviews_feed():
         reviews = Review.objects.filter(Q(rating__user=user) & Q(date_publication__gt = DATE_REVIEWS)).order_by('-date_publication').prefetch_related('rating__rating__content_object')[:15]
         user_reviews.append({
             'user' : user,
-            'account' : user.account, #mis car select related ne marche pas ...
+            'profile' : user.profile, #mis car select related ne marche pas ...
             'reviews' : reviews,
             })
     return user_reviews
 
 def compute_ratings_feed():
-    users = User.objects.filter(userrating__isnull=False, userrating__modified__gt=DATE).annotate(last_date = Max('userrating__modified')).order_by('-last_date').select_related('account')
+    users = User.objects.filter(userrating__isnull=False, userrating__modified__gt=DATE).annotate(last_date = Max('userrating__modified')).order_by('-last_date').select_related('profile')
     user_list = users[:4]
 
     user_ratings = []
@@ -78,7 +78,7 @@ def compute_ratings_feed():
         ratings = UserRating.objects.filter(Q(user=user) & Q(modified__gt = DATE)).order_by('-modified').prefetch_related('rating__content_object')[:15]
         user_ratings.append({
             'user' : user,
-            'account' : user.account, #mis car select related ne marche pas ...
+            'profile' : user.profile, #mis car select related ne marche pas ...
             'ratings' : ratings,
             })
     return user_ratings
@@ -86,7 +86,7 @@ def compute_ratings_feed():
 
 @login_required
 def ajax_followees_reviews(request):
-    users = User.objects.filter(followers__follower = request.user, userrating__review__isnull=False, userrating__review__date_publication__gt=DATE_REVIEWS).annotate(last_date = Max('userrating__review__date_publication')).order_by('-last_date').select_related('account')
+    users = User.objects.filter(followers__follower = request.user, userrating__review__isnull=False, userrating__review__date_publication__gt=DATE_REVIEWS).annotate(last_date = Max('userrating__review__date_publication')).order_by('-last_date').select_related('profile')
     user_list = users[:4]
 
     user_reviews = []
@@ -106,14 +106,14 @@ def ajax_followees_reviews(request):
         user_reviews.append({
             'username' : user.username,
             'profile_url' : reverse('profile', args=[user.username]),
-            'avatar' : user.account.get_avatar(),
+            'avatar' : user.profile.get_avatar(),
             'reviews' : reviews_data,
             })
     return JsonResponse({'users' : user_reviews})
     
 @login_required
 def ajax_followees_ratings(request):
-    users = User.objects.filter(followers__follower = request.user, userrating__isnull=False, userrating__modified__gt=DATE).annotate(last_date = Max('userrating__modified')).order_by('-last_date').select_related('account')
+    users = User.objects.filter(followers__follower = request.user, userrating__isnull=False, userrating__modified__gt=DATE).annotate(last_date = Max('userrating__modified')).order_by('-last_date').select_related('profile')
     user_list = users[:4]
 
     user_ratings = []
@@ -131,7 +131,7 @@ def ajax_followees_ratings(request):
         user_ratings.append({
             'username' : user.username,
             'profile_url' : reverse('profile', args=[user.username]),
-            'avatar' : user.account.get_avatar(),
+            'avatar' : user.profile.get_avatar(),
             'ratings' : ratings_data,
             })
     return JsonResponse({'users' : user_ratings})

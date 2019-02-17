@@ -15,7 +15,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from django.views.decorators.cache import cache_page
 
-from account.views import search_account
+from profile.views import search_account
 from lists.models import ItemList
 from ratings.models import Review
 from ratings.utils import rating_for_followees_list

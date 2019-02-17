@@ -10,7 +10,7 @@ Modifier votre profil
 
 {% block profile_sidebar %}
 
-{% include 'account/profile_sidebar.html' with profile=user.account %}
+{% include 'account/profile_sidebar.html' with profile=user.profile %}
 {% endblock %}
 
 {% block profile_content %}
@@ -30,8 +30,8 @@ Modifier votre profil
 
     {{ account_form|as_bootstrap }}
 
-    {% if user.account.avatar %}
-    <img id="preview" src="{{ user.account.avatar.url }}" width="150px"/>
+    {% if user.profile.avatar %}
+    <img id="preview" src="{{ user.profile.avatar.url }}" width="150px"/>
     {% else %}
     <img id="preview" src="" width="150px"/>
     {% endif %}

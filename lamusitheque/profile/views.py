@@ -1,43 +1,22 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.models import User
-from django.contrib.sites.shortcuts import get_current_site
-from django.core.mail import EmailMessage
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db import transaction
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template.loader import render_to_string
-from django.utils.encoding import force_bytes, force_text
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_text
+from django.utils.http import urlsafe_base64_decode
 
 from friendship.models import Follow
 from lists.models import ItemList, ListObject
+from profile.email import send_activation_email
 from ratings.models import Review
 from star_ratings.models import UserRating
 from .forms import RegistrationForm, EditUserForm, EditAccountForm, PasswordConfirmForm
-from .models import Account
+from .models import Profile
 from .tokens import account_activation_token
-
-
-def send_activation_email(request, user):
-    """
-    Send an activation email to the newly registrated user
-    :param request: the request object
-    :param user: a (not active) user
-    :return: nothing, sends an activation email to the user
-    """
-    current_site = get_current_site(request)
-    mail_subject = 'Activez votre compte.'
-    message = render_to_string('account/acc_active_email.html', {
-        'user': user,
-        'domain': current_site.domain,
-        'uid': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
-        'token': account_activation_token.make_token(user),
-    })
-    to_email = user.email
-    email = EmailMessage(mail_subject, message, to=[to_email])
-    email.send()
 
 
 def resend_email(request, username):
@@ -51,9 +30,9 @@ def resend_email(request, username):
     if request.user.is_authenticated and request.user != user:
         return redirect('/')
     if user.is_active:
-        return render(request, 'account/already_confirmed.html', {})
+        return render(request, 'profile/already_confirmed.html', {})
     send_activation_email(request, user)
-    return render(request, 'account/confirm_email.html', {'email': user.email, 'user': user})
+    return render(request, 'profile/confirm_email.html', {'email': user.email, 'user': user})
 
 
 @transaction.atomic
@@ -72,17 +51,17 @@ def register(request):
             addr = form.cleaned_data.get('email')
             password = form.cleaned_data.get('password')
             user = User.objects.create_user(username=username, password=password, email=addr, is_active=False)
-            profile = Account(user=user)
+            profile = Profile(user=user)
             top_albums = ItemList(user=user, title="Top Albums de " + user.username, ordered=True)
             top_albums.save()
             profile.top_albums = top_albums
             profile.save()
             send_activation_email(request, user)
-            return render(request, 'account/confirm_email.html', {'email': addr, 'user': user})
+            return render(request, 'profile/confirm_email.html', {'email': addr, 'user': user})
         else:
-            return render(request, 'account/registration_form.html', {'form': form, 'error': True})
+            return render(request, 'profile/registration_form.html', {'form': form, 'error': True})
     else:
-        return render(request, 'account/registration_form.html', {'form': RegistrationForm()})
+        return render(request, 'profile/registration_form.html', {'form': RegistrationForm()})
 
 
 def activate(request, uidb64, token):
@@ -110,7 +89,7 @@ def activate(request, uidb64, token):
 
 
 def registration_complete(request):
-    return render(request, 'account/registration_complete.html')
+    return render(request, 'profile/registration_complete.html')
 
 
 @login_required
@@ -126,7 +105,7 @@ def profile(request, username):
     :return:
     """
     user = get_object_or_404(User, username=username)
-    profile = user.account
+    profile = user.profile
     if request.user.is_authenticated:
         is_followed = Follow.objects.follows(user, request.user)
         follows = Follow.objects.follows(request.user, user)
@@ -143,7 +122,7 @@ def profile(request, username):
         'nb_reviews': Review.objects.filter(rating__user=user).count(),
         'nb_ratings': UserRating.objects.filter(user=user).count(),
     }
-    return render(request, 'account/profile.html', context)
+    return render(request, 'profile/profile.html', context)
 
 
 @login_required
@@ -152,12 +131,12 @@ def edit_profile(request):
     context = {}
     if request.method == 'POST':
         user_form = EditUserForm(request.POST, instance=request.user)
-        account_form = EditAccountForm(request.POST, request.FILES, instance=request.user.account)
+        account_form = EditAccountForm(request.POST, request.FILES, instance=request.user.profile)
         if user_form.is_valid() and account_form.is_valid():
             user_form.save()
             account_form.save()
             context['user_form'] = EditUserForm(instance=request.user)
-            context['account_form'] = EditAccountForm(instance=request.user.account)
+            context['account_form'] = EditAccountForm(instance=request.user.profile)
             context['success'] = True
         else:
             context['user_form'] = user_form
@@ -165,9 +144,9 @@ def edit_profile(request):
             context['success'] = False
     else:
         context['user_form'] = EditUserForm(instance=request.user)
-        context['account_form'] = EditAccountForm(instance=request.user.account)
+        context['account_form'] = EditAccountForm(instance=request.user.profile)
         context['success'] = None
-    return render(request, 'account/edit_profile_form.html', context)
+    return render(request, 'profile/edit_profile_form.html', context)
 
 
 @login_required
@@ -182,17 +161,17 @@ def edit_settings(request):
             context['password_success'] = True
         else:
             context['password_success'] = False
-        return render(request, 'account/edit_settings_form.html', context)
+        return render(request, 'profile/edit_settings_form.html', context)
     else:
         context['password_form'] = PasswordChangeForm(user=request.user)
         context['password_success'] = None
-        return render(request, 'account/edit_settings_form.html', context)
+        return render(request, 'profile/edit_settings_form.html', context)
 
 
 @login_required
 def user_exports(request):
     exports = request.user.exports.all().order_by('-created_at')
-    return render(request, 'account/user_exports.html', {'exports': exports})
+    return render(request, 'profile/user_exports.html', {'exports': exports})
 
 
 @login_required
@@ -203,16 +182,16 @@ def delete_account(request):
         if password_confirm.is_valid():
             password = password_confirm.cleaned_data.get('password')
             if request.user.check_password(password):
-                request.user.account.top_albums = None  # prevents models.PROTECT to be triggered
-                request.user.account.save()
+                request.user.profile.top_albums = None  # prevents models.PROTECT to be triggered
+                request.user.profile.save()
                 request.user.delete()
-                return render(request, 'account/deleted.html')
+                return render(request, 'profile/deleted.html')
             else:
-                return render(request, 'account/delete.html', {'form': password_confirm, 'delete_success': False})
+                return render(request, 'profile/delete.html', {'form': password_confirm, 'delete_success': False})
         else:
-            return render(request, 'account/delete.html', {'form': password_confirm, 'delete_success': False})
+            return render(request, 'profile/delete.html', {'form': password_confirm, 'delete_success': False})
     else:
-        return render(request, 'account/delete.html', {'form': PasswordConfirmForm()})
+        return render(request, 'profile/delete.html', {'form': PasswordConfirmForm()})
 
 
 @login_required
@@ -229,7 +208,7 @@ def notifications(request):
     context = {
         'notifications': notifications,
     }
-    rendered = render_to_string('account/notifications.html', context, request=request)
+    rendered = render_to_string('profile/notifications.html', context, request=request)
     p.object_list.mark_all_as_read()
     return HttpResponse(rendered)
 
@@ -266,4 +245,4 @@ def search_account(request):
             'm_type': m_type,
             'page': page,
         }
-        return render(request, 'account/search_account.html', context)
+        return render(request, 'profile/search_account.html', context)

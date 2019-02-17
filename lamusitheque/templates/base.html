@@ -98,7 +98,7 @@
 			    <a href="#" class="nav-link nav-account-img dropdown-toggle mt-0 mb-0 pt-0 pb-0" id="navbarDropdownColl" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 				<span {% if message_unread_count > 0 %}class="notif-badge" data-badge="{{message_unread_count}}"{% endif %}>
 				    <div class="profile-thumb" >
-					<img title="{{ user.username }}" src="{{ user.account.get_avatar }}">
+					<img title="{{ user.username }}" src="{{ user.profile.get_avatar }}">
 					
 				    </div>
 				</span>

@@ -148,7 +148,7 @@ class Album(models.Model):
 
     def get_cover(self):
         if self.cover:
-            return PROTOCOL + COVER_URL + '/release/' + self.cover
+            return PROTOCOL + COVER_URL + 'release/' + self.cover
         return static('albums/images/default_cover.png')
 
     def get_preview(self):

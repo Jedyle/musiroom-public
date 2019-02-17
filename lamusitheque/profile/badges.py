@@ -243,7 +243,7 @@ class Top10Badge(Badge):
 
     def award(self, **state):
         user = state["user"]
-        top = user.account.top_albums
+        top = user.profile.top_albums
         if top.albums.count() >= 10:
             return BadgeAwarded(level=1)
 

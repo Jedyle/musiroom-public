@@ -28,7 +28,7 @@ Nouvelle discussion
 {% block content %}
 
 <div class="col-4 offset-4 col-md-2 offset-md-1 mb-3">
-    <a title="{{ user.username }}" class="float-md-right" target="_blank" href="{% url 'profile' user.username %}"><span class="mx-auto company-header-avatar" style="background-image : url({{ user.account.get_avatar }}); width : 80px; height : 80px;"></span></a>
+    <a title="{{ user.username }}" class="float-md-right" target="_blank" href="{% url 'profile' user.username %}"><span class="mx-auto company-header-avatar" style="background-image : url({{ user.profile.get_avatar }}); width : 80px; height : 80px;"></span></a>
 </div>
 
 <div class="col-12 col-md-6 bg-light border pt-2">

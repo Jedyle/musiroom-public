@@ -166,27 +166,28 @@ class ParseArtistPhoto:
 
 
 class ParseSimilarArtists:
-    def __init__(self, artist_id, protocol=PROTOCOL, url=LASTFM_API_URL):
+    def __init__(self, artist_id, protocol=PROTOCOL, url=LASTFM_API_URL, limit=6):
         self.artist_id = artist_id
         self.url = protocol + url + "?method=artist.getsimilar" + "&api_key=" + LASTFM_API_KEY + "&format=json" + "&mbid=" + self.artist_id
+        self.limit = limit
 
     def load(self):
         req = requests.get(self.url)
         if req.status_code == 200:
             self.json = req.json()
-        return (req.status_code == 200)
+        return req.status_code == 200
 
     def get_artists(self):
         artists = self.json['similarartists']['artist']
         res = []
         i = 0
-        while ((len(res) < min(6, len(artists))) and (i < len(artists))):
+        while (len(res) < min(self.limit, len(artists))) and (i < len(artists)):
             try:
                 artist = artists[i]
                 name = artist['name']
                 mbid = artist['mbid']
                 image = artist['image'][-1]["#text"]
-                if (image != "" and mbid != "" and artist != ""):
+                if image != "" and mbid != "" and artist != "":
                     res.append({
                         'name': name,
                         'mbid': mbid,

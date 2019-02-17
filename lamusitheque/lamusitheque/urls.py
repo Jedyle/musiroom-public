@@ -26,7 +26,7 @@ urlpatterns = [
                   url(r'^live$', views.feed, name='live'),
                   url(r'^home_followees_reviews/', views.ajax_followees_reviews, name="home_followees_reviews"),
                   url(r'^home_followees_ratings/', views.ajax_followees_ratings, name="home_followees_ratings"),
-                  url(r'^profil/', include('account.urls')),
+                  url(r'^profil/', include('profile.urls')),
                   url(r'^messages/', include('postman.urls', namespace='postman')),
                   url(r'^musique/', include('albums.urls', namespace='albums')),
                   url(r'^notes/', include('star_ratings.urls', namespace='ratings')),

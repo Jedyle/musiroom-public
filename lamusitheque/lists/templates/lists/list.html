@@ -291,7 +291,7 @@
      description : `{{ infos.description }}`,
      user : "{{ infos.user.username }}",
      user_profile : "{% url 'profile' infos.user.username %}",
-     avatar : "{{ infos.user.account.get_avatar }}",
+     avatar : "{{ infos.user.profile.get_avatar }}",
      list_id : "{{ infos.id }}",
      ordered : {% if infos.ordered == True %}true{% else %}false{% endif %},
      nb_pages : {{nb_pages}},

@@ -72,7 +72,7 @@
 		<div class="row">
 		    <!-- Avatar -->
 		    <div class="col-12 col-md-2 mb-md-0 mb-4">
-			<circlethumb url="{{ r_user.account.get_avatar }}" size="70px"></circlethumb>
+			<circlethumb url="{{ r_user.profile.get_avatar }}" size="70px"></circlethumb>
 		    </div>
 		    <!-- Author Data -->
 		    <div class="col-12 col-md-10">
@@ -80,7 +80,7 @@
 			    <strong><a href="{% url 'profile' r_user.username %}">{{ r_user.username }}</a></strong> &nbsp; <span class="w3-tag bg-secondary">{{ review.rating.score }}</span>
 			</h5>
 			<p>
-			    {{ r_user.account.description|linebreaks|urlize  }}
+			    {{ r_user.profile.description|linebreaks|urlize  }}
 			</p>
 		    </div>
 		</div>

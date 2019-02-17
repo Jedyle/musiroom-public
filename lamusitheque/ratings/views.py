@@ -14,7 +14,7 @@ from django.db.models import Q, Avg
 from math import ceil
 from django.template.defaultfilters import floatformat
 from notifications.signals import notify
-from account.utils import same_notifications
+from profile.utils import same_notifications
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from albums.scraper import get_page_list
 

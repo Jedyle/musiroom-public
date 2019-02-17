@@ -4,13 +4,13 @@ from django.contrib.auth.views import LoginView, LogoutView, PasswordResetView, 
 
 from . import views  # import views so we can use them in urls.
 
-# app_name = 'account'
+# app_name = 'profile'
 
 urlpatterns = [
     url(r'^inscription/$', views.register, name='register'),
     url(r'^inscription/renvoyer/(?P<username>[\w_-]{3,})/$', views.resend_email, name='resend_email'),
     url(r'^inscription_complete/$', views.registration_complete, name='registration_complete'),
-    url(r'^connexion/$', LoginView.as_view(template_name='account/login.html', redirect_authenticated_user=True),
+    url(r'^connexion/$', LoginView.as_view(template_name='profile/login.html', redirect_authenticated_user=True),
         name='login'),
     url(r'^deconnexion/$', LogoutView.as_view(), name='logout'),
     url(r'^connecte/$', views.loggedin, name='loggedin'),
@@ -18,14 +18,14 @@ urlpatterns = [
     url(r'^activation/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$', views.activate,
         name='activate'),
     url(r'^parametres/$', views.edit_settings, name='edit_settings'),
-    url(r'^oublie/$', PasswordResetView.as_view(template_name='account/password_change_form.html'),
+    url(r'^oublie/$', PasswordResetView.as_view(template_name='profile/password_change_form.html'),
         name='reset_password'),
-    url(r'^oublie/fin/$', PasswordResetDoneView.as_view(template_name='account/password_reset_done.html'),
+    url(r'^oublie/fin/$', PasswordResetDoneView.as_view(template_name='profile/password_reset_done.html'),
         name='password_reset_done'),
     url(r'^oublie/confirmer/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
-        PasswordResetConfirmView.as_view(template_name='account/password_reset_confirm.html'),
+        PasswordResetConfirmView.as_view(template_name='profile/password_reset_confirm.html'),
         name='password_reset_confirm'),
-    url(r'^oublie/succes/$', PasswordResetCompleteView.as_view(template_name='account/password_reset_complete.html'),
+    url(r'^oublie/succes/$', PasswordResetCompleteView.as_view(template_name='profile/password_reset_complete.html'),
         name='password_reset_complete'),
     url(r'^supprimer/$', views.delete_account, name='delete_account'),
     url(r'^u/(?P<username>[\w_-]{3,})$', views.profile, name='profile'),

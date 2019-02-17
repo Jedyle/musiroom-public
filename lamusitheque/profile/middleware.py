@@ -13,6 +13,6 @@ class UpdateLastActivityMiddleware(object):
         assert hasattr(request,
                        'user'), 'The UpdateLastActivityMiddleware requires authentication middleware to be installed.'
         if request.user.is_authenticated:
-            account = request.user.account
+            account = request.user.profile
             account.last_activity = timezone.now()
             account.save()

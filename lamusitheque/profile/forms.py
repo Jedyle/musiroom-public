@@ -6,14 +6,14 @@ from django.contrib.auth.password_validation import get_default_password_validat
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator, MinLengthValidator, MaxLengthValidator
 
-from .models import Account, get_100_last_years
+from .models import Profile, get_100_last_years
 
 
 def ForbiddenUsernamesValidator(value):
     forbidden_usernames = ['admin', 'settings', 'news', 'about', 'help',
                            'signin', 'signup', 'signout', 'terms', 'privacy',
                            'cookie', 'new', 'login', 'logout', 'administrator',
-                           'join', 'account', 'username', 'root', 'blog',
+                           'join', 'profile', 'username', 'root', 'blog',
                            'user', 'users', 'billing', 'subscribe', 'reviews',
                            'review', 'blog', 'blogs', 'edit', 'mail', 'email',
                            'home', 'job', 'jobs', 'contribute', 'newsletter',
@@ -116,7 +116,7 @@ class EditUserForm(forms.ModelForm):
 
 class EditAccountForm(forms.ModelForm):
     class Meta:
-        model = Account
+        model = Profile
         fields = ("display_name", "birth", "display_birth", "sex", "display_sex", "description", "avatar")
         labels = {
             'display_name': 'Afficher mon nom sur mon profil',

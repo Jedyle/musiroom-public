@@ -15,7 +15,7 @@ from django.template.defaultfilters import floatformat
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db.models import Q, F
 from notifications.signals import notify
-from account.utils import same_notifications
+from profile.utils import same_notifications
 
 # Create your views here.
 

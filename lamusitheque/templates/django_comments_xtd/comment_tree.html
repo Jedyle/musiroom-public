@@ -10,7 +10,7 @@
     <div class="mr-3 mt-2">
 	{% if item.comment.user and not item.comment.is_removed %}
 	<a href="{% url 'profile' item.comment.user.username %}" target="_blank">
-	    <div style="width:50px; height:50px; background-image: url({{ item.comment.user.account.get_avatar }}); background-size:cover; background-position : center;">
+	    <div style="width:50px; height:50px; background-image: url({{ item.comment.user.profile.get_avatar }}); background-size:cover; background-position : center;">
 	    </div>
 	</a>
 	{% endif %}

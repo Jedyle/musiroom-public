@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import os
+
 from celery.schedules import crontab
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -28,6 +29,14 @@ DEBUG = True
 
 # Application definition
 
+AUTHENTICATION_BACKENDS = (
+    # Needed to login by username in Django admin, regardless of `allauth`
+    'django.contrib.auth.backends.ModelBackend',
+
+    # `allauth` specific authentication methods, such as login by e-mail
+    'allauth.account.auth_backends.AuthenticationBackend',
+)
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -36,17 +45,20 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+    'django_extensions',
     'debug_toolbar',
     'compressor',
     'django_unused_media',
     'django_forms_bootstrap',
     'rest_framework',
+    'django_filters',
+    'rest_framework_filters',
     'rest_framework.authtoken',
     'rest_auth',
     'siteflags',
     'moderation',
     'core',
-    'account',
+    'profile',
     'albums',
     'lists',
     'postman',
@@ -90,7 +102,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.locale.LocaleMiddleware',
-    'account.middleware.UpdateLastActivityMiddleware',
+    'profile.middleware.UpdateLastActivityMiddleware',
 ]
 
 INTERNAL_IPS = ['127.0.0.1']
@@ -300,11 +312,11 @@ CELERY_TIMEZONEC = 'Europe/Paris'
 
 CELERY_BEAT_SCHEDULE = {
     'update-badges': {
-        'task': 'account.tasks.update_badges',
+        'task': 'profile.tasks.update_badges',
         'schedule': crontab(minute=1, hour=2),
     },
     'notif-inactive-users': {
-        'task': 'account.tasks.send_email_to_inactive_user',
+        'task': 'profile.tasks.send_email_to_inactive_user',
         'schedule': crontab(day_of_month=1, hour=1, minute=1),
     }
 }
@@ -325,5 +337,17 @@ MIN_EXPORT_TIMEDIFF = 0
 
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 100
+    'PAGE_SIZE': 100,
+    'DEFAULT_FILTER_BACKENDS': ('rest_framework_filters.backends.RestFrameworkFilterBackend',)
+}
+
+# ALLAUTH
+
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+ACCOUNT_EMAIL_REQUIRED = True
+
+# REST AUTh
+
+REST_AUTH_SERIALIZERS = {
+    'USER_DETAILS_SERIALIZER': 'profile.api.serializers.UserProfileSerializer',
 }
