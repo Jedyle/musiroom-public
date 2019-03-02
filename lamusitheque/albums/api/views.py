@@ -1,17 +1,23 @@
+import re
+
+from django.contrib.auth.models import User
+from django.core.cache import cache
+from django.db.models import Q
 from django.http import Http404
 from django.shortcuts import get_object_or_404
+from rest_framework import generics, viewsets, mixins
 from rest_framework import status
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework.response import Response
 
 from albums.api.filters import AlbumFilter
 from albums.api.serializers import GenreSerializer, AlbumSerializer, ArtistSerializer, AlbumGenreSerializer, \
-    VoteSerializer
-from albums.models import Genre, Album, Artist, AlbumGenre
-from albums.scraper import ParseSimilarArtists
-from albums.views import load_album_if_not_exists, create_artist_from_mbid
-from lamusitheque.viewsets import CreateListRetrieveViewset, ListRetrieveViewset
+    UserInterestSerializer
+from albums.models import Genre, Album, Artist, AlbumGenre, UserInterest
+from albums.scraper import ParseSimilarArtists, ParseArtist
+from lamusitheque.apiutils.serializers import VoteSerializer
+from lamusitheque.apiutils.viewsets import CreateListRetrieveViewset, ListRetrieveViewset
 
 
 class GenreViewset(CreateListRetrieveViewset):
@@ -38,13 +44,7 @@ class AlbumViewset(ListRetrieveViewset):
         Loads album from database if exists, else gets album from musicbrainz.
         """
         mbid = self.kwargs["mbid"]
-        try:
-            album = Album.objects.get(mbid=mbid)
-        except Album.DoesNotExist:
-            album, artists = load_album_if_not_exists(mbid)
-        if album is None:
-            raise Http404("Album does not exist")
-        return album
+        return Album.objects.get_from_api(mbid)
 
     @action(detail=True, methods=['GET'])
     def real_genres(self, request, mbid=None):
@@ -53,9 +53,35 @@ class AlbumViewset(ListRetrieveViewset):
         serializer = GenreSerializer(album_genres, many=True)
         return Response(serializer.data)
 
+    def get_serializer_context(self):
+        return {
+            "request": self.request
+        }
+
+    @action(detail=True, methods=['GET', 'PUT'], permission_classes=[IsAuthenticated])
+    def user_interest(self, request, mbid=None):
+        album = self.get_object()
+        if request.method == "GET":
+            return Response({
+                "user": request.user.username,
+                "interest": album.users_interested.filter(username=request.user.username).exists()
+            })
+        elif request.method == "PUT":
+            serializer = UserInterestSerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            value = serializer.validated_data.get('value')
+            # add user interest (or get it if exists)
+            user_interest, created = UserInterest.objects.get_or_create(album=album, user=request.user)
+            if not value:  # if value=false, delete
+                user_interest.delete()
+            return Response({
+                "user": request.user.username,
+                "interest": value
+            })
+
 
 class AlbumGenreViewset(CreateListRetrieveViewset):
-    permission_classes = (IsAuthenticatedOrReadOnly, )
+    permission_classes = (IsAuthenticatedOrReadOnly,)
     serializer_class = AlbumGenreSerializer
     lookup_field = "genre__slug"
 
@@ -71,7 +97,7 @@ class AlbumGenreViewset(CreateListRetrieveViewset):
 
     def get_serializer_context(self):
         return {'request': self.request,
-                "mbid": self.kwargs['albums_mbid']}
+                'mbid': self.kwargs.get('albums_mbid')}
 
     @action(detail=True, methods=['PUT'])
     def vote(self, request, albums_mbid=None, genre__slug=None):
@@ -89,25 +115,17 @@ class AlbumGenreViewset(CreateListRetrieveViewset):
         return Response(serializer.data)
 
 
-# TODO : adapt with musicbrainz api
-
-
 class ArtistViewset(ListRetrieveViewset):
     serializer_class = ArtistSerializer
     queryset = Artist.objects.all()
     lookup_field = "mbid"
 
-    def retrieve(self, request, mbid):
+    def get_object(self):
+        mbid = self.kwargs['mbid']
         try:
-            artist = Artist.objects.get(mbid=mbid)
+            artist = Artist.objects.get_from_api(mbid)
         except Artist.DoesNotExist:
-            artist = create_artist_from_mbid(mbid, 1, "")
-        if artist is None:
-            return Response({
-                "message": "Artist does not exist"
-            }, status=status.HTTP_404_NOT_FOUND)
-        serializer = self.get_serializer(instance=artist)
-        return Response(serializer.data)
+            raise Http404
 
     @action(detail=True, methods=['get'])
     def similar(self, request, mbid=None):
@@ -131,7 +149,72 @@ class ArtistViewset(ListRetrieveViewset):
     @action(detail=True, methods=["GET"])
     def discography(self, request, mbid=None):
 
-        # TODO : make a function to scrape discography from musicbrainz
-        # allow search by "name" & page number
+        try:
+            page = int(request.GET.get('page', 1))
+        except ValueError:
+            page = 1
 
-        return Response(status=status.HTTP_501_NOT_IMPLEMENTED)
+        name = request.GET.get('search', '')
+        parser = ParseArtist(mbid, page=page, name=name)
+        if not parser.load():
+            raise Http404
+        discog = parser.get_discography()
+        artist_name = parser.get_name()
+        nb_pages = parser.get_nb_pages()
+
+        return Response({
+            "results": discog,
+            "artist": artist_name,
+            "mbid": mbid,
+            "num_pages": nb_pages,
+            "page": page,
+            "search": ""
+        })
+
+
+SLUG_ALL_VALUE = "all"
+YEAR_ALL_VALUE = "all"
+
+
+class TopAlbumsView(generics.ListAPIView):
+    serializer_class = AlbumSerializer
+
+    def get_queryset(self):
+        year = self.kwargs['year']
+        slug = self.kwargs['slug']
+        albums = Album.objects.all()
+        if year != YEAR_ALL_VALUE:
+            m = re.match(r'^([0-9]{4})s$', year)
+            if m is not None:
+                decade = int(m.group(1))
+                years = [(decade + i) for i in range(10)]
+            else:
+                years = [int(year)]
+            albums = albums.filter(release_date__year__in=years)
+
+        if slug != SLUG_ALL_VALUE:
+            genre = Genre.objects.get(slug=slug)
+            associated_genres = genre.get_all_children()
+            albums = albums.filter(Q(albumgenre__genre__in=associated_genres) & Q(albumgenre__is_genre=True))
+
+        albums = albums.filter(
+            Q(ratings__isnull=False) & Q(ratings__average__gt=1.0) & Q(ratings__count__gt=2)).order_by(
+            '-ratings__average', 'title')
+
+        cache_albums = cache.get('top_album_albums_{}_{}'.format(slug, year))
+        if cache_albums is None:
+            albums = albums.distinct().prefetch_related('artists')[:100]
+            cache.set('top_album_albums_{}_{}'.format(slug, year), albums)
+        else:
+            albums = cache_albums
+
+        return albums
+
+
+class UserInterestsViewset(viewsets.GenericViewSet, mixins.ListModelMixin):
+    serializer_class = AlbumSerializer
+
+    def get_queryset(self):
+        username = self.kwargs['users_user__username']
+        user = get_object_or_404(User, username=username)
+        return user.interests.all()

@@ -9,4 +9,4 @@ class GenreModerator(GenericModerator):
     notify_user = False
 
 
-moderation.register(Genre, GenreModerator)  # Uses default moderation settingss
+moderation.register(Genre, GenreModerator)  # Uses default moderation settings

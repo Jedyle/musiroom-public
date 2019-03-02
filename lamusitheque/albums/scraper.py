@@ -28,7 +28,7 @@ def get_page_list(nb_pages, current_page):
     page_list.append(1)
     page_list.append(nb_pages)
     for i in range(current_page - 1, current_page + 2):
-        if i > 1 and i < nb_pages:
+        if 1 < i < nb_pages:
             page_list.append(i)
     page_sorted = sorted(list(set(page_list)))
     page_sorted_with_dots = []

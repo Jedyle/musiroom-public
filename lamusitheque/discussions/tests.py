@@ -41,11 +41,11 @@ class DiscussionModelTest(TestCase):
         self.user = User.objects.create(username = 'Toto', password='12345')
         self.instance = User.objects.create(username = 'Tata', password='23456') #used as a content object for discussions (could be any other model)
     
-    def create_discussion(self, author, content_object, title='This is a test', content='Yes, this is a test'):
-        return Discussion.objects.create(author = author, content_object= content_object, title = title, content= content)
+    def create_discussion(self, user, content_object, title='This is a test', content='Yes, this is a test'):
+        return Discussion.objects.create(user = user, content_object= content_object, title = title, content= content)
 
     def test_discussion_creation(self):
-        disc = self.create_discussion(author = self.user, content_object = self.instance)
+        disc = self.create_discussion(user = self.user, content_object = self.instance)
         self.assertTrue(isinstance(disc, Discussion))
         self.assertEqual(disc.content_object, self.instance)
         self.assertEqual(disc.get_absolute_url(), reverse('discussions:display_discussion', args=[disc.pk]))
@@ -56,7 +56,7 @@ class DiscussionViewTest(TestCase):
     def setUp(self):
         self.user = User.objects.create(username = 'Toto', password='12345')
         self.instance = User.objects.create(username = 'Tata', password='23456') #used as a content object for discussions (could be any other model)
-        self.discussion = Discussion.objects.create(author = self.user, content_object = self.instance, title = 'Title', content= 'Content')
+        self.discussion = Discussion.objects.create(user = self.user, content_object = self.instance, title = 'Title', content= 'Content')
 
     def check_status(self, name, args, status, params=""):
         url = reverse(name, args=args) + params

@@ -18,38 +18,14 @@ from django.conf.urls import include, url
 from django.conf.urls.static import static
 from django.contrib import admin
 
-from core import views
-
 urlpatterns = [
                   url(r'^manage/', admin.site.urls),
-                  url(r'^$', views.home, name='home'),
-                  url(r'^live$', views.feed, name='live'),
-                  url(r'^home_followees_reviews/', views.ajax_followees_reviews, name="home_followees_reviews"),
-                  url(r'^home_followees_ratings/', views.ajax_followees_ratings, name="home_followees_ratings"),
-                  url(r'^profil/', include('profile.urls')),
-                  url(r'^messages/', include('postman.urls', namespace='postman')),
-                  url(r'^musique/', include('albums.urls', namespace='albums')),
-                  url(r'^notes/', include('star_ratings.urls', namespace='ratings')),
-                  url(r'^critiques/', include('ratings.urls', namespace='reviews')),
-                  url(r'^commentaires/', include('django_comments_xtd.urls')),
-                  url(r'^contacts/', include('friendship.urls')),
-                  url(r'^suivre/', include('ajax_follower.urls')),
-                  url(r'^listes/', include('lists.urls', namespace='lists')),
-                  url(r'^notifications/', include('notifications.urls', namespace='notifications')),
-                  url(r'^feedback/', include('feedback.urls', namespace='feedback')),
-                  url(r'^discussions/', include('discussions.urls', namespace='discussions')),
-                  url(r'^autocomplete/', include('autocomplete_search.urls', namespace='autocomplete_search')),
-                  url(r"^badges/", include("pinax.badges.urls", namespace="pinax_badges")),
-                  url(r'^activité/', include('actstream.urls')),
-                  url(r'^exports/', include('export_ratings.urls')),
-
                   url(r'api/', include('lamusitheque.api_routes')),
-
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
 
 if settings.DEBUG:
     import debug_toolbar
-
     urlpatterns = [
                       url(r'^__debug__/', include(debug_toolbar.urls)),
                   ] + urlpatterns

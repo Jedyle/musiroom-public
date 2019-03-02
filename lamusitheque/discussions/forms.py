@@ -1,12 +1,13 @@
 from django import forms
-from .models import Discussion
 from django.contrib.contenttypes.models import ContentType
 
-class DiscussionForm(forms.Form):
+from .models import Discussion
 
-    title = forms.CharField(label = 'Titre', max_length = 200)
-    content = forms.CharField(label = 'Contenu', widget = forms.Textarea(attrs={'rows' : 18}))
-    
+
+class DiscussionForm(forms.Form):
+    title = forms.CharField(label='Titre', max_length=200)
+    content = forms.CharField(label='Contenu', widget=forms.Textarea(attrs={'rows': 18}))
+
     def __init__(self, target_object=None, *args, **kwargs):
         super(DiscussionForm, self).__init__(*args, **kwargs)
         self.target_object = target_object
@@ -29,23 +30,22 @@ class DiscussionForm(forms.Form):
         """
         if self.target_object is not None:
             return dict(
-                content_type = ContentType.objects.get_for_model(self.target_object),
-                object_id = self.target_object.pk,
-                title = self.cleaned_data['title'],
-                content = self.cleaned_data['content'],
-                )    
-        else :
+                content_type=ContentType.objects.get_for_model(self.target_object),
+                object_id=self.target_object.pk,
+                title=self.cleaned_data['title'],
+                content=self.cleaned_data['content'],
+            )
+        else:
             return dict(
-                title = self.cleaned_data['title'],
-                content = self.cleaned_data['content'],
-                )    
+                title=self.cleaned_data['title'],
+                content=self.cleaned_data['content'],
+            )
+
 
 class EditDiscussionForm(forms.ModelForm):
-
-    title = forms.CharField(label = "Titre", max_length = 200, required=True)
-    content = forms.CharField(label = 'Contenu', required=True, widget = forms.Textarea(attrs={'rows' : 18}))
+    title = forms.CharField(label="Titre", max_length=200, required=True)
+    content = forms.CharField(label='Contenu', required=True, widget=forms.Textarea(attrs={'rows': 18}))
 
     class Meta:
         model = Discussion
         fields = ['title', 'content']
-    

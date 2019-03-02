@@ -28,8 +28,8 @@
 	     window.dispatchEvent(event);
 	 }, false)
 	 
-	 var account_menu = document.getElementById('navbarDropdownColl')
-	 account_menu.addEventListener('click', function(event){
+	 var profile_menu = document.getElementById('navbarDropdownColl')
+	 profile_menu.addEventListener('click', function(event){
 	     event.preventDefault();
 	     document.getElementById('navbarDropdownCollMenu').classList.toggle('show');
 	 });

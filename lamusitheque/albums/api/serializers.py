@@ -1,8 +1,8 @@
-from django.http import Http404
+from django.shortcuts import get_object_or_404
 from rest_framework import serializers
-from rest_framework.exceptions import ValidationError
 
 from albums.models import Genre, Album, Artist, AlbumGenre
+from star_ratings.api.serializers import RatingSerializer
 
 
 class GenreSerializer(serializers.ModelSerializer):
@@ -25,11 +25,19 @@ class AlbumSerializer(serializers.ModelSerializer):
     tracks = serializers.JSONField()
     artists = ArtistListSerializer(many=True)
     cover = serializers.CharField(source='get_cover')
+    rating = RatingSerializer()
+    genres = serializers.SlugRelatedField(slug_field="slug", read_only=True, many=True)
 
     class Meta:
         model = Album
-        exclude = ('id',)
+        exclude = ('id', 'users_interested')
         lookup_field = "mbid"
+
+
+class ShortArtistSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Artist
+        fields = ('mbid', 'name')
 
 
 class ShortAlbumSerializer(serializers.ModelSerializer):
@@ -38,15 +46,19 @@ class ShortAlbumSerializer(serializers.ModelSerializer):
     Used by AlbumGenreSerializer (no need to get the album tracks here for example)
     """
 
+    cover = serializers.SerializerMethodField()
+
     class Meta:
         model = Album
-        fields = ('title', 'mbid')
-        read_only_fields = ('title', 'mbid')
+        fields = ('title', 'mbid', 'cover')
+        read_only_fields = ('title', 'mbid', 'cover')
         lookup_field = "mbid"
+
+    def get_cover(self, obj):
+        return obj.get_cover()
 
 
 class ShortGenreSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Genre
         read_only_fields = ("name", "description", "parent")
@@ -85,10 +97,8 @@ class AlbumGenreSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         genre = validated_data['genre']
-        try:
-            album = Album.objects.get(mbid=self.context.get("mbid"))
-        except Album.DoesNotExist:
-            raise Http404("This album does not exist")
+        mbid = self.context.get("mbid")
+        album = get_object_or_404(Album, mbid=mbid)
         user = None
         request = self.context.get("request")
         if request and hasattr(request, "user"):
@@ -101,11 +111,11 @@ class AlbumGenreSerializer(serializers.ModelSerializer):
         return albumgenre
 
 
-class VoteSerializer(serializers.Serializer):
-    vote = serializers.ChoiceField(["up", "down", "null"])
-
-
 class ArtistSerializer(serializers.ModelSerializer):
     class Meta:
         model = Artist
         exclude = ("albums",)
+
+
+class UserInterestSerializer(serializers.Serializer):
+    value = serializers.ChoiceField(required=True, choices=[False, True])

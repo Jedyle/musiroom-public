@@ -32,9 +32,6 @@ DEBUG = True
 AUTHENTICATION_BACKENDS = (
     # Needed to login by username in Django admin, regardless of `allauth`
     'django.contrib.auth.backends.ModelBackend',
-
-    # `allauth` specific authentication methods, such as login by e-mail
-    'allauth.account.auth_backends.AuthenticationBackend',
 )
 
 INSTALLED_APPS = [
@@ -55,25 +52,24 @@ INSTALLED_APPS = [
     'rest_framework_filters',
     'rest_framework.authtoken',
     'rest_auth',
+    'generic_relations',
     'siteflags',
     'moderation',
-    'core',
-    'profile',
+    'user_profile',
     'albums',
     'lists',
-    'postman',
+    'conversations',
+    'comments',
     'vote',
     'star_ratings',
     'ratings',
-    'django_comments_xtd',
-    'django_comments',
     'friendship',
     'ajax_follower',
     'jchart',
     'notifications',
     'feedback',
     'discussions',
-    'autocomplete_search',
+    'search',
     'pinax.badges',
     'actstream',
     'django_social_share',
@@ -102,7 +98,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.locale.LocaleMiddleware',
-    'profile.middleware.UpdateLastActivityMiddleware',
+    'user_profile.middleware.UpdateLastActivityMiddleware',
 ]
 
 INTERNAL_IPS = ['127.0.0.1']
@@ -172,7 +168,7 @@ CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
         'LOCATION': '/var/tmp/django_cache',
-        'TIMEOUT': 30,
+        'TIMEOUT': 3,
         'OPTIONS': {
             'MAX_ENTRIES': 1000
         }
@@ -243,24 +239,12 @@ CSRF_COOKIE_NAME = "XSRF-TOKEN"
 
 # Comments
 
-CRISPY_TEMPLATE_PACK = 'bootstrap3'
-
-COMMENTS_APP = 'django_comments_xtd'
-
-COMMENTS_XTD_MAX_THREAD_LEVEL = 1  # default is 0
-COMMENTS_XTD_MAX_THREAD_LEVEL_BY_APP_MODEL = {
-    'discussions.discussion': 3,
-}
-
-COMMENTS_XTD_LIST_ORDER = ('thread_id', 'order')
-
-COMMENTS_XTD_APP_MODEL_OPTIONS = {
-    'default': {
-        'allow_flagging': True,
-        'allow_feedback': True,
-        'show_feedback': True,
-    }
-}
+COMMENTS_MAX_DEPTH = 2
+COMMENTS_ALLOWED_COMMENT_TARGETS = [
+    "lists.models.ListObj",
+    "discussions.models.Discussion",
+    "ratings.models.Review"
+]
 
 # Notifications
 
@@ -297,7 +281,7 @@ AUTOCOMPLETE_SEARCH_FIELDS = {
 # User absolute url
 
 ABSOLUTE_URL_OVERRIDES = {
-    'auth.user': lambda o: "/profil/u/%s" % o.username,
+    'auth.user': lambda o: "/api/users/%s/" % o.username,
 }
 
 # CELERY / RABBITMQ
@@ -312,11 +296,11 @@ CELERY_TIMEZONEC = 'Europe/Paris'
 
 CELERY_BEAT_SCHEDULE = {
     'update-badges': {
-        'task': 'profile.tasks.update_badges',
+        'task': 'user_profile.tasks.update_badges',
         'schedule': crontab(minute=1, hour=2),
     },
     'notif-inactive-users': {
-        'task': 'profile.tasks.send_email_to_inactive_user',
+        'task': 'user_profile.tasks.send_email_to_inactive_user',
         'schedule': crontab(day_of_month=1, hour=1, minute=1),
     }
 }
@@ -336,18 +320,19 @@ MIN_EXPORT_TIMEDIFF = 0
 # REST FRAMEWORK
 
 REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 100,
-    'DEFAULT_FILTER_BACKENDS': ('rest_framework_filters.backends.RestFrameworkFilterBackend',)
+    'DEFAULT_PAGINATION_CLASS': 'lamusitheque.apiutils.pagination.StandardResultsSetPagination',
+    'PAGE_SIZE': 20,
+    'DEFAULT_FILTER_BACKENDS': ('rest_framework_filters.backends.RestFrameworkFilterBackend',
+                                'rest_framework.filters.OrderingFilter')
 }
 
 # ALLAUTH
 
-ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
-ACCOUNT_EMAIL_REQUIRED = True
+profile_EMAIL_VERIFICATION = 'mandatory'
+profile_EMAIL_REQUIRED = True
 
 # REST AUTh
 
 REST_AUTH_SERIALIZERS = {
-    'USER_DETAILS_SERIALIZER': 'profile.api.serializers.UserProfileSerializer',
+    'USER_DETAILS_SERIALIZER': 'user_profile.api.serializers.UserProfileSerializer',
 }

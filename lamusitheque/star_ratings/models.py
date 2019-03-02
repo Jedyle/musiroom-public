@@ -1,13 +1,14 @@
 from __future__ import division, unicode_literals
+
 from decimal import Decimal
+from warnings import warn
 
 import swapper
-from warnings import warn
 from django.conf import settings
-from django.core.exceptions import ValidationError
-from django.db import models
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ValidationError
+from django.db import models
 from django.db.models import Avg, Count, Sum
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext as _
@@ -31,10 +32,11 @@ class RatingManager(models.Manager):
         ct = ContentType.objects.get_for_model(instance)
         ratings, created = self.get_or_create(content_type=ct, object_id=instance.pk)
         return ratings
-        
 
     def ratings_for_instance(self, instance):
-        warn("RatingManager method 'ratings_for_instance' has been renamed to 'for_instance'. Please change uses of 'Rating.objects.ratings_for_instance' to 'Rating.objects.for_instance' in your code.", DeprecationWarning)
+        warn(
+            "RatingManager method 'ratings_for_instance' has been renamed to 'for_instance'. Please change uses of 'Rating.objects.ratings_for_instance' to 'Rating.objects.for_instance' in your code.",
+            DeprecationWarning)
         return self.for_instance(instance)
 
     def rate(self, instance, score, user=None, ip=None):
@@ -106,8 +108,8 @@ class Rating(AbstractBaseRating):
     class Meta(AbstractBaseRating.Meta):
         swappable = swapper.swappable_setting('star_ratings', 'Rating')
         indexes = [
-            models.Index(fields = ['object_id', 'content_type'])
-            ]
+            models.Index(fields=['object_id', 'content_type'])
+        ]
 
 
 class UserRatingManager(models.Manager):
@@ -120,22 +122,21 @@ class UserRatingManager(models.Manager):
             return None
 
     def for_instance_list_by_user(self, instance_list, ct, user):
-        if instance_list :
+        if instance_list:
             user = _clean_user(user)
             list_pk = [instance.pk for instance in instance_list]
-            queryset = self.filter(user = user, rating__content_type=ct, rating__object_id__in = list_pk).select_related('rating')
+            queryset = self.filter(user=user, rating__content_type=ct, rating__object_id__in=list_pk).select_related(
+                'rating')
             user_rating_list = sorted(queryset, key=lambda r: list_pk.index(r.rating.object_id))
             user_pk = [l.rating.object_id for l in user_rating_list]
             i = 0
             while i < len(list_pk):
                 if (len(user_rating_list) <= i) or (list_pk[i] != user_rating_list[i].rating.object_id):
                     user_rating_list.insert(i, None)
-                i+=1
+                i += 1
             return user_rating_list
         else:
             return []
-        
-        
 
     def has_rated(self, instance, user=None):
         if isinstance(instance, get_star_ratings_rating_model()):
@@ -159,7 +160,8 @@ class UserRating(TimeStampedModel):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, on_delete=models.CASCADE)
     ip = models.GenericIPAddressField(blank=True, null=True)
     score = models.PositiveSmallIntegerField()
-    rating = models.ForeignKey(get_star_ratings_rating_model_name(), related_name='user_ratings', on_delete=models.CASCADE)
+    rating = models.ForeignKey(get_star_ratings_rating_model_name(), related_name='user_ratings',
+                               on_delete=models.CASCADE)
 
     objects = UserRatingManager()
 
@@ -167,13 +169,9 @@ class UserRating(TimeStampedModel):
         unique_together = ['user', 'rating']
         indexes = [
             models.Index(fields=['user', 'rating'])
-            ]
+        ]
 
     def __str__(self):
         if not app_settings.STAR_RATINGS_ANONYMOUS:
             return '{} rating {} for {}'.format(self.user, self.score, self.rating.content_object)
         return '{} rating {} for {}'.format(self.ip, self.score, self.rating.content_object)
-
-
-
-

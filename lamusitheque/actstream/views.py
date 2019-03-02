@@ -99,7 +99,7 @@ def following(request, user_id, flag):
 
 def user(request, username):
     """
-    ``User`` focused activity stream. (Eg: Profile page twitter.com/justquick)
+    ``User`` focused activity stream. (Eg: user_profile page twitter.com/justquick)
     """
     instance = get_object_or_404(
         USER_MODEL,

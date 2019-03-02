@@ -1,13 +1,15 @@
-from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponseNotFound, HttpResponseForbidden
-from .sc_scraper import ParseSCUser
+from django.shortcuts import render, get_object_or_404
+from django.utils import timezone
+
+from .decorators import paginate
 from .forms import SCExportForm
 from .models import ExportReport
-from .decorators import paginate
-from .tasks import export_from_sc
+from .sc_scraper import ParseSCUser
 from .settings import get_min_export_timediff
-from django.utils import timezone
+from .tasks import export_from_sc
+
 
 # Create your views here.
 
@@ -18,29 +20,27 @@ def create_export(request):
         if form.is_valid():
             user = request.user.username
             sc_user = form.cleaned_data['sc_url'].split('/')[-1]
-            config = { el:True for el in form.cleaned_data['fields'] }
+            config = {el: True for el in form.cleaned_data['fields']}
             erase = form.cleaned_data['erase']
 
-
-        
             user_exports = request.user.exports.order_by('-created_at')
-            if user_exports.count() > 0 :
+            if user_exports.count() > 0:
                 now = timezone.now()
                 last_export = user_exports[0].created_at
                 print(now, last_export)
                 delta = now - last_export
                 min_timediff = get_min_export_timediff()
-                if delta.total_seconds() < min_timediff :
-                    return render(request, 'export_ratings/unauthorized.html', {'min_time' : min_timediff})
+                if delta.total_seconds() < min_timediff:
+                    return render(request, 'export_ratings/unauthorized.html', {'min_time': min_timediff})
 
             # launch task
-            export_from_sc.delay(username = user, sc_username = sc_user, config=config, erase_old=erase)
+            export_from_sc.delay(username=user, sc_username=sc_user, config=config, erase_old=erase)
 
             return render(request, 'export_ratings/launched.html', {})
-            
+
     else:
         form = SCExportForm()
-    return render(request, 'export_ratings/create.html', {'form' : form})
+    return render(request, 'export_ratings/create.html', {'form': form})
 
 
 def parse_sc_user(request):
@@ -55,34 +55,37 @@ def parse_sc_user(request):
                 return HttpResponseNotFound()
     return HttpResponseNotFound()
 
+
 @login_required
 def get_export(request, export_id):
-    export = get_object_or_404(ExportReport, pk = export_id)
+    export = get_object_or_404(ExportReport, pk=export_id)
     if export.user != request.user:
         return HttpResponseForbidden()
-    return render(request, 'export_ratings/export.html', {'stats' : export.get_stats()})
-    
+    return render(request, 'export_ratings/export.html', {'stats': export.get_stats()})
+
 
 @login_required
 @paginate()
 def get_new_ratings(request, export_id):
-    export = get_object_or_404(ExportReport, pk = export_id)
+    export = get_object_or_404(ExportReport, pk=export_id)
     if export.user != request.user:
         return HttpResponseForbidden()
-    return JsonResponse({'data' : export.get_new_ratings()})
+    return JsonResponse({'data': export.get_new_ratings()})
+
 
 @login_required
 @paginate()
 def get_conflicts(request, export_id):
-    export = get_object_or_404(ExportReport, pk = export_id)
+    export = get_object_or_404(ExportReport, pk=export_id)
     if export.user != request.user:
         return HttpResponseForbidden()
-    return JsonResponse({'data' : export.get_conflicts()})
+    return JsonResponse({'data': export.get_conflicts()})
+
 
 @login_required
 @paginate()
 def get_not_found(request, export_id):
-    export = get_object_or_404(ExportReport, pk = export_id)
+    export = get_object_or_404(ExportReport, pk=export_id)
     if export.user != request.user:
         return HttpResponseForbidden()
-    return JsonResponse({'data' : export.get_not_found()})
+    return JsonResponse({'data': export.get_not_found()})

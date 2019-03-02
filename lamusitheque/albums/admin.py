@@ -28,7 +28,7 @@ class GenreParentFilter(admin.SimpleListFilter):
         in the right sidebar.
         """
         parents = set([genre.parent for genre in model_admin.model.objects.all()])
-        return [('aucun', 'Aucun')] + [(genre.slug, genre.name) for genre in parents if genre is not None]
+        return [('none', 'None')] + [(genre.slug, genre.name) for genre in parents if genre is not None]
 
     def queryset(self, request, queryset):
         """
@@ -38,7 +38,7 @@ class GenreParentFilter(admin.SimpleListFilter):
         """
         # Compare the requested value (either '80s' or '90s')
         # to decide how to filter the queryset.
-        if self.value() == 'aucun':
+        if self.value() == 'none':
             return queryset.filter(parent__isnull=True)
         elif self.value():
             return queryset.filter(parent__slug=self.value())
@@ -62,8 +62,8 @@ class AlbumArtistInline(admin.TabularInline):
 class AlbumGenreInline(admin.TabularInline):
     model = Album.genres.through
     extra = 1
-    verbose_name = "Genre de l'album"
-    verbose_name_plural = "Genres de l'album"
+    verbose_name = "Album's genre"
+    verbose_name_plural = "Albums's genres"
 
 
 @admin.register(Artist)
@@ -72,7 +72,7 @@ class ArtistAdmin(admin.ModelAdmin):
         AlbumArtistInline,
     ]
     extra = 1
-    verbose_name = "Artiste"
+    verbose_name = "Artist"
     search_fields = ['name']
     exclude = ('albums',)
 

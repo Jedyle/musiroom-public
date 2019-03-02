@@ -14,7 +14,18 @@ To add routes from an app:
 
 api_patterns = [
     url(r'', include("albums.api.urls")),
-    url(r'', include("profile.api.urls"))
+    url(r'', include("user_profile.api.urls")),
+    url(r'', include("lists.api.urls")),
+    url(r'', include("star_ratings.api.urls")),
+    url(r'', include("discussions.api.urls")),
+    url(r'', include("feedback.api.urls")),
+    url(r'', include("ratings.api.urls")),
+    url(r'', include("export_ratings.api.urls")),
+    url(r'', include("ajax_follower.api.urls")),
+    url(r'', include("search.api.urls")),
+    url(r'', include("actstream.api.urls")),
+    url(r'', include("comments.api.urls")),
+    url(r'', include("conversations.api.urls"))
     # to add urls from another app : url(r'', include('app.api.urls'))
 ]
 

@@ -14,8 +14,8 @@ router.register(r'artists', views.ArtistViewset)
 albumgenres_router = routers.NestedSimpleRouter(router, r'albums', lookup='albums')
 albumgenres_router.register(r'genres', views.AlbumGenreViewset, base_name='genres')
 
-
 urlpatterns = [
     url(r'', include(router.urls)),
-    url(r'', include(albumgenres_router.urls))
+    url(r'', include(albumgenres_router.urls)),
+    url(r'tops/(?P<slug>([a-zA-Z-_]+))/(?P<year>([0-9]{4}s?|all))/$', views.TopAlbumsView.as_view())
 ]

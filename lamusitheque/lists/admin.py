@@ -1,15 +1,18 @@
 from django.contrib import admin
-from .models import ItemList, ListObject
+
+from .models import ListObj
 
 # Register your models here.
-admin.register(ItemList)
+admin.register(ListObj)
+
 
 class ListObjectInline(admin.TabularInline):
-    model = ItemList.albums.through
+    model = ListObj.albums.through
     verbose_name = 'Element'
     extra = 0
 
-@admin.register(ItemList)
-class ItemListAdmin(admin.ModelAdmin):
+
+@admin.register(ListObj)
+class ListObjAdmin(admin.ModelAdmin):
     inlines = []
     extra = 1
