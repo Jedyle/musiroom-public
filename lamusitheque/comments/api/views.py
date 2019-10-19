@@ -2,20 +2,19 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from rest_framework import viewsets, status, mixins
-from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from comments.api.filters import CommentFilter
-from comments.api.permissions import IsCommentOwnerOrReadOnly
 from comments.api.serializers import ReadCommentSerializer, WriteCommentSerializer, UpdateCommentSerializer
 from comments.models import Comment
-from lamusitheque.apiutils.serializers import VoteSerializer
+from lamusitheque.apiutils.mixins import VoteMixin
+from lamusitheque.apiutils.permissions import IsUserOrReadOnly
 
 MIN_TIME_BETWEEN_COMMENTS = 5  # in seconds
 
 
-class CommentViewset(viewsets.ModelViewSet):
-    permission_classes = (IsCommentOwnerOrReadOnly,)
+class CommentViewset(viewsets.ModelViewSet, VoteMixin):
+    permission_classes = (IsUserOrReadOnly,)
     filter_class = CommentFilter
 
     def get_serializer_class(self):
@@ -34,7 +33,9 @@ class CommentViewset(viewsets.ModelViewSet):
         # overwrite this method because get_queryset only gets comments with no parent
 
         pk = self.kwargs["pk"]
-        return get_object_or_404(Comment, id=pk)
+        obj = get_object_or_404(Comment, id=pk)
+        self.check_object_permissions(self.request, obj)
+        return obj
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -64,28 +65,7 @@ class CommentViewset(viewsets.ModelViewSet):
                 }, status=status.HTTP_403_FORBIDDEN)
 
         serializer.save(user=request.user)
-        return Response(serializer.data)
-
-    @action(detail=True, methods=["PUT"])
-    def vote(self, request, pk=None):
-        # votes
-        # TODO : change default form in browsable API
-        serializer = VoteSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        vote = serializer.validated_data.get('vote')
-        comment = self.get_object()
-        if vote == "up":
-            comment.votes.up(request.user.pk)
-        elif vote == "down":
-            comment.votes.down(request.user.pk)
-        else:
-            comment.votes.delete(request.user.pk)
-        # re-call get object to have the updated instance
-        # (doesn't update by itself, don't know why)
-        comment = self.get_object()
-        serializer = self.get_serializer(comment)
-        return Response(serializer.data)
-
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class CommentChildrenViewset(viewsets.GenericViewSet, mixins.ListModelMixin):
@@ -93,6 +73,5 @@ class CommentChildrenViewset(viewsets.GenericViewSet, mixins.ListModelMixin):
     filter_class = CommentFilter
 
     def get_queryset(self):
-        print(self.kwargs)
         comment_id = self.kwargs['comments_pk']
         return get_object_or_404(Comment, id=comment_id).children

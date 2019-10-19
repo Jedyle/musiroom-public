@@ -86,7 +86,6 @@ class ModerationObjectsManager(Manager):
                 content_type=ContentType.objects.get_for_model(query_set.model),
                 object_pk__in=query_set.values_list('pk', flat=True))
 
-            # TODO: Load this query in chunks to avoid huge RAM usage spikes
             mobjects = {}
             for mobject in mobjs_set:
                 if mobject.object_pk in mobjects:

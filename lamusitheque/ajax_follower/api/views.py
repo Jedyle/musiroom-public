@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from notifications.signals import notify
-from rest_framework import views, permissions, status, mixins, viewsets
+from rest_framework import views, permissions, status, mixins, viewsets, generics
 from rest_framework.response import Response
 
 from ajax_follower.api.serializers import FollowSerializer
@@ -11,16 +11,22 @@ from user_profile.models import Profile
 from user_profile.utils import notifications_alike
 
 
-class FollowView(views.APIView):
+class FollowView(generics.CreateAPIView):
+
+    """
+    Updates a follower/following relationship
+    """
+
     permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = FollowSerializer
 
     def post(self, request):
 
         """
-        Toggles a following relationship between request.user and a user
+        Toggles a following relationship between the logged in user and another user
         """
 
-        serializer = FollowSerializer(data=request.data)
+        serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         username = serializer.validated_data.get("user")
         user = get_object_or_404(User, username=username)

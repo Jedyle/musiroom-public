@@ -23,13 +23,14 @@ class ReadCommentSerializer(serializers.ModelSerializer):
 
 
 class WriteCommentSerializer(serializers.ModelSerializer):
+    user = UserProfileSerializer(read_only=True)
     parent = serializers.PrimaryKeyRelatedField(queryset=Comment.objects.all(), allow_null=True)
     content_type = serializers.SlugRelatedField(slug_field="model", queryset=ContentType.objects.all())
 
     class Meta:
         model = Comment
         fields = ('comment', 'submit_date', 'parent', 'content_type', 'object_pk',
-                  'vote_score', 'num_vote_up', 'num_vote_down')
+                  'vote_score', 'num_vote_up', 'num_vote_down', 'user')
         read_only_fields = ('vote_score', 'num_vote_up', 'num_vote_down')
 
     def validate_content_type(self, value):

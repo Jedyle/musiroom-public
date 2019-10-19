@@ -8,6 +8,11 @@ DEFAULT_PER_PAGE = 20
 
 
 class UserStreamView(viewsets.GenericViewSet, mixins.ListModelMixin):
+
+    """
+    Returns a user's activity stream
+    """
+
     permission_classes = (IsAuthenticated,)
     serializer_class = ActionSerializer
 
@@ -16,6 +21,11 @@ class UserStreamView(viewsets.GenericViewSet, mixins.ListModelMixin):
 
 
 class AllStreamView(viewsets.GenericViewSet, mixins.ListModelMixin):
+
+    """
+    Returns a general activity stream
+    """
+
     permission_classes = (IsAuthenticated,)
     serializer_class = ActionSerializer
 

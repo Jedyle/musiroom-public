@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.staticfiles.templatetags.staticfiles import static
+from django.core.validators import MinLengthValidator, MaxLengthValidator
 from django.db import models
 from django.http import Http404
 from django.urls import reverse
@@ -79,10 +80,6 @@ class Genre(models.Model):
     def children(self):
         return self.genre_set.all().order_by("name")
 
-    @property
-    def api_lookup_value(self):
-        return self.slug
-
 
 class AlbumManager(models.Manager):
 
@@ -134,17 +131,6 @@ class Album(models.Model):
         if self.album_type == 'UK':
             return self.title
         return "{} ({})".format(self.title, self.get_album_type_display())
-
-    @property
-    def api_lookup_value(self):
-        return self.mbid
-
-    @cached_property
-    def very_verbose_name(self):
-        if self.album_type == 'UK':
-            return self.title + ' de ' + ', '.join(str(item) for item in self.artists.all())
-        return self.title + ' (' + self.get_album_type_display() + ') de ' + ', '.join(
-            str(item) for item in self.artists.all())
 
     def get_absolute_url(self):
         return reverse('album-detail', args=[self.mbid])
@@ -220,7 +206,8 @@ class ArtistManager(models.Manager):
 
 
 class Artist(models.Model):
-    mbid = models.CharField(db_index=True, max_length=36, unique=True)
+    mbid = models.CharField(db_index=True, max_length=36, unique=True,
+                            validators=[MinLengthValidator(36), MaxLengthValidator(36)])
     name = models.CharField(max_length=100)
     albums = models.ManyToManyField(Album, related_name='artists', blank=True)
     photo = models.CharField(max_length=150, null=True)
@@ -248,15 +235,6 @@ class Artist(models.Model):
 
     def get_preview(self):
         return self.get_photo()
-
-    @property
-    def api_lookup_value(self):
-        """
-        Get value to lookup in details route in API
-        TODO : add this to every model
-        :return:
-        """
-        return self.mbid
 
     class Meta:
         verbose_name = "Artiste"

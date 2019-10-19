@@ -25,10 +25,6 @@ class Discussion(VoteModel, models.Model):
     def get_absolute_url(self):
         return reverse('discussion-detail', args=[self.pk])
 
-    @property
-    def api_lookup_value(self):
-        return self.id
-
     class Meta:
         verbose_name = "discussion"
         verbose_name_plural = "discussions"

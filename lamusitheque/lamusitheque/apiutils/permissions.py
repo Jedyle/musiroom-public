@@ -1,7 +1,7 @@
 from rest_framework import permissions
 
 
-REGULAR_ACTIONS = ['list', 'retrieve', 'update', 'partial_update', 'destroy']
+REGULAR_ACTIONS = ['list', 'retrieve', 'create', 'update', 'partial_update', 'destroy']
 
 
 class IsOwnerOrReadOnly(permissions.BasePermission):
@@ -33,8 +33,6 @@ class IsUserOrReadOnly(permissions.BasePermission):
     """
     Object-level permission to only allow user of an object to edit it.
     Assumes the model instance has an `owner` attribute.
-
-    # TODO : merge with IsOwnerOrReadOnly
     """
 
     def has_permission(self, request, view):

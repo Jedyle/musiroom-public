@@ -48,10 +48,12 @@ INSTALLED_APPS = [
     'django_unused_media',
     'django_forms_bootstrap',
     'rest_framework',
+    'rest_framework_swagger',
     'django_filters',
     'rest_framework_filters',
     'rest_framework.authtoken',
     'rest_auth',
+    'corsheaders',
     'generic_relations',
     'siteflags',
     'moderation',
@@ -62,7 +64,7 @@ INSTALLED_APPS = [
     'comments',
     'vote',
     'star_ratings',
-    'ratings',
+    'reviews',
     'friendship',
     'ajax_follower',
     'jchart',
@@ -86,6 +88,7 @@ STATICFILES_FINDERS = (
 SITE_ID = 4
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.gzip.GZipMiddleware',
     # 'htmlmin.middleware.HtmlMinifyMiddleware',
     # 'htmlmin.middleware.MarkRequestMiddleware',
@@ -222,13 +225,6 @@ DEFAULT_FROM_EMAIL = "La Musithèque <darknessjdl@gmail.com>"
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# Messaging (postman) app
-
-POSTMAN_I18N_URLS = True
-POSTMAN_DISALLOW_ANONYMOUS = True
-POSTMAN_DISABLE_USER_EMAILING = True
-POSTMAN_AUTO_MODERATE_AS = True
-
 # Star rating
 
 STAR_RATINGS_RANGE = 10
@@ -243,7 +239,7 @@ COMMENTS_MAX_DEPTH = 2
 COMMENTS_ALLOWED_COMMENT_TARGETS = [
     "lists.models.ListObj",
     "discussions.models.Discussion",
-    "ratings.models.Review"
+    "reviews.models.Review"
 ]
 
 # Notifications
@@ -323,7 +319,12 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'lamusitheque.apiutils.pagination.StandardResultsSetPagination',
     'PAGE_SIZE': 20,
     'DEFAULT_FILTER_BACKENDS': ('rest_framework_filters.backends.RestFrameworkFilterBackend',
-                                'rest_framework.filters.OrderingFilter')
+                                'rest_framework.filters.OrderingFilter'),
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',  # <-- And here
+        # 'rest_framework.authentication.SessionAuthentication',
+        # TODO : in production, remove SessionAuthentication ! Used in debug for browsable API
+    ],
 }
 
 # ALLAUTH
@@ -336,3 +337,7 @@ profile_EMAIL_REQUIRED = True
 REST_AUTH_SERIALIZERS = {
     'USER_DETAILS_SERIALIZER': 'user_profile.api.serializers.UserProfileSerializer',
 }
+
+# CORS
+
+CORS_ORIGIN_ALLOW_ALL = True

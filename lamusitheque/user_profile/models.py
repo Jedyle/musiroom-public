@@ -11,14 +11,6 @@ from lists.models import ListObj
 from .badges import *
 
 
-@property
-def api_lookup_value(self):
-    return self.username
-
-
-User.add_to_class("api_lookup_value", api_lookup_value)
-
-
 def get_100_last_years():
     lastyear = date.today().year
     return [str(i) for i in range(lastyear - 1, lastyear - 100, -1)]
@@ -35,9 +27,9 @@ class Profile(models.Model):
     description = models.TextField("Description", max_length=400, default="", blank=True)
 
     SEX = [
-        ("M", "Male"),
-        ("F", "Female"),
-        ("N", "Anonymous"),
+        ("M", "Homme"),
+        ("F", "Femme"),
+        ("N", "Anonyme"),
     ]
 
     sex = models.CharField("Sex", max_length=1, default="N", choices=SEX)
@@ -65,10 +57,6 @@ class Profile(models.Model):
             return self.avatar.url
         else:
             return static('user_profile/images/user_profile.png')
-
-    @property
-    def api_lookup_value(self):
-        return self.user.username
 
     def get_absolute_url(self):
         return self.user.get_absolute_url()

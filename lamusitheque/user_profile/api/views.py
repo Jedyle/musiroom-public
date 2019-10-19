@@ -89,8 +89,6 @@ class DestroyProfileView(generics.CreateAPIView):
 
     serializer_class = PasswordConfirmSerializer
 
-    # TODO : change API schema for this route
-
     def create(self, request):
         """
         This method actually DELETES the current user's user_profile.

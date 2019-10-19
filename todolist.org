@@ -1,0 +1,2 @@
+* TODO make auth tokens expire after a certain time 
+* TODO add pytest with factoryboy

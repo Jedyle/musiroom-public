@@ -8,9 +8,6 @@ from lamusitheque.apiutils.generic_tests import GenericAPITest
 
 class ArtistViewsetTest(GenericAPITest):
 
-    def setUp(self):
-        self.client = APIClient()
-
     def list_artists(self):
         return self.client.get('/api/artists/')
 

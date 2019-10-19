@@ -14,7 +14,7 @@ from actstream import action
 from albums.models import Album
 from albums.utils import load_album_if_not_exists
 from lamusitheque.utils import make_clickable_link as _link
-from ratings.handlers import save_rating_handler
+from reviews.handlers import save_rating_handler
 from star_ratings.models import UserRating, Rating
 from .contextmanagers import temp_disconnect_signal
 from .models import ExportReport

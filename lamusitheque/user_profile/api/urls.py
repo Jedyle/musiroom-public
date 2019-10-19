@@ -5,7 +5,7 @@ from ajax_follower.api.views import FollowersViewset, FolloweesViewset
 from albums.api.views import UserInterestsViewset
 from discussions.api.views import UserDiscussionViewset
 from lists.api.views import UserListViewset
-from ratings.api.views import UserReviewViewset
+from reviews.api.views import UserReviewViewset
 from star_ratings.api.views import UserUserRatingViewset
 from user_profile.api.views import RegisterUserView, ActivateProfileView, ResendConfirmationLinkView, \
     DestroyProfileView, \

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from albums.models import Album
-from ratings.api.serializers import ReviewSerializer
+from reviews.api.serializers import ReviewSerializer
 from star_ratings.models import Rating, UserRating
 from generic_relations.relations import GenericRelatedField
 

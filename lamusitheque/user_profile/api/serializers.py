@@ -31,7 +31,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('first_name', 'last_name', 'profile')
+        fields = ('username', 'first_name', 'last_name', 'profile')
         read_only_fields = ('username',)
 
     def update(self, instance, validated_data):
@@ -92,7 +92,8 @@ class PasswordConfirmSerializer(serializers.ModelSerializer):
 class PublicProfileSerializer(serializers.ModelSerializer):
 
     user = serializers.SlugRelatedField(slug_field="username", many=False, read_only=True)
-    name = serializers.SerializerMethodField()
+    first_name = serializers.SerializerMethodField()
+    date_joined = serializers.SerializerMethodField()
     birth = serializers.SerializerMethodField()
     sex = serializers.SerializerMethodField()
 
@@ -101,9 +102,12 @@ class PublicProfileSerializer(serializers.ModelSerializer):
         exclude = ('display_birth', 'display_name', 'display_sex', 'top_albums')
         lookup_field = 'user__username'
 
-    def get_name(self, obj):
+    def get_date_joined(self, obj):
+        return obj.user.date_joined
+
+    def get_first_name(self, obj):
         if obj.display_name:
-            return obj.user.first_name + ' ' + obj.user.last_name
+            return obj.user.first_name
         return None
 
     def get_birth(self, obj):

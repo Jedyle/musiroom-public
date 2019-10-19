@@ -5,7 +5,7 @@ from pinax.badges.registry import badges
 
 from albums.models import AlbumGenre
 from discussions.models import Discussion
-from ratings.models import Review
+from reviews.models import Review
 from star_ratings.models import UserRating
 
 

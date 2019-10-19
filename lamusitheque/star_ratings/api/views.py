@@ -22,7 +22,6 @@ class RatingViewset(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
         rating = self.get_object()
         user_ratings = rating.user_ratings
         count = []
-        # TODO : optimize this into a single query
         for i in range(1, 11):
             count.append(user_ratings.filter(score=i).count())
         serializer = self.get_serializer(rating)
@@ -55,6 +54,7 @@ class UserRatingView(generics.RetrieveUpdateDestroyAPIView):
         user = self.request.user
         rating_id = self.kwargs["rating_id"]
         rating = get_object_or_404(UserRating, user=user, rating__id=rating_id)
+        self.check_object_permissions(self.request, rating)
         return rating
 
     def get_queryset(self):

@@ -1,14 +1,18 @@
 from django.contrib.auth.models import User
-from rest_framework.test import APIClient
 
 from albums.models import Genre
 from lamusitheque.apiutils.generic_tests import GenericAPITest
+
+"""
+Test permissions
+Test post -> moderated
+"""
 
 
 class GenreViewsetTest(GenericAPITest):
 
     def setUp(self):
-        self.client = APIClient()
+        super().setUp()
         self.user = User.objects.create(username="test", password="testmdp")
 
         self.genres = [
@@ -20,26 +24,51 @@ class GenreViewsetTest(GenericAPITest):
         for genre in self.genres:
             genre.moderated_object.approve(by=self.user, reason="Test")
 
-    def list_genres(self):
-        return self.client.get('/api/genres/')
+    def list_url(self):
+        return '/api/genres/'
 
-    def retrieve_genre(self, slug):
-        return self.client.get('/api/genres/' + slug + '/')
+    def object_url(self, slug):
+        return '/api/genres/{}/'.format(slug)
 
-    def create_genre(self, data):
-        return self.client.post('/api/genres/', data)
+    def test_cannot_update(self):
+        self.check_func_logged(self.update, auth_key=self.user.auth_token.key, id=self.genres[0].slug,
+                               data={}, status_code=405)
 
-    def test_list_genres(self):
-        res = self.list_genres()
-        self.check_status(res, 200)
+    def test_cannot_patch(self):
+        self.check_func_logged(self.partial_update, auth_key=self.user.auth_token.key, id=self.genres[0].slug,
+                               data={}, status_code=405)
 
-    def test_list_genres_length(self):
-        res = self.list_genres()
-        data = res.data
-        self.assertEqual(data["count"], len(self.genres))
+    def test_cannot_delete(self):
+        self.check_func_logged(self.destroy, auth_key=self.user.auth_token.key, id=self.genres[0].slug,
+                               data={}, status_code=405)
 
-    def test_retrieve_genre(self):
-        res = self.retrieve_genre(self.genres[0].slug)
-        self.check_status(res, 200)
+    def test_can_list(self):
+        self.check_func_not_logged(self.list, status_code=200)
+
+    def test_can_retrieve(self):
+        self.check_func_not_logged(self.retrieve, id=self.genres[0].slug, status_code=200)
+
+    def test_cannot_create_if_not_logged(self):
+        data = {
+            "name": "Folk",
+            "description": "Test",
+            "slug": "folk"
+        }
+        self.check_func_not_logged(self.create, id=self.genres[0].slug,
+                                   data=data, status_code=401)
+
+    def test_can_create_if_logged(self):
+        data = {
+            "name": "Folk",
+            "description": "Test",
+            "slug": "folk",
+            "parent": self.genres[1].slug
+        }
+        self.check_func_logged(self.create, auth_key=self.user.auth_token.key,
+                               data=data, status_code=201)
 
 
+class AlbumGenreViewsetTest(GenericAPITest):
+
+    # TODO : test permissions
+    pass

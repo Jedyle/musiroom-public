@@ -23,7 +23,7 @@ def create_profile(sender, instance=None, created=False, **kwargs):
         Token.objects.create(user=instance)
         # bind an user_profile and a 'top albums' list to the user_profile
         profile = Profile(user=instance)
-        top_albums = ListObj(owner=instance, title="Top Albums de " + instance.username, ordered=True)
+        top_albums = ListObj(user=instance, title="Top Albums de " + instance.username, ordered=True)
         top_albums.save()
         profile.top_albums = top_albums
         profile.save()
