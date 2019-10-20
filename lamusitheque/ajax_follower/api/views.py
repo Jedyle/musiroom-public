@@ -53,15 +53,21 @@ class FollowersViewset(viewsets.GenericViewSet, mixins.ListModelMixin):
     serializer_class = PublicProfileSerializer
 
     def get_queryset(self):
-        username = self.kwargs['users_user__username']
-        user = get_object_or_404(User, username=username)
-        return Profile.objects.filter(user__in=Follow.objects.followers(user=user))
+        user = get_object_or_404(User, username=self.kwargs['users_user__username'])
+        username_to_retrieve = self.request.query_params.get('username')
+        queryset = Profile.objects.filter(user__in=Follow.objects.followers(user=user))
+        if username_to_retrieve:
+            queryset = queryset.filter(user__username = username_to_retrieve)
+        return queryset
 
 
 class FolloweesViewset(viewsets.GenericViewSet, mixins.ListModelMixin):
     serializer_class = PublicProfileSerializer
 
     def get_queryset(self):
-        username = self.kwargs['users_user__username']
-        user = get_object_or_404(User, username=username)
-        return Profile.objects.filter(user__in=Follow.objects.following(user=user))
+        user = get_object_or_404(User, username=self.kwargs['users_user__username'])
+        username_to_retrieve = self.request.query_params.get('username')        
+        queryset = Profile.objects.filter(user__in=Follow.objects.following(user=user))
+        if username_to_retrieve:
+            queryset =  queryset.filter(user__username = username_to_retrieve)
+        return queryset
