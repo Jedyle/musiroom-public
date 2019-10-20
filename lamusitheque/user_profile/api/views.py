@@ -21,7 +21,7 @@ from user_profile.api.serializers import CreateUserSerializer, PasswordConfirmSe
 from user_profile.email import send_activation_email
 from user_profile.models import Profile
 from user_profile.tokens import profile_activation_token
-
+from lists.api.serializers import ListObjSerializer
 
 class RegisterUserView(generics.CreateAPIView):
     """
@@ -117,6 +117,12 @@ class ProfileViewset(ListRetrieveViewset):
     queryset = Profile.objects.all()
     lookup_field = 'user__username'
     filter_class = ProfileFilter
+
+    @action(detail=True, methods=['get'])
+    def top(self, request, **kwargs):
+        user = self.get_object()
+        serializer = ListObjSerializer(user.top_albums)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class NotificationViewset(viewsets.GenericViewSet, mixins.ListModelMixin):

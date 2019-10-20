@@ -1,7 +1,9 @@
 from django.contrib.auth.models import User
+from star_ratings.models import UserRating
 from notifications.models import Notification
 from pinax.badges.models import BadgeAward
 from rest_framework import serializers
+from reviews.models import Review
 
 from user_profile.models import Profile
 
@@ -93,28 +95,40 @@ class PublicProfileSerializer(serializers.ModelSerializer):
 
     user = serializers.SlugRelatedField(slug_field="username", many=False, read_only=True)
     first_name = serializers.SerializerMethodField()
+    avatar = serializers.SerializerMethodField()
     date_joined = serializers.SerializerMethodField()
     birth = serializers.SerializerMethodField()
     sex = serializers.SerializerMethodField()
+    nb_ratings = serializers.SerializerMethodField()
+    nb_reviews = serializers.SerializerMethodField()
 
     class Meta:
         model = Profile
         exclude = ('display_birth', 'display_name', 'display_sex', 'top_albums')
         lookup_field = 'user__username'
 
-    def get_date_joined(self, obj):
-        return obj.user.date_joined
+    def get_nb_ratings(self, profile):
+        return UserRating.objects.filter(user=profile.user).count()
 
-    def get_first_name(self, obj):
-        if obj.display_name:
-            return obj.user.first_name
+    def get_nb_reviews(self, profile):
+        return Review.objects.filter(rating__user=profile.user).count()
+    
+    def get_avatar(self, profile):
+        return profile.get_avatar()
+        
+    def get_date_joined(self, profile):
+        return profile.user.date_joined
+
+    def get_first_name(self, profile):
+        if profile.display_name:
+            return profile.user.first_name
         return None
 
-    def get_birth(self, obj):
-        return obj.birth if obj.display_birth else None
+    def get_birth(self, profile):
+        return profile.birth if profile.display_birth else None
 
-    def get_sex(self, obj):
-        return obj.get_sex_display() if obj.display_sex else None
+    def get_sex(self, profile):
+        return profile.get_sex_display() if profile.display_sex else None
 
 
 class NotificationSerializer(serializers.ModelSerializer):

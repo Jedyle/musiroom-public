@@ -56,7 +56,7 @@ class Profile(models.Model):
         if self.avatar:
             return self.avatar.url
         else:
-            return static('user_profile/images/user_profile.png')
+            return static('user_profile/images/default_profile.png')
 
     def get_absolute_url(self):
         return self.user.get_absolute_url()
