@@ -51,6 +51,7 @@ class FollowView(generics.CreateAPIView):
 
 class FollowersViewset(viewsets.GenericViewSet, mixins.ListModelMixin):
     serializer_class = PublicProfileSerializer
+    pagination_class = None
 
     def get_queryset(self):
         user = get_object_or_404(User, username=self.kwargs['users_user__username'])
@@ -63,7 +64,8 @@ class FollowersViewset(viewsets.GenericViewSet, mixins.ListModelMixin):
 
 class FolloweesViewset(viewsets.GenericViewSet, mixins.ListModelMixin):
     serializer_class = PublicProfileSerializer
-
+    pagination_class = None
+    
     def get_queryset(self):
         user = get_object_or_404(User, username=self.kwargs['users_user__username'])
         username_to_retrieve = self.request.query_params.get('username')        

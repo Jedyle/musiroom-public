@@ -67,7 +67,11 @@ class UserUserRatingViewset(viewsets.GenericViewSet, mixins.ListModelMixin):
 
     def get_queryset(self):
         username = self.kwargs["users_user__username"]
-        return UserRating.objects.filter(user__username=username)
+        queryset = UserRating.objects.filter(user__username=username)
+        album_title = self.request.query_params.get("album_title__icontains")
+        if album_title:
+            queryset = queryset.filter(rating__albums__title__icontains=album_title)
+        return queryset
 
 
 @api_view(["GET"])
@@ -95,6 +99,7 @@ def followees_ratings(request):
 def user_ratings(request):
     ids = request.GET.get('ids')
     if ids is not None:
+        print(ids)
         try:
             ids = [int(el) for el in ids.split(',')]
         except ValueError:

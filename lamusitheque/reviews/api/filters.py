@@ -6,4 +6,4 @@ from reviews.models import Review
 class ReviewFilter(filters.FilterSet):
     class Meta:
         model = Review
-        fields = {"rating_id": ["exact"]}
+        fields = {"rating_id": ["exact", "in"]}
