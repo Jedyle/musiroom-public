@@ -4,7 +4,7 @@ from django.utils.html import format_html
 from siteflags.utils import get_flag_model
 
 from moderation.admin import ModerationAdmin
-from .models import Album, Artist, Genre
+from .models import Album, Artist, Genre, UserInterest
 
 
 # TODO : ModerationAdmin blocks migrations when creating a new database ! Fix this.
@@ -107,3 +107,5 @@ class FlagModelAdmin(admin.ModelAdmin):
 
 admin.site.unregister(FLAG_MODEL)
 admin.site.register(FLAG_MODEL, FlagModelAdmin)
+
+admin.site.register(UserInterest)

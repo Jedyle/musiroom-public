@@ -6,8 +6,7 @@ from star_ratings.api.serializers import RatingSerializer
 
 
 class GenreSerializer(serializers.ModelSerializer):
-    parent = serializers.SlugRelatedField(many=False, read_only=False, slug_field="slug",
-                                          queryset=Genre.objects.all(), allow_null=True)
+    parent = serializers.SlugRelatedField(many=False, read_only=False, slug_field="slug", queryset=Genre.objects.all(), allow_null=True)
 
     class Meta:
         model = Genre

@@ -17,5 +17,6 @@ albumgenres_router.register(r'genres', views.AlbumGenreViewset, base_name='genre
 urlpatterns = [
     url(r'', include(router.urls)),
     url(r'', include(albumgenres_router.urls)),
-    url(r'tops/(?P<slug>([a-zA-Z-_]+))/(?P<year>([0-9]{4}s?|all))/$', views.TopAlbumsView.as_view())
+    url(r'tops/(?P<slug>([a-zA-Z-_]+))/(?P<year>([0-9]{4}s?|all))/$', views.TopAlbumsView.as_view()),
+    url('interests/self', views.user_interests)
 ]

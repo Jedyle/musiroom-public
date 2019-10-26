@@ -7,7 +7,7 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404
 from rest_framework import generics, viewsets, mixins
 from rest_framework import status
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework.response import Response
 
@@ -241,4 +241,27 @@ class UserInterestsViewset(viewsets.GenericViewSet, mixins.ListModelMixin):
     def get_queryset(self):
         username = self.kwargs['users_user__username']
         user = get_object_or_404(User, username=username)
-        return user.interests.all()
+        album_title = self.request.query_params.get("album_title__icontains")
+        queryset = user.interests
+        if album_title:
+            queryset = queryset.filter(title__icontains=album_title)
+        return queryset.all()
+
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def user_interests(request):
+    ids = request.GET.get('ids')
+    if ids is not None:
+        try:
+            ids = [int(el) for el in ids.split(',')]
+        except ValueError:
+            return Response({"message": "IDs are not integers"}, status=status.HTTP_400_BAD_REQUEST)
+    else:
+        return Response({"message": "Parameter 'ids' is required"}, status=status.HTTP_400_BAD_REQUEST)
+    user = request.user
+    interests_list = UserInterest.objects.filter(user=user, album__ratings__id__in=ids)
+    return Response({
+        "interests": [el.album.ratings.get().id for el in interests_list]
+    })
