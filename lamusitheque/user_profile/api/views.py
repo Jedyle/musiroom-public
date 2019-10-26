@@ -17,7 +17,7 @@ from albums.api.serializers import AlbumSerializer
 from lamusitheque.apiutils.viewsets import ListRetrieveViewset
 from user_profile.api.filters import ProfileFilter
 from user_profile.api.serializers import CreateUserSerializer, PasswordConfirmSerializer, PublicProfileSerializer, \
-    NotificationSerializer, BadgeSerializer
+    NotificationSerializer, BadgeSerializer, ProfileAvatarSerializer
 from user_profile.email import send_activation_email
 from user_profile.models import Profile
 from user_profile.tokens import profile_activation_token
@@ -85,6 +85,17 @@ class ResendConfirmationLinkView(views.APIView):
         }, status=status.HTTP_200_OK)
 
 
+class UpdateAvatarView(generics.UpdateAPIView):
+
+    serializer_class = ProfileAvatarSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def update(self, request):
+        serializer = ProfileAvatarSerializer(request.user.profile, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
 class DestroyProfileView(generics.CreateAPIView):
 
     serializer_class = PasswordConfirmSerializer

@@ -14,6 +14,7 @@ class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         exclude = ('user', 'top_albums')
+        read_only_fields = ('avatar',)
 
 
 class ShortUserSerializer(serializers.ModelSerializer):
@@ -37,14 +38,10 @@ class UserProfileSerializer(serializers.ModelSerializer):
         read_only_fields = ('username',)
 
     def update(self, instance, validated_data):
-        profile_data = validated_data.pop('user_profile')
-        profile = instance.profile
+        print(validated_data)
+        profile = instance.profile        
 
-        # check avatar is not None
-        avatar = profile_data.pop('avatar', None)
-        if avatar is not None:
-            profile.avatar = avatar
-
+        profile_data = validated_data.pop('profile')
         for key in profile_data:
             setattr(profile, key, profile_data[key])
         profile.save()
@@ -52,6 +49,12 @@ class UserProfileSerializer(serializers.ModelSerializer):
             setattr(instance, key, validated_data[key])
         instance.save()
         return instance
+
+class ProfileAvatarSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Profile
+        fields = ('avatar', )
 
 
 class CreateUserSerializer(serializers.ModelSerializer):
