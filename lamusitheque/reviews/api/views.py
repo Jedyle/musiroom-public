@@ -66,6 +66,12 @@ class UserReviewViewset(viewsets.GenericViewSet, mixins.ListModelMixin):
 
     def get_queryset(self):
         username = self.kwargs["users_user__username"]
-        return Review.objects.filter(rating__user__username=username)
+        queryset = Review.objects.filter(rating__user__username=username)
+        album_title = self.request.query_params.get("album_title__icontains")
+        if album_title:
+            queryset = queryset.filter(rating__rating__albums__title__icontains=album_title)
+        return queryset
+
+
 
 

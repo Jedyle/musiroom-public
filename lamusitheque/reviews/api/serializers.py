@@ -1,10 +1,13 @@
 from rest_framework import serializers
-
+from star_ratings.models import UserRating
 from reviews.models import Review
+from star_ratings.api.serializers import ExtendedUserRatingSerializer
 
 
 class ReviewSerializer(serializers.ModelSerializer):
 
+    rating = ExtendedUserRatingSerializer(read_only=True)
+    
     class Meta:
         model = Review
         fields = "__all__"
