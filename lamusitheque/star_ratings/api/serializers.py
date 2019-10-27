@@ -14,8 +14,8 @@ class RatingSerializer(serializers.ModelSerializer):
 
 class UserRatingSerializer(serializers.ModelSerializer):
 
-    review = SimpleReviewSerializer(read_only=True)
 
+    review = SimpleReviewSerializer(read_only=True)
     class Meta:
         model = UserRating
         exclude = ('ip', )

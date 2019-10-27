@@ -99,7 +99,6 @@ def followees_ratings(request):
 def user_ratings(request):
     ids = request.GET.get('ids')
     if ids is not None:
-        print(ids)
         try:
             ids = [int(el) for el in ids.split(',')]
         except ValueError:
