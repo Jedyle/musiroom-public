@@ -338,6 +338,8 @@ REST_AUTH_SERIALIZERS = {
     'USER_DETAILS_SERIALIZER': 'user_profile.api.serializers.UserProfileSerializer',
 }
 
+OLD_PASSWORD_FIELD_ENABLED = True
+
 # CORS
 
 CORS_ORIGIN_ALLOW_ALL = True

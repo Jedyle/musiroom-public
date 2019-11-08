@@ -1,10 +1,10 @@
 from django.contrib.auth.models import User
-from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.urls import reverse
 from vote.models import VoteModel
-
+from comments.models import Comment
 
 # Create your models here.
 
@@ -19,6 +19,10 @@ class Discussion(VoteModel, models.Model):
     object_id = models.PositiveIntegerField(default=0)
     content_object = GenericForeignKey('content_type', 'object_id')
 
+    comments = GenericRelation(Comment,
+                               related_query_name='discussions',
+                               object_id_field='object_pk')
+    
     def __str__(self):
         return self.title
 

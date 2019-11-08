@@ -1,2 +1,7 @@
 * TODO make auth tokens expire after a certain time 
 * TODO add pytest with factoryboy
+
+
+* TODO refactor + pytest
+* TODO add i18n language support (for actions / notifications mostly)
+* TODO fix the 'append slash' 500 error

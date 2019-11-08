@@ -142,9 +142,7 @@ class NotificationViewset(viewsets.GenericViewSet, mixins.ListModelMixin):
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
-        username = self.kwargs['users_user__username']
-        user = get_object_or_404(User, username=username)
-        return user.notifications.all()
+        return self.request.user.notifications.all()
 
 
 class BadgesViewset(viewsets.GenericViewSet, mixins.ListModelMixin):

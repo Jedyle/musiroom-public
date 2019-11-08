@@ -13,6 +13,7 @@ from user_profile.api.views import RegisterUserView, ActivateProfileView, Resend
 
 router = routers.DefaultRouter()
 router.register(r'users', ProfileViewset)
+router.register(r'notifications', NotificationViewset, base_name='Notification')
 
 user_nested_router = routers.NestedSimpleRouter(router, r'users', lookup='users')
 user_nested_router.register(r'lists', UserListViewset, base_name="lists")
@@ -20,7 +21,6 @@ user_nested_router.register(r'discussions', UserDiscussionViewset, base_name="di
 user_nested_router.register(r'reviews', UserReviewViewset, base_name="reviews")
 user_nested_router.register(r'ratings', UserUserRatingViewset, base_name="ratings")
 user_nested_router.register(r'interests', UserInterestsViewset, base_name="interests")
-user_nested_router.register(r'notifications', NotificationViewset, base_name="notifications")
 user_nested_router.register(r'badges', BadgesViewset, base_name='badges')
 user_nested_router.register(r'followers', FollowersViewset, base_name='followers')
 user_nested_router.register(r'followees', FolloweesViewset, base_name='followees')
