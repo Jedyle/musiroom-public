@@ -3,7 +3,7 @@ from albums.models import Album
 from reviews.api.simple_serializers import SimpleReviewSerializer
 from star_ratings.models import Rating, UserRating
 from generic_relations.relations import GenericRelatedField
-
+from user_profile.api.serializers import ShortUserSerializer
 
 class RatingSerializer(serializers.ModelSerializer):
 
@@ -25,7 +25,8 @@ class UserRatingSerializer(serializers.ModelSerializer):
 class ExtendedUserRatingSerializer(serializers.ModelSerializer):
 
     content_object = serializers.SerializerMethodField()
-
+    user = ShortUserSerializer(read_only=True)
+    
     class Meta:
         model = UserRating
         exclude = ('ip', )

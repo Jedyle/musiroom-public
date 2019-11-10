@@ -16,7 +16,8 @@ class ReviewViewset(viewsets.ModelViewSet, VoteMixin):
     permission_classes = (IsUserOrReadOnly,)
     queryset = Review.objects.all()
     filter_class = ReviewFilter
-
+    ordering_fields = ('date_publication', 'rating__score')
+    
     def get_queryset(self):
 
         """

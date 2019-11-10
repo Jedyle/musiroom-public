@@ -4,6 +4,7 @@ from rest_framework import viewsets, mixins, generics, status
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from friendship.models import Follow
 
 from star_ratings.api.serializers import RatingSerializer, UserRatingSerializer, ExtendedUserRatingSerializer
 from star_ratings.models import Rating, UserRating
@@ -16,7 +17,7 @@ class RatingViewset(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
 
     serializer_class = RatingSerializer
     queryset = Rating.objects.all()
-
+    
     @action(detail=True, methods=['GET'])
     def stats(self, request, pk=None):
         rating = self.get_object()
