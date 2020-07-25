@@ -3,6 +3,7 @@ from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.core.validators import MinLengthValidator, MaxLengthValidator
 from django.db import models
+from django.db.models import Count
 from django.http import Http404
 from django.urls import reverse
 from django.utils.functional import cached_property
@@ -157,7 +158,7 @@ class Album(models.Model):
     @property
     def rating(self):
         # for drf, property to add nested serializer
-        return self.ratings.get()
+        return Rating.objects.for_instance(self)
 
 
 discussions_registry.register(Album)
@@ -235,6 +236,9 @@ class Artist(models.Model):
 
     def get_preview(self):
         return self.get_photo()
+
+    def get_associated_genres(self):
+        return Genre.objects.filter(albumgenre__album__artists__in=[self], albumgenre__is_genre = True).annotate(total = Count('id')).order_by('-total')[:3]
 
     class Meta:
         verbose_name = "Artiste"

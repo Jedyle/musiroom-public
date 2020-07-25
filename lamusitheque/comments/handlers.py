@@ -16,7 +16,7 @@ def comment_activity(sender, instance, created, **kwargs):
 def notify_comment(sender, instance, created, **kwargs):
     if created:
         content_obj = instance.content_object
-        user = content_obj.user
+        user = instance.user
         if instance.user != user:
             notify.send(sender=instance.user, recipient=user, verb="has commented", target=content_obj)
         if instance.parent is not None:

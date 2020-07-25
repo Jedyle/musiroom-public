@@ -258,6 +258,10 @@ FEEDBACK_CHOICES = (
 )
 ALLOW_ANONYMOUS_FEEDBACK = True
 
+# Albums
+
+YOUTUBE_API_KEY = "AIzaSyAiXPK_Qbrsl85Ki6IM-x3JsZTpxI2yz8k"
+
 # Discussion settings
 
 # default : title

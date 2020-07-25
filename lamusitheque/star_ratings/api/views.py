@@ -6,7 +6,11 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from friendship.models import Follow
 
-from star_ratings.api.serializers import RatingSerializer, UserRatingSerializer, ExtendedUserRatingSerializer
+from star_ratings.api.serializers import (
+    RatingSerializer,
+    UserRatingSerializer,
+    ExtendedUserRatingSerializer,
+)
 from star_ratings.models import Rating, UserRating
 
 
@@ -17,8 +21,8 @@ class RatingViewset(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
 
     serializer_class = RatingSerializer
     queryset = Rating.objects.all()
-    
-    @action(detail=True, methods=['GET'])
+
+    @action(detail=True, methods=["GET"])
     def stats(self, request, pk=None):
         rating = self.get_object()
         user_ratings = rating.user_ratings
@@ -26,14 +30,15 @@ class RatingViewset(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
         for i in range(1, 11):
             count.append(user_ratings.filter(score=i).count())
         serializer = self.get_serializer(rating)
-        return Response({
-            **serializer.data,
-            "stats":
-                {
-                    "labels": list(range(1, 11)),
-                    "data": count
-                }
-        })
+        return Response(
+            {**serializer.data, "stats": {"labels": list(range(1, 11)), "data": count}}
+        )
+
+    @action(detail=True, methods=["GET"], permission_classes=[IsAuthenticated])
+    def followees_ratings(self, request, pk=None):
+        rating = self.get_object()
+        serializer = UserRatingSerializer(rating.followees_ratings(request.user), many=True)
+        return Response({"results": serializer.data, "stats": rating.followees_ratings_stats(request.user)})
 
 
 class CreateUserRatingView(generics.CreateAPIView):
@@ -78,37 +83,48 @@ class UserUserRatingViewset(viewsets.GenericViewSet, mixins.ListModelMixin):
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def followees_ratings(request):
-    ids = request.GET.get('ids')
+    ids = request.GET.get("ids")
     if ids is not None:
         try:
-            ids = [int(el) for el in ids.split(',')]
+            ids = [int(el) for el in ids.split(",")]
         except ValueError:
-            return Response({"message": "IDs are not integers"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"message": "IDs are not integers"}, status=status.HTTP_400_BAD_REQUEST
+            )
     else:
-        return Response({"message": "Parameter 'ids' is required"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {"message": "Parameter 'ids' is required"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
     user = request.user
-    ratings_list = UserRating.objects.filter(Q(rating_id__in=ids) & Q(user__followers__follower=user))\
-        .values('rating__id').annotate(avg=Avg('score'))
-    ratings_list = {el['rating__id']: el['avg'] for el in ratings_list}
-    return Response({
-        "ratings": ratings_list
-    })
+    ratings_list = (
+        UserRating.objects.filter(
+            Q(rating_id__in=ids) & Q(user__followers__follower=user)
+        )
+        .values("rating__id")
+        .annotate(avg=Avg("score"))
+    )
+    ratings_list = {el["rating__id"]: el["avg"] for el in ratings_list}
+    return Response({"ratings": ratings_list})
 
 
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def user_ratings(request):
-    ids = request.GET.get('ids')
+    ids = request.GET.get("ids")
     if ids is not None:
         try:
-            ids = [int(el) for el in ids.split(',')]
+            ids = [int(el) for el in ids.split(",")]
         except ValueError:
-            return Response({"message": "IDs are not integers"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"message": "IDs are not integers"}, status=status.HTTP_400_BAD_REQUEST
+            )
     else:
-        return Response({"message": "Parameter 'ids' is required"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {"message": "Parameter 'ids' is required"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
     user = request.user
     ratings_list = UserRating.objects.filter(rating_id__in=ids).filter(user=user)
     ratings_list = {el.rating_id: el.score for el in ratings_list}
-    return Response({
-        "ratings": ratings_list
-    })
+    return Response({"ratings": ratings_list})

@@ -1,5 +1,7 @@
 import re
 
+from youtube_api import YouTubeDataAPI
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.db.models import Q
@@ -11,9 +13,10 @@ from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework.response import Response
 
-from albums.api.filters import AlbumFilter
+from albums.api.filters import AlbumFilter, ArtistFilter
 from albums.api.serializers import GenreSerializer, AlbumSerializer, ArtistSerializer, AlbumGenreSerializer, \
     UserInterestSerializer
+from albums.api.service import add_album_details
 from albums.models import Genre, Album, Artist, AlbumGenre, UserInterest
 from albums.scraper import ParseSimilarArtists, ParseArtist
 from albums.settings import SIMILAR_ARTISTS_LENGTH
@@ -97,6 +100,23 @@ class AlbumViewset(ListRetrieveViewset):
                 "interest": value
             })
 
+    @action(detail=True, methods=["GET"])
+    def youtube_link(self, request, mbid=None):
+        album = self.get_object()
+        search_string = f"{album.artists.first().name} {album.title}"
+        yt = YouTubeDataAPI(settings.YOUTUBE_API_KEY)
+        res = yt.search(search_string, max_results=1)
+        return Response({
+            "link" : f"https://youtube.com/watch?v={res[0]['video_id']}"
+        })
+
+    @action(detail=True, methods=["GET"])
+    def same_artist(self, request, mbid=None):
+        album = self.get_object()
+        queryset = self.queryset.filter(artists__in=album.artists.all()).exclude(mbid=mbid)[:3]
+        serializer = self.get_serializer(queryset, many=True)
+        return Response({"results": serializer.data})
+        
 
 class AlbumGenreViewset(CreateListRetrieveViewset, VoteMixin):
 
@@ -133,6 +153,7 @@ class ArtistViewset(ListRetrieveViewset):
     serializer_class = ArtistSerializer
     queryset = Artist.objects.all()
     lookup_field = "mbid"
+    filter_class = ArtistFilter
 
     def get_object(self):
         mbid = self.kwargs['mbid']
@@ -159,7 +180,6 @@ class ArtistViewset(ListRetrieveViewset):
         serializer = ArtistSerializer(artist)
         similar = parser.get_artists()
         return Response({
-            **serializer.data,
             "similar": {
                 "count": len(similar),
                 "items": similar
@@ -183,6 +203,8 @@ class ArtistViewset(ListRetrieveViewset):
         if not parser.load():
             raise Http404
         discog = parser.get_discography()
+        discog = add_album_details(discog, request)
+        
         artist_name = parser.get_name()
         nb_pages = parser.get_nb_pages()
 

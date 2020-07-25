@@ -454,7 +454,7 @@ class ParseArtist:
                         album_list.append(release)
                     except:
                         pass
-                discog.append((release_type, album_list))
+                discog.append({"release_type": release_type, "items": album_list})
         return discog
 
 

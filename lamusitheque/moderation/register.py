@@ -1,4 +1,4 @@
-from __future__ import unicode_literals
+# from __future__ import unicode_literals
 
 try:
     from django.contrib.contenttypes.fields import GenericRelation

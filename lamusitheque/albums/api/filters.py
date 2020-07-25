@@ -4,9 +4,10 @@ from albums.models import Album, Artist
 
 
 class AlbumFilter(filters.FilterSet):
+    
     class Meta:
         model = Album
-        fields = {"title": ['iexact', 'in', 'startswith', 'icontains']}
+        fields = {"title": ['iexact', 'in', 'startswith', 'icontains'], "mbid": "__all__"}
 
 
 class ArtistFilter(filters.FilterSet):

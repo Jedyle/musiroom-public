@@ -7,6 +7,8 @@ from user_profile.api.serializers import ShortUserSerializer
 
 class RatingSerializer(serializers.ModelSerializer):
 
+    average = serializers.FloatField(min_value=1, max_value=10)
+    
     class Meta:
         model = Rating
         exclude = ("object_id", "content_type")
@@ -14,8 +16,10 @@ class RatingSerializer(serializers.ModelSerializer):
 
 class UserRatingSerializer(serializers.ModelSerializer):
 
-
     review = SimpleReviewSerializer(read_only=True)
+    user = serializers.SlugRelatedField(slug_field='username', read_only=True)
+    score = serializers.IntegerField(min_value=1, max_value=10)
+    
     class Meta:
         model = UserRating
         exclude = ('ip', )

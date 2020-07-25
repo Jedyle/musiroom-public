@@ -103,6 +103,26 @@ class AbstractBaseRating(models.Model):
         self.average = aggregates.get('average') or 0.0
         self.save()
 
+    def followees_ratings(self, user):
+        return self.user_ratings.filter(
+            user__followers__follower=user
+        )
+
+    def followees_ratings_stats(self, user):
+        followees_user_ratings = self.user_ratings.filter(
+            user__followers__follower=user
+        )
+        scores = [el.score for el in followees_user_ratings]
+        stats = {
+            "stats": {
+                "labels": list(range(1, 11)),
+                "data": [scores.count(i) for i in range(1, 11)],
+            },
+            "average": (sum(scores) / len(scores)) if scores else 0.0,
+            "count": len(scores),
+        }
+        return stats
+
 
 class Rating(AbstractBaseRating):
     class Meta(AbstractBaseRating.Meta):

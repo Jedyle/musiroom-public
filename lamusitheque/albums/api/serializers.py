@@ -2,6 +2,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 
 from albums.models import Genre, Album, Artist, AlbumGenre
+from star_ratings.models import UserRating
 from star_ratings.api.serializers import RatingSerializer
 
 
@@ -15,6 +16,9 @@ class GenreSerializer(serializers.ModelSerializer):
 
 
 class ArtistListSerializer(serializers.ModelSerializer):
+
+    photo = serializers.CharField(source='get_photo')
+    
     class Meta:
         model = Artist
         fields = ('mbid', 'name', 'photo')
@@ -27,16 +31,30 @@ class AlbumSerializer(serializers.ModelSerializer):
     rating = RatingSerializer()
     genres = serializers.SlugRelatedField(slug_field="slug", read_only=True, many=True)
 
+    user_rating = serializers.SerializerMethodField()
+    followees_avg = serializers.SerializerMethodField()
+    
     class Meta:
         model = Album
-        exclude = ('id', 'users_interested')
+        exclude = ('users_interested',)
         lookup_field = "mbid"
 
+    def get_user_rating(self, obj):
+        request = self.context.get("request")
+        if request and not request.user.is_anonymous:
+            user_rating = UserRating.objects.for_instance_by_user(obj, user=request.user)
+            return user_rating.score if user_rating else None
+
+    def get_followees_avg(self, obj):
+        request = self.context.get("request")
+        if request and not request.user.is_anonymous:
+            return obj.rating.followees_ratings_stats(request.user)["average"]
+        
 
 class ShortArtistSerializer(serializers.ModelSerializer):
     class Meta:
         model = Artist
-        fields = ('mbid', 'name')
+        fields = ('mbid', 'name', 'photo')
 
 
 class ShortAlbumSerializer(serializers.ModelSerializer):
@@ -80,7 +98,7 @@ class AlbumGenreSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = AlbumGenre
-        fields = ('album', 'genre', 'user', 'user_vote', 'num_vote_up', 'num_vote_down', 'vote_score')
+        fields = ('album', 'genre', 'user', 'user_vote', 'num_vote_up', 'num_vote_down', 'vote_score',  'is_genre')
         read_only_fields = ('num_vote_up', 'num_vote_down', 'vote_score')
 
     def get_user_vote(self, obj):
@@ -111,10 +129,14 @@ class AlbumGenreSerializer(serializers.ModelSerializer):
 
 
 class ArtistSerializer(serializers.ModelSerializer):
+
+    photo = serializers.CharField(source="get_photo")
+    associated_genres = GenreSerializer(source="get_associated_genres", many=True)
+    
     class Meta:
         model = Artist
         exclude = ("albums",)
 
 
 class UserInterestSerializer(serializers.Serializer):
-    value = serializers.ChoiceField(required=True, choices=[False, True])
+    value = serializers.BooleanField(required=True)

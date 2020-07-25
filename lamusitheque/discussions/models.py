@@ -13,7 +13,7 @@ class Discussion(VoteModel, models.Model):
     created = models.DateTimeField("Date", auto_now_add=True)
     modified = models.DateTimeField("Last edit", auto_now=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='discussions')
-    title = models.CharField('Title', max_length=200, blank=True)
+    title = models.CharField('Title', max_length=200)
     content = models.TextField('Content')
     content_type = models.ForeignKey(ContentType, null=True, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField(default=0)
