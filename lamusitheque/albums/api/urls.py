@@ -5,7 +5,8 @@ from rest_framework_nested import routers
 from . import views
 
 router = routers.DefaultRouter()
-router.register(r'genres', views.GenreViewset)
+router.register(r'genres', views.GenreViewset, base_name="genre")
+router.register(r'all_genres', views.GenreListViewset)
 router.register(r'albums', views.AlbumViewset)
 router.register(r'artists', views.ArtistViewset)
 

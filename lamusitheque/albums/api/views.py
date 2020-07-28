@@ -15,14 +15,14 @@ from rest_framework.response import Response
 
 from albums.api.filters import AlbumFilter, ArtistFilter
 from albums.api.serializers import GenreSerializer, AlbumSerializer, ArtistSerializer, AlbumGenreSerializer, \
-    UserInterestSerializer
+    UserInterestSerializer, ShortGenreSerializer
 from albums.api.service import add_album_details
 from albums.models import Genre, Album, Artist, AlbumGenre, UserInterest
 from albums.scraper import ParseSimilarArtists, ParseArtist
 from albums.settings import SIMILAR_ARTISTS_LENGTH
 from lamusitheque.apiutils.mixins import VoteMixin
 from lamusitheque.apiutils.serializers import VoteSerializer
-from lamusitheque.apiutils.viewsets import CreateListRetrieveViewset, ListRetrieveViewset
+from lamusitheque.apiutils.viewsets import CreateListRetrieveViewset, ListRetrieveViewset, ListViewset
 
 
 class GenreViewset(CreateListRetrieveViewset):
@@ -31,10 +31,27 @@ class GenreViewset(CreateListRetrieveViewset):
     When a genre is created, it is not publicly available until a moderator approves it.
     """
 
+    pagination_class = None
     serializer_class = GenreSerializer
-    queryset = Genre.objects.all()
     permission_classes = (IsAuthenticatedOrReadOnly,)
     lookup_field = 'slug'
+
+    def get_queryset(self):
+        # if asked a list, we directly display a tree
+        print(self.action)
+        if self.action == "list":
+            return Genre.objects.filter(parent__isnull=True)
+        elif self.action == "create":
+            return Genre.unmoderated_objects.all()
+        return Genre.objects.all()
+
+
+class GenreListViewset(ListViewset):
+
+    serializer_class = ShortGenreSerializer
+    pagination_class = None
+    lookup_field = 'slug'
+    queryset = Genre.objects.all()
 
 
 class AlbumViewset(ListRetrieveViewset):

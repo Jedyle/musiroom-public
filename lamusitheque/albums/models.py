@@ -7,6 +7,7 @@ from django.db.models import Count
 from django.http import Http404
 from django.urls import reverse
 from django.utils.functional import cached_property
+from django.template.defaultfilters import slugify
 from jsonfield.fields import JSONField
 from siteflags.models import ModelWithFlag
 from vote.models import VoteModel
@@ -75,6 +76,8 @@ class Genre(models.Model):
             if parent == self:
                 raise RuntimeError("Références circulaires non autorisées")
             parent = parent.parent
+        if not self.slug:
+            self.slug = slugify(self.name)
         super(Genre, self).save(*args, **kwargs)
 
     @property

@@ -1,5 +1,7 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
+from rest_framework.validators import UniqueValidator
+from rest_framework_recursive.fields import RecursiveField
 
 from albums.models import Genre, Album, Artist, AlbumGenre
 from star_ratings.models import UserRating
@@ -9,9 +11,13 @@ from star_ratings.api.serializers import RatingSerializer
 class GenreSerializer(serializers.ModelSerializer):
     parent = serializers.SlugRelatedField(many=False, read_only=False, slug_field="slug", queryset=Genre.objects.all(), allow_null=True)
 
+    name = serializers.CharField(allow_blank=False, validators=[UniqueValidator(queryset=Genre.unmoderated_objects.all())])
+    children = serializers.ListField(child=RecursiveField(), read_only=True)
+
     class Meta:
         model = Genre
-        fields = ("name", "description", "slug", "parent")
+        fields = ("name", "description", "slug", "parent", "children")
+        read_only_fields = ('slug',)
         lookup_field = 'slug'
 
 
@@ -79,7 +85,7 @@ class ShortGenreSerializer(serializers.ModelSerializer):
     class Meta:
         model = Genre
         read_only_fields = ("name", "description", "parent")
-        fields = ('slug',)
+        fields = ('slug', 'name')
 
 
 class AlbumGenreSerializer(serializers.ModelSerializer):
