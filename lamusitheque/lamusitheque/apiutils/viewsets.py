@@ -35,6 +35,13 @@ class ListRetrieveViewset(
     pass
 
 
+class ListViewset(
+    mixins.ListModelMixin,
+    viewsets.GenericViewSet
+):
+    pass
+
+
 class CreateRetrieveUpdateDeleteViewset(
     mixins.CreateModelMixin,
     mixins.UpdateModelMixin,
