@@ -5,3 +5,13 @@
 * TODO refactor + pytest
 * TODO add i18n language support (for actions / notifications mostly)
 * TODO fix the 'append slash' 500 error
+* TODO add user rating stats for followees
+
+
+* ERRORS
+** 500 error with CreateUserRatingView when object already exists
+** When we add a rating, disable the interest for the album by default (backend + frontend)
+** Do cases when user is not connected (e.g : show rating in album page ?)
+** LastFM api does not give artist image anymore : find another source
+** Artist/Albums Page : use placeholders during loading (can be pretty long)
+** Search album, artists... takes accents 
