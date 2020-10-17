@@ -20,33 +20,57 @@ from .scraper import PROTOCOL, COVER_URL, ParseArtistPhoto
 
 # Create your models here.
 
+
 class GenreManager(models.Manager):
     def generate_tree(self):
         roots = self.filter(parent__isnull=True)
-        genre_tree = [{'name': root.name, 'slug': root.slug, 'url': reverse('albums:genre', args=[root.slug])} for root
-                      in roots]
+        genre_tree = [
+            {
+                "name": root.name,
+                "slug": root.slug,
+                "url": reverse("albums:genre", args=[root.slug]),
+            }
+            for root in roots
+        ]
         for i in range(len(genre_tree)):
             self.gen_child_tree(genre_tree[i])
-        return {'tree': genre_tree}
+        return {"tree": genre_tree}
 
     def gen_child_tree(self, genre_dict):
-        slug = genre_dict['slug']
+        slug = genre_dict["slug"]
         genre = Genre.objects.get(slug=slug)
         children = genre.children
-        children_tree = [{'name': child.name, 'slug': child.slug, 'url': reverse('albums:genre', args=[child.slug])} for
-                         child in children]
+        children_tree = [
+            {
+                "name": child.name,
+                "slug": child.slug,
+                "url": reverse("albums:genre", args=[child.slug]),
+            }
+            for child in children
+        ]
         if len(children_tree) > 0:
-            genre_dict['children'] = children_tree
+            genre_dict["children"] = children_tree
             for i in range(len(children_tree)):
                 self.gen_child_tree(children_tree[i])
 
 
 class Genre(models.Model):
-    name = models.CharField('Name', max_length=200, help_text="Genre name", unique=True)
-    description = models.TextField('Description', blank=True, null=True, default="", help_text="Description du genre")
-    slug = models.SlugField('Slug', max_length=255, db_index=True, null=False, unique=True,
-                            help_text="Slug for urls",
-                            )
+    name = models.CharField("Name", max_length=200, help_text="Genre name", unique=True)
+    description = models.TextField(
+        "Description",
+        blank=True,
+        null=True,
+        default="",
+        help_text="Description du genre",
+    )
+    slug = models.SlugField(
+        "Slug",
+        max_length=255,
+        db_index=True,
+        null=False,
+        unique=True,
+        help_text="Slug for urls",
+    )
     parent = models.ForeignKey("self", null=True, blank=True, on_delete=models.CASCADE)
 
     objects = GenreManager()
@@ -86,7 +110,6 @@ class Genre(models.Model):
 
 
 class AlbumManager(models.Manager):
-
     def get_from_api(self, mbid):
         """
         Tries to get album from database, else tries from musicbrainz
@@ -108,23 +131,33 @@ class Album(models.Model):
     tracks = JSONField(null=True)
 
     TYPE_CHOICES = (
-        ('SI', 'Single'),
-        ('LP', 'LP'),
-        ('EP', 'EP'),
-        ('LI', 'Live'),
-        ('CP', 'Compilation'),
-        ('RE', 'Remix'),
-        ('UK', 'Inconnu'),
+        ("SI", "Single"),
+        ("LP", "LP"),
+        ("EP", "EP"),
+        ("LI", "Live"),
+        ("CP", "Compilation"),
+        ("RE", "Remix"),
+        ("UK", "Inconnu"),
     )
 
-    album_type = models.CharField(max_length=2, choices=TYPE_CHOICES, default='LP')
-    genres = models.ManyToManyField(Genre, related_name='albums', blank=True, through='AlbumGenre',
-                                    through_fields=('album', 'genre'))
+    album_type = models.CharField(max_length=2, choices=TYPE_CHOICES, default="LP")
+    genres = models.ManyToManyField(
+        Genre,
+        related_name="albums",
+        blank=True,
+        through="AlbumGenre",
+        through_fields=("album", "genre"),
+    )
 
-    ratings = GenericRelation(Rating, related_query_name='albums')
+    ratings = GenericRelation(Rating, related_query_name="albums")
 
-    users_interested = models.ManyToManyField(User, related_name='interests', blank=True, through='UserInterest',
-                                              through_fields=('album', 'user'))
+    users_interested = models.ManyToManyField(
+        User,
+        related_name="interests",
+        blank=True,
+        through="UserInterest",
+        through_fields=("album", "user"),
+    )
 
     objects = AlbumManager()
 
@@ -132,12 +165,12 @@ class Album(models.Model):
         return self.title
 
     def verbose_name(self):
-        if self.album_type == 'UK':
+        if self.album_type == "UK":
             return self.title
         return "{} ({})".format(self.title, self.get_album_type_display())
 
     def get_absolute_url(self):
-        return reverse('album-detail', args=[self.mbid])
+        return reverse("album-detail", args=[self.mbid])
 
     def get_release_date(self):
         if self.release_date is None:
@@ -149,8 +182,8 @@ class Album(models.Model):
 
     def get_cover(self):
         if self.cover:
-            return PROTOCOL + COVER_URL + 'release/' + self.cover
-        return static('albums/images/default_cover.png')
+            return PROTOCOL + COVER_URL + "release/" + self.cover
+        return static("albums/images/default_cover.png")
 
     def get_preview(self):
         return self.get_cover()
@@ -163,6 +196,12 @@ class Album(models.Model):
         # for drf, property to add nested serializer
         return Rating.objects.for_instance(self)
 
+    @property
+    def real_genres(self):
+        return self.genres.filter(albumgenre__is_genre=True).order_by(
+            "albumgenre__vote_score"
+        )
+
 
 discussions_registry.register(Album)
 
@@ -171,7 +210,9 @@ class AlbumGenre(VoteModel, ModelWithFlag, models.Model):
     album = models.ForeignKey(Album, on_delete=models.CASCADE)
     genre = models.ForeignKey(Genre, on_delete=models.CASCADE)
     user = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL)
-    is_genre = models.BooleanField(default=False)  # true if this genre is registered as one of the album's genre
+    is_genre = models.BooleanField(
+        default=False
+    )  # true if this genre is registered as one of the album's genre
 
     FLAG_SPAM = 10
 
@@ -179,26 +220,25 @@ class AlbumGenre(VoteModel, ModelWithFlag, models.Model):
         return "%s - %s" % (self.album.title, self.genre.name)
 
     def get_absolute_url(self):
-        return reverse('genres-detail', args=[self.album.mbid, self.genre.slug])
+        return reverse("genres-detail", args=[self.album.mbid, self.genre.slug])
 
     class Meta:
-        unique_together = ('album', 'genre')
+        unique_together = ("album", "genre")
 
 
 class UserInterest(models.Model):
     album = models.ForeignKey(Album, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    date_created = models.DateTimeField('Creation date', auto_now=True)
+    date_created = models.DateTimeField("Creation date", auto_now=True)
 
     def __str__(self):
         return "%s wants to listen to %s " % (self.user.username, self.album.title)
 
     class Meta:
-        unique_together = ('album', 'user')
+        unique_together = ("album", "user")
 
 
 class ArtistManager(models.Manager):
-
     def get_from_api(self, mbid):
         try:
             artist = self.get(mbid=mbid)
@@ -210,10 +250,14 @@ class ArtistManager(models.Manager):
 
 
 class Artist(models.Model):
-    mbid = models.CharField(db_index=True, max_length=36, unique=True,
-                            validators=[MinLengthValidator(36), MaxLengthValidator(36)])
+    mbid = models.CharField(
+        db_index=True,
+        max_length=36,
+        unique=True,
+        validators=[MinLengthValidator(36), MaxLengthValidator(36)],
+    )
     name = models.CharField(max_length=100)
-    albums = models.ManyToManyField(Album, related_name='artists', blank=True)
+    albums = models.ManyToManyField(Album, related_name="artists", blank=True)
     photo = models.CharField(max_length=150, null=True)
 
     objects = ArtistManager()
@@ -222,7 +266,7 @@ class Artist(models.Model):
         return self.name
 
     def get_absolute_url(self):
-        return reverse('artist-detail', args=[self.mbid])
+        return reverse("artist-detail", args=[self.mbid])
 
     def get_photo(self):
         if self.photo is None:
@@ -234,19 +278,23 @@ class Artist(models.Model):
                 if photo != "":
                     return photo
         elif self.photo == "":
-            return static('images/artist.jpg')
+            return static("images/artist.jpg")
         return self.photo
 
     def get_preview(self):
         return self.get_photo()
 
     def get_associated_genres(self):
-        return Genre.objects.filter(albumgenre__album__artists__in=[self], albumgenre__is_genre = True).annotate(total = Count('id')).order_by('-total')[:3]
+        return (
+            Genre.objects.filter(
+                albumgenre__album__artists__in=[self], albumgenre__is_genre=True
+            )
+            .annotate(total=Count("id"))
+            .order_by("-total")[:3]
+        )
 
     class Meta:
         verbose_name = "Artiste"
 
 
 discussions_registry.register(Artist)
-
-

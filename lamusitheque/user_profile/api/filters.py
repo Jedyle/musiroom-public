@@ -1,5 +1,6 @@
 import rest_framework_filters as filters
 from django.contrib.auth.models import User
+from notifications.models import Notification
 
 from user_profile.models import Profile
 
@@ -18,3 +19,10 @@ class ProfileFilter(filters.FilterSet):
     class Meta:
         model = Profile
         fields = {"sex": ['exact']}
+
+
+class NotificationFilter(filters.FilterSet):
+
+    class Meta:
+        model = Notification
+        fields = {"unread": ["exact"]}

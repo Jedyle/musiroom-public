@@ -38,11 +38,11 @@ class FollowView(generics.CreateAPIView):
             # delete follower
             Follow.objects.remove_follower(request.user, user)
             # delete notifications like 'user x follows you'
-            notifications_alike(user.notifications, actor=user, verb="follows you").delete()
+            notifications_alike(user.notifications, actor=request.user, verb="follows you").delete()
         else:
             # add follower
             Follow.objects.add_follower(request.user, user)
-            notify.send(sender=user, recipient=user, verb="follows you")
+            notify.send(sender=request.user, recipient=user, verb="follows you")
         return Response({
             "user": user.username,
             "is_followed": Follow.objects.follows(request.user, user)

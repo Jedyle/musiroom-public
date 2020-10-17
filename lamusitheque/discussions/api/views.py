@@ -32,7 +32,7 @@ class DiscussionViewset(viewsets.ModelViewSet, VoteMixin):
             serializer_class = DiscussionUpdateSerializer
 
         return serializer_class
-    
+
     def create(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -70,5 +70,3 @@ def get_discussion_object(request, model, object_id):
         "object": serializer(dobject).data,
         "model": model
     })
-    
-        

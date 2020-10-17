@@ -232,19 +232,16 @@ class ParseAlbum:
         table = self.soup.find('table', {'class': 'tbl'})
         dates = []
 
-        for row in table.tbody.find_all('tr')[1:]:
-            rows = row.find_all('td')
+        for row in table.tbody.find_all('span', {'class': 'release-date'}):            
             try:
-                col = row.find_all('td')[3].find_all('li')
-                for li in col:
-                    r_date = li.text
-                    if len(r_date) == 4:
-                        r_date = r_date + '-12-31'
-                    try:
-                        date = datetime.datetime.strptime(r_date, '%Y-%m-%d').date()
-                        dates.append(date)
-                    except ValueError:
-                        pass
+                r_date = row.text
+                if len(r_date) == 4:
+                    r_date = r_date + '-12-31'
+                try:
+                    date = datetime.datetime.strptime(r_date, '%Y-%m-%d').date()
+                    dates.append(date)
+                except ValueError:
+                    pass
             except IndexError:
                 pass
         if dates:
@@ -259,7 +256,8 @@ class ParseAlbum:
             table = self.soup.find('table', {'class': 'tbl'})
             release_1 = table.tbody.find_all('tr')[1:2]
             if release_1:
-                release_link = release_1[0].find_all('td')[0].a['href']
+                release_link = release_1[0].find_all('td')[0].find_all('a')[-1]['href']
+                print(self.root_url + release_link)
                 req = requests.get(self.root_url + release_link)
                 if req.status_code == 200:
                     page = req.content
@@ -504,7 +502,7 @@ def test_search_artist(artist):
 def test_page_list(nb_pages, current_page):
     print('nb_pages : ', nb_pages, 'current_page : ', current_page, 'list : ', get_page_list(nb_pages, current_page))
 
-# test_album('1122eaed-f403-4feb-af98-63a63d3e083a')
+# test_album('3dc9ee80-0768-490d-9e43-534796da3076')
 # test_album('9c150c9b-769e-4a63-92b3-faf0db3033b0')
 # test_album('1bd0767d-756b-3023-bf84-ca475fea487a')
 # test_album('3a73b210-aa6e-459d-a9f7-9be3')

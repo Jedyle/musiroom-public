@@ -16,8 +16,8 @@ class ReviewViewset(viewsets.ModelViewSet, VoteMixin):
     permission_classes = (IsUserOrReadOnly,)
     queryset = Review.objects.all()
     filter_class = ReviewFilter
-    ordering_fields = ('date_publication', 'rating__score')
-    
+    ordering_fields = ("date_publication", "rating__score")
+
     def get_queryset(self):
 
         """
@@ -49,11 +49,9 @@ class ReviewViewset(viewsets.ModelViewSet, VoteMixin):
     def create(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        rating = serializer.validated_data.get('rating')
+        rating = serializer.validated_data.get("rating")
         if rating.user != request.user:
-            raise PermissionDenied({
-                "message": "Users do not match"
-            })
+            raise PermissionDenied({"message": "Users do not match"})
         review = serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
@@ -70,9 +68,7 @@ class UserReviewViewset(viewsets.GenericViewSet, mixins.ListModelMixin):
         queryset = Review.objects.filter(rating__user__username=username)
         album_title = self.request.query_params.get("album_title__icontains")
         if album_title:
-            queryset = queryset.filter(rating__rating__albums__title__icontains=album_title)
+            queryset = queryset.filter(
+                rating__rating__albums__title__icontains=album_title
+            )
         return queryset
-
-
-
-

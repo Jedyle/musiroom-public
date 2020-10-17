@@ -15,18 +15,26 @@ from rest_framework import views, mixins, generics, viewsets
 
 from albums.api.serializers import AlbumSerializer
 from lamusitheque.apiutils.viewsets import ListRetrieveViewset
-from user_profile.api.filters import ProfileFilter
-from user_profile.api.serializers import CreateUserSerializer, PasswordConfirmSerializer, PublicProfileSerializer, \
-    NotificationSerializer, BadgeSerializer, ProfileAvatarSerializer
+from user_profile.api.filters import ProfileFilter, NotificationFilter
+from user_profile.api.serializers import (
+    CreateUserSerializer,
+    PasswordConfirmSerializer,
+    PublicProfileSerializer,
+    NotificationSerializer,
+    BadgeSerializer,
+    ProfileAvatarSerializer,
+)
 from user_profile.email import send_activation_email
 from user_profile.models import Profile
 from user_profile.tokens import profile_activation_token
 from lists.api.serializers import ListObjSerializer
 
+
 class RegisterUserView(generics.CreateAPIView):
     """
     Registers a user a sends him a confirmation email
     """
+
     serializer_class = CreateUserSerializer
 
     def create(self, request, *args, **kwargs):
@@ -35,10 +43,10 @@ class RegisterUserView(generics.CreateAPIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         user = serializer.save()
         send_activation_email(request, user)
-        return Response({
-            "message": "A confirmation email has been sent.",
-            **serializer.data
-        }, status=status.HTTP_201_CREATED)
+        return Response(
+            {"message": "A confirmation email has been sent.", **serializer.data},
+            status=status.HTTP_201_CREATED,
+        )
 
 
 class ActivateProfileView(views.APIView):
@@ -50,17 +58,17 @@ class ActivateProfileView(views.APIView):
         try:
             uid = force_text(urlsafe_base64_decode(uidb64))
             user = User.objects.get(pk=uid)
-        except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
             user = None
         if user is not None and profile_activation_token.check_token(user, token):
             user.is_active = True
             user.save()
-            return Response({
-                "message": "Registration completed"
-            }, status=status.HTTP_202_ACCEPTED)
-        return Response({
-            "message": "Invalid token"
-        }, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"message": "Registration completed"}, status=status.HTTP_202_ACCEPTED
+            )
+        return Response(
+            {"message": "Invalid token"}, status=status.HTTP_400_BAD_REQUEST
+        )
 
 
 class ResendConfirmationLinkView(views.APIView):
@@ -71,18 +79,21 @@ class ResendConfirmationLinkView(views.APIView):
     def post(self, request, username):
         user = get_object_or_404(User, username=username)
         if request.user.is_authenticated and request.user != user:
-            return Response({
-                "message": "Unauthorized"
-            }, status=status.HTTP_403_FORBIDDEN)
+            return Response(
+                {"message": "Unauthorized"}, status=status.HTTP_403_FORBIDDEN
+            )
         if user.is_active:
-            return Response({
-                "This user is already active !"
-            }, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"This user is already active !"}, status=status.HTTP_400_BAD_REQUEST
+            )
         send_activation_email(request, user)
-        return Response({
-            "message": "A confirmation email has been sent.",
-            **CreateUserSerializer(user).data
-        }, status=status.HTTP_200_OK)
+        return Response(
+            {
+                "message": "A confirmation email has been sent.",
+                **CreateUserSerializer(user).data,
+            },
+            status=status.HTTP_200_OK,
+        )
 
 
 class UpdateAvatarView(generics.UpdateAPIView):
@@ -95,7 +106,8 @@ class UpdateAvatarView(generics.UpdateAPIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-        
+
+
 class DestroyProfileView(generics.CreateAPIView):
 
     serializer_class = PasswordConfirmSerializer
@@ -113,9 +125,9 @@ class DestroyProfileView(generics.CreateAPIView):
             user.is_active = False
             user.save()
             return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response({
-            "message": "Invalid password"
-        }, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {"message": "Invalid password"}, status=status.HTTP_400_BAD_REQUEST
+        )
 
 
 class ProfileViewset(ListRetrieveViewset):
@@ -126,10 +138,10 @@ class ProfileViewset(ListRetrieveViewset):
 
     serializer_class = PublicProfileSerializer
     queryset = Profile.objects.all()
-    lookup_field = 'user__username'
+    lookup_field = "user__username"
     filter_class = ProfileFilter
 
-    @action(detail=True, methods=['get'])
+    @action(detail=True, methods=["get"])
     def top(self, request, **kwargs):
         user = self.get_object()
         serializer = ListObjSerializer(user.top_albums)
@@ -140,9 +152,19 @@ class NotificationViewset(viewsets.GenericViewSet, mixins.ListModelMixin):
 
     serializer_class = NotificationSerializer
     permission_classes = (IsAuthenticated,)
+    filter_class = NotificationFilter
 
     def get_queryset(self):
         return self.request.user.notifications.all()
+
+    @action(detail=False, methods=["get"])
+    def unread_count(self, request, **kwargs):
+        return Response({"unread": self.request.user.notifications.unread().count()})
+
+    @action(detail=False, methods=["put"])
+    def mark_all_as_read(self, request, **kwargs):
+        request.user.notifications.unread().mark_all_as_read()
+        return Response({}, status=status.HTTP_204_NO_CONTENT)
 
 
 class BadgesViewset(viewsets.GenericViewSet, mixins.ListModelMixin):
@@ -150,6 +172,5 @@ class BadgesViewset(viewsets.GenericViewSet, mixins.ListModelMixin):
     serializer_class = BadgeSerializer
 
     def get_queryset(self):
-        username = self.kwargs['users_user__username']
+        username = self.kwargs["users_user__username"]
         return BadgeAward.objects.filter(user__username=username)
-

@@ -8,7 +8,7 @@ from star_ratings.models import UserRating
 # Create your models here.
 
 class Review(VoteModel, models.Model):
-    title = models.CharField("Title", max_length=200, blank=True)
+    title = models.CharField("Title", max_length=200)
     content = models.TextField("Content")
     date_publication = models.DateTimeField("Published", auto_now_add=True)
     date_last_change = models.DateTimeField("Last edit", auto_now=True)

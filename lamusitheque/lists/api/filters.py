@@ -9,15 +9,20 @@ from user_profile.api.filters import UserFilter
 
 class ListFilter(filters.FilterSet):
 
-    user = filters.RelatedFilter(UserFilter, field_name="user", queryset=User.objects.all())
+    user = filters.RelatedFilter(
+        UserFilter, field_name="user", queryset=User.objects.all()
+    )
 
-    contains_album = filters.CharFilter(field_name="albums", method="list_contains_album")
-    not_contains_albums = filters.CharFilter(field_name="albums", method="list_not_contains_album")
-    
+    contains_album = filters.CharFilter(
+        field_name="albums", method="list_contains_album"
+    )
+    not_contains_albums = filters.CharFilter(
+        field_name="albums", method="list_not_contains_album"
+    )
+
     class Meta:
         model = ListObj
-        fields = {"title": "__all__",
-                  "description": ["icontains"]}
+        fields = {"title": "__all__", "description": ["icontains"]}
 
     def list_contains_album(self, qs, name, value):
         """
@@ -30,4 +35,3 @@ class ListFilter(filters.FilterSet):
         Filters List based on whether they dont contain a specific album (value is a mbid)
         """
         return qs.exclude(albums__mbid=value)
-        

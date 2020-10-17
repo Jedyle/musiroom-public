@@ -3,7 +3,7 @@ from albums.models import Album
 from reviews.api.simple_serializers import SimpleReviewSerializer
 from star_ratings.models import Rating, UserRating
 from generic_relations.relations import GenericRelatedField
-from user_profile.api.serializers import ShortUserSerializer
+from user_profile.api.short_serializers import ShortUserSerializer
 
 class RatingSerializer(serializers.ModelSerializer):
 

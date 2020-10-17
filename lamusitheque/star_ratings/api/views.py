@@ -4,7 +4,7 @@ from rest_framework import viewsets, mixins, generics, status
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from friendship.models import Follow
+from star_ratings.api.filters import UserRatingFilter
 
 from star_ratings.api.serializers import (
     RatingSerializer,
@@ -37,8 +37,15 @@ class RatingViewset(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
     @action(detail=True, methods=["GET"], permission_classes=[IsAuthenticated])
     def followees_ratings(self, request, pk=None):
         rating = self.get_object()
-        serializer = UserRatingSerializer(rating.followees_ratings(request.user), many=True)
-        return Response({"results": serializer.data, "stats": rating.followees_ratings_stats(request.user)})
+        serializer = UserRatingSerializer(
+            rating.followees_ratings(request.user), many=True
+        )
+        return Response(
+            {
+                "results": serializer.data,
+                "stats": rating.followees_ratings_stats(request.user),
+            }
+        )
 
 
 class CreateUserRatingView(generics.CreateAPIView):
@@ -70,6 +77,7 @@ class UserRatingView(generics.RetrieveUpdateDestroyAPIView):
 class UserUserRatingViewset(viewsets.GenericViewSet, mixins.ListModelMixin):
 
     serializer_class = ExtendedUserRatingSerializer
+    filter_class = UserRatingFilter
 
     def get_queryset(self):
         username = self.kwargs["users_user__username"]

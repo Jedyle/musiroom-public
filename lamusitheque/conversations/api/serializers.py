@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 
 from conversations.models import Conversation, Message
-from user_profile.api.serializers import ShortUserSerializer
+from user_profile.api.short_serializers import ShortUserSerializer
 
 
 class ConversationSerializer(serializers.ModelSerializer):
