@@ -60,7 +60,7 @@ class ListItemOrderSerializer(serializers.ModelSerializer):
         nb_items = items.count()
         if nb_items >= destination_id >= 1 and nb_items >= item_id >= 1:
             if destination_id < item_id:
-                for elt in items[destination_id-1:item_id-1]:
+                for elt in items[destination_id - 1 : item_id - 1]:
                     elt.order += 1
                     elt.save()
                 instance.order = destination_id
@@ -90,9 +90,11 @@ class ListObjSerializer(serializers.ModelSerializer, VoteSerializerMixin):
             "num_vote_up",
             "num_vote_down",
             "vote_score",
-            "user_vote"
+            "user_vote",
         )
-        read_only_fields = ("num_vote_up", "num_vote_down", "vote_score")
+        read_only_fields = (
+            "num_vote_up", "num_vote_down", "vote_score"
+        )
 
     def get_request_user(self):
         user = None
