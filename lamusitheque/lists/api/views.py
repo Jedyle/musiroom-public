@@ -28,6 +28,7 @@ class ListViewset(viewsets.ModelViewSet, VoteMixin):
     serializer_class = ListObjSerializer
     queryset = ListObj.objects.all()
     filter_class = ListFilter
+    ordering_fields = ("vote_score", "modified", "created")
 
 
 class UserListViewset(viewsets.GenericViewSet, mixins.ListModelMixin):
