@@ -42,5 +42,3 @@ class TestConversationViewset(GenericAPITest):
     def test_retrieve_conversation_right_auth(self):
         self.check_func_logged(self.retrieve, id=self.conversation.id,
                                auth_key=self.user2.auth_token.key, status_code=200)
-
-    # TODO : test other methods

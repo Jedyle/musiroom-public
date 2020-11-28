@@ -6,6 +6,7 @@ from notifications.models import Notification
 from pinax.badges.models import BadgeAward
 from rest_framework import serializers
 from reviews.models import Review
+from export_ratings.models import ExportReport
 
 from user_profile.models import Profile
 from discussions.models import Discussion
@@ -13,6 +14,7 @@ from discussions.api.serializers import DiscussionSerializer
 from reviews.api.serializers import ReviewSerializer
 from comments.models import Comment
 from comments.api.short_serializers import ShortCommentSerializer
+from export_ratings.api.serializers import ExportReadSerializer
 
 from .short_serializers import ShortUserSerializer
 
@@ -157,6 +159,7 @@ class NotificationSerializer(serializers.ModelSerializer):
             Discussion: DiscussionSerializer(),
             Review: ReviewSerializer(),
             BadgeAward: BadgeSerializer(),
+            ExportReport: ExportReadSerializer()
         }
     )
 

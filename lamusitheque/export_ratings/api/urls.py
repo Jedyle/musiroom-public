@@ -8,6 +8,6 @@ router = routers.DefaultRouter()
 router.register(r'exports', views.ExportRetrieveViewset)
 
 urlpatterns = [
-                  url(r'^exports/sc_data/$', views.parse_sc_user),
-                  url(r'^exports/$', views.ExportView.as_view()),
-              ] + router.urls
+    url(r'^exports/sc_data/$', views.parse_sc_user),
+    url(r'^exports/$', views.ExportView.as_view()),
+] + router.urls
