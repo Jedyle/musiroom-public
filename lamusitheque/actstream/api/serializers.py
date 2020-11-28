@@ -4,32 +4,32 @@ from actstream.models import Action
 
 
 class ActionSerializer(serializers.ModelSerializer):
-    actor_content_type = serializers.SlugRelatedField(slug_field="model", read_only=True)
+    actor_content_type = serializers.SlugRelatedField(
+        slug_field="model", read_only=True
+    )
     actor = serializers.SerializerMethodField()
 
-    target_content_type = serializers.SlugRelatedField(slug_field="model", read_only=True)
+    target_content_type = serializers.SlugRelatedField(
+        slug_field="model", read_only=True
+    )
     target = serializers.SerializerMethodField()
 
-    action_object_content_type = serializers.SlugRelatedField(slug_field="model", read_only=True)
+    action_object_content_type = serializers.SlugRelatedField(
+        slug_field="model", read_only=True
+    )
     action_object = serializers.SerializerMethodField()
 
     def get_actor(self, obj):
         res = obj.actor
         if res is None:
             return None
-        return {
-            "name": str(res),
-            "url": getattr(res, 'get_absolute_url', lambda: None)()
-        }
+        return {"name": str(res), "avatar": res.profile.get_avatar(), "id": res.id}
 
     def get_target(self, obj):
         res = obj.target
         if res is None:
             return None
-        return {
-            "name": str(res),
-            "url": getattr(res, 'get_absolute_url', lambda: None)()
-        }
+        return {"name": str(res), "id": res.id}
 
     def get_action_object(self, obj):
         res = obj.action_object
@@ -37,9 +37,11 @@ class ActionSerializer(serializers.ModelSerializer):
             return None
         return {
             "name": str(res),
-            "url": getattr(res, 'get_absolute_url', lambda: None)()
+            "id": res.id,
+            # just set a method like this if your need to add fields per target
+            **(res.activity_data() if hasattr(res, "activity_data") else {}),
         }
 
     class Meta:
         model = Action
-        exclude = ('actor_object_id', 'target_object_id', 'action_object_object_id')
+        exclude = ("actor_object_id", "target_object_id", "action_object_object_id")

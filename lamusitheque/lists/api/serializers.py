@@ -8,6 +8,46 @@ from lists.models import ListObj, ListItem
 from lamusitheque.apiutils.mixins import VoteSerializerMixin
 
 
+class ListObjSerializer(serializers.ModelSerializer, VoteSerializerMixin):
+    # albums are fetched in another route
+
+    user = ShortUserSerializer(read_only=True)
+    album_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = ListObj
+        fields = (
+            "id",
+            "user",
+            "title",
+            "description",
+            "ordered",
+            "num_vote_up",
+            "num_vote_down",
+            "vote_score",
+            "user_vote",
+            "album_count"
+        )
+        read_only_fields = (
+            "num_vote_up", "num_vote_down", "vote_score"
+        )
+
+    def get_album_count(self, obj):
+        return obj.albums.count()
+
+    def get_request_user(self):
+        user = None
+        request = self.context.get("request")
+        if request and hasattr(request, "user"):
+            user = request.user
+        return user
+
+    def create(self, validated_data):
+        listobj = ListObj(**validated_data, user=self.get_request_user())
+        listobj.save()
+        return listobj
+
+
 class ShortListItemSerializer(serializers.ModelSerializer):
     album = ShortAlbumSerializer()
 
@@ -74,36 +114,13 @@ class ListItemOrderSerializer(serializers.ModelSerializer):
         return instance
 
 
-class ListObjSerializer(serializers.ModelSerializer, VoteSerializerMixin):
-    # albums are fetched in another route
-
-    user = ShortUserSerializer(read_only=True)
+class ListItemWithListSerializer(serializers.ModelSerializer):
+    album = ShortAlbumSerializer()
+    item_list = ListObjSerializer()
 
     class Meta:
-        model = ListObj
-        fields = (
-            "id",
-            "user",
-            "title",
-            "description",
-            "ordered",
-            "num_vote_up",
-            "num_vote_down",
-            "vote_score",
-            "user_vote",
-        )
-        read_only_fields = (
-            "num_vote_up", "num_vote_down", "vote_score"
-        )
+        model = ListItem
+        fields = ("id", "item_list", "comment", "album")
+        read_only_fields = ("order",)
 
-    def get_request_user(self):
-        user = None
-        request = self.context.get("request")
-        if request and hasattr(request, "user"):
-            user = request.user
-        return user
 
-    def create(self, validated_data):
-        listobj = ListObj(**validated_data, user=self.get_request_user())
-        listobj.save()
-        return listobj

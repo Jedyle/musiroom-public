@@ -7,20 +7,27 @@ from star_ratings.models import UserRating
 
 # Create your models here.
 
+
 class Review(VoteModel, models.Model):
     title = models.CharField("Title", max_length=200)
     content = models.TextField("Content")
     date_publication = models.DateTimeField("Published", auto_now_add=True)
     date_last_change = models.DateTimeField("Last edit", auto_now=True)
-    rating = models.OneToOneField(UserRating, on_delete=models.CASCADE, related_name='review')
+    rating = models.OneToOneField(
+        UserRating, on_delete=models.CASCADE, related_name="review"
+    )
 
     def __str__(self):
         if self.title:
             return self.title
-        return str(self.rating.user) + '\'s review about ' + str(self.rating.rating.albums.get())
+        return (
+            str(self.rating.user)
+            + "'s review about "
+            + str(self.rating.rating.albums.get())
+        )
 
     def get_absolute_url(self):
-        return reverse('review-detail', args=[self.id])
+        return reverse("review-detail", args=[self.id])
 
     @property
     def user(self):
@@ -30,6 +37,11 @@ class Review(VoteModel, models.Model):
         """
         return self.rating.user
 
+    def activity_data(self):
+        return {
+            "album_id": self.rating.rating.albums.get().mbid,
+        }
+
     class Meta:
-        verbose_name = 'review'
-        verbose_name_plural = 'reviews'
+        verbose_name = "review"
+        verbose_name_plural = "reviews"

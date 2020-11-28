@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
@@ -16,11 +17,12 @@ def send_activation_email(request, user):
     """
     current_site = get_current_site(request)
     mail_subject = 'Activez votre compte.'
+    uid = urlsafe_base64_encode(force_bytes(user.pk)).decode()
+    token = profile_activation_token.make_token(user)
     message = render_to_string('user_profile/acc_active_email.html', {
         'user': user,
         'domain': current_site.domain,
-        'uid': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
-        'token': profile_activation_token.make_token(user),
+        'url': f"{settings.FRONTEND_APP_NAME}/confirm?token={token}&uid={uid}"
     })
     to_email = user.email
     email = EmailMessage(mail_subject, message, to=[to_email])

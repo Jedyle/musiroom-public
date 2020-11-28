@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from lamusitheque.apiutils.permissions import IsUser
-from export_ratings.api.serializers import ExportReadSerializer, ExportCreateSerializer, ExportDetailSerializer
+from export_ratings.api.serializers import ExportReadSerializer, ExportCreateSerializer
 from export_ratings.models import ExportReport
 from export_ratings.sc_scraper import ParseSCUser
 from export_ratings.settings import get_min_export_timediff

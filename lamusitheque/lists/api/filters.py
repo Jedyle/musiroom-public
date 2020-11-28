@@ -1,9 +1,7 @@
 import rest_framework_filters as filters
 from django.contrib.auth.models import User
 
-from albums.models import Album
-from albums.api.filters import AlbumFilter
-from lists.models import ListObj, ListItem
+from lists.models import ListObj
 from user_profile.api.filters import UserFilter
 
 

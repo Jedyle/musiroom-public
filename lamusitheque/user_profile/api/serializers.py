@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from rest_framework.validators import UniqueValidator
 from generic_relations.relations import GenericRelatedField
 from star_ratings.models import UserRating
 from notifications.models import Notification
@@ -54,6 +55,7 @@ class ProfileAvatarSerializer(serializers.ModelSerializer):
 
 
 class CreateUserSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(required=True, validators=[UniqueValidator(queryset=User.objects.all())])
     password_confirm = serializers.CharField(write_only=True)
 
     class Meta:
@@ -130,6 +132,18 @@ class PublicProfileSerializer(serializers.ModelSerializer):
         return profile.get_sex_display() if profile.display_sex else None
 
 
+class BadgeSerializer(serializers.ModelSerializer):
+
+    image = serializers.SerializerMethodField()
+
+    class Meta:
+        model = BadgeAward
+        fields = ("name", "description", "progress", "image")
+
+    def get_image(self, obj):
+        return obj._badge.images[obj.level]
+
+
 class NotificationSerializer(serializers.ModelSerializer):
 
     actor = GenericRelatedField({User: ShortUserSerializer()})
@@ -141,7 +155,8 @@ class NotificationSerializer(serializers.ModelSerializer):
         {
             Comment: ShortCommentSerializer(),
             Discussion: DiscussionSerializer(),
-            Review: ReviewSerializer()
+            Review: ReviewSerializer(),
+            BadgeAward: BadgeSerializer(),
         }
     )
 
@@ -156,17 +171,5 @@ class NotificationSerializer(serializers.ModelSerializer):
             "target_object_id",
             "verb",
             "target",
-            "deleted"
+            "deleted",
         )
-
-
-class BadgeSerializer(serializers.ModelSerializer):
-
-    image = serializers.SerializerMethodField()
-
-    class Meta:
-        model = BadgeAward
-        fields = ("name", "description", "progress", "image")
-
-    def get_image(self, obj):
-        return obj._badge.images[obj.level]

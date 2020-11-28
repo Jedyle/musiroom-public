@@ -1,19 +1,14 @@
-import time
-
 from django.contrib.auth.models import User
-from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import get_object_or_404
-from django.utils.crypto import salted_hmac
 from django.utils.encoding import force_text
 from django.utils.http import urlsafe_base64_decode
 from pinax.badges.models import BadgeAward
 from rest_framework import status
-from rest_framework.decorators import action, api_view
+from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import views, mixins, generics, viewsets
 
-from albums.api.serializers import AlbumSerializer
 from lamusitheque.apiutils.viewsets import ListRetrieveViewset
 from user_profile.api.filters import ProfileFilter, NotificationFilter
 from user_profile.api.serializers import (
@@ -155,6 +150,8 @@ class NotificationViewset(viewsets.GenericViewSet, mixins.ListModelMixin):
     filter_class = NotificationFilter
 
     def get_queryset(self):
+        for el in self.request.user.notifications.all():
+            print(el.actor, el.target)
         return self.request.user.notifications.all()
 
     @action(detail=False, methods=["get"])

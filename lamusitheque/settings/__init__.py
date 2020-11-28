@@ -216,7 +216,7 @@ LOGOUT_REDIRECT_URL = '/'
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'darknessjdl@gmail.com'
-EMAIL_HOST_PASSWORD = 'dumbpassword3'
+EMAIL_HOST_PASSWORD = 'dumbpassword3!'
 EMAIL_PORT = 587
 DEFAULT_FROM_EMAIL = "La Musithèque <darknessjdl@gmail.com>"
 
@@ -260,7 +260,7 @@ ALLOW_ANONYMOUS_FEEDBACK = True
 
 # Albums
 
-YOUTUBE_API_KEY = "AIzaSyAiXPK_Qbrsl85Ki6IM-x3JsZTpxI2yz8k"
+YOUTUBE_API_KEY = "AIzaSyAoQfq3M8KCfKWVZZBlWUgz10qKVJ5xvTw"
 
 # Discussion settings
 
@@ -347,3 +347,7 @@ OLD_PASSWORD_FIELD_ENABLED = True
 # CORS
 
 CORS_ORIGIN_ALLOW_ALL = True
+
+# FRONTEND
+
+FRONTEND_APP_NAME = "http://localhost:3000"

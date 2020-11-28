@@ -6,7 +6,6 @@ from django.db import models
 from django.db.models import Count
 from django.http import Http404
 from django.urls import reverse
-from django.utils.functional import cached_property
 from django.template.defaultfilters import slugify
 from jsonfield.fields import JSONField
 from siteflags.models import ModelWithFlag
@@ -201,6 +200,11 @@ class Album(models.Model):
         return self.genres.filter(albumgenre__is_genre=True).order_by(
             "albumgenre__vote_score"
         )
+
+    def activity_data(self):
+        return {
+            "mbid": self.mbid
+        }
 
 
 discussions_registry.register(Album)

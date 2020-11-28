@@ -41,7 +41,7 @@ registration_patterns = [
         ActivateProfileView.as_view(),
     ),
     url(
-        r"registration/(?P<username>[\w_-]{3,})/resend-email/$",
+        r"registration/(?P<username>[\w_-]{3,})/resend_email/$",
         ResendConfirmationLinkView.as_view(),
     ),
     url(r"auth/user/delete", DestroyProfileView.as_view()),

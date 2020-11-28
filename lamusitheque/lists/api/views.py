@@ -1,19 +1,22 @@
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, status, mixins
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 
+from albums.models import Album
 from lamusitheque.apiutils.mixins import VoteMixin
 from lamusitheque.apiutils.permissions import IsUserOrReadOnly
 from lists.api.filters import ListFilter
 from lists.api.permissions import IsListUserOrReadOnly
 from lists.api.serializers import (
     ListObjSerializer,
+    ListItemWithListSerializer,
     ListItemSerializer,
     ListItemOrderSerializer,
     ListItemWriteSerializer,
-    ShortListItemSerializer
+    ShortListItemSerializer,
 )
 from lists.models import ListObj, ListItem
 
@@ -94,16 +97,27 @@ class ListItemViewset(viewsets.ModelViewSet):
         serializer = ShortListItemSerializer(self.get_queryset(), many=True)
         return Response(serializer.data)
 
-    @action(detail=True, methods=["PUT"],
-            serializer_class=ListItemOrderSerializer)
+    @action(detail=True, methods=["PUT"], serializer_class=ListItemOrderSerializer)
     def position(self, request, lists_pk=None, pk=None):
         """
         Change an item's position
         """
-        serializer = ListItemOrderSerializer(
-            self.get_object(),
-            data=request.data
-        )
+        serializer = ListItemOrderSerializer(self.get_object(), data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def user_lists_with_album(request):
+    mbid = request.GET.get("mbid")
+    if not mbid:
+        return Response({"message": "No mbid set"})
+    get_object_or_404(Album, mbid=mbid)
+    listItemsForAlbum = ListItem.objects.filter(
+        item_list__user=request.user, album__mbid=mbid
+    )
+    print(listItemsForAlbum)
+    serializer = ListItemWithListSerializer(listItemsForAlbum, many=True, context={"request": request})
+    return Response(serializer.data)

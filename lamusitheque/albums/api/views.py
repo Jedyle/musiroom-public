@@ -248,6 +248,7 @@ YEAR_ALL_VALUE = "all"
 
 class TopAlbumsView(generics.ListAPIView):
     serializer_class = AlbumSerializer
+    pagination_class = None
 
     def get_queryset(self):
         year = self.kwargs["year"]
@@ -263,7 +264,7 @@ class TopAlbumsView(generics.ListAPIView):
             albums = albums.filter(release_date__year__in=years)
 
         if slug != SLUG_ALL_VALUE:
-            genre = Genre.objects.get(slug=slug)
+            genre = get_object_or_404(Genre, slug=slug)
             associated_genres = genre.get_all_children()
             albums = albums.filter(
                 Q(albumgenre__genre__in=associated_genres)
