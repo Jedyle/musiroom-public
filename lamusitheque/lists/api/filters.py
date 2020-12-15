@@ -1,4 +1,5 @@
 import rest_framework_filters as filters
+from django.db.models import Count
 from django.contrib.auth.models import User
 
 from lists.models import ListObj
@@ -18,6 +19,8 @@ class ListFilter(filters.FilterSet):
         field_name="albums", method="list_not_contains_album"
     )
 
+    not_empty = filters.BooleanFilter(field_name="albums", method="list_not_empty")
+
     class Meta:
         model = ListObj
         fields = {"title": "__all__", "description": ["icontains"]}
@@ -33,3 +36,8 @@ class ListFilter(filters.FilterSet):
         Filters List based on whether they dont contain a specific album (value is a mbid)
         """
         return qs.exclude(albums__mbid=value)
+
+    def list_not_empty(self, qs, name, value):
+        if value:
+            return qs.annotate(album_count=Count("albums")).filter(album_count__gt=0)
+        return qs
