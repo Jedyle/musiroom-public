@@ -11,12 +11,12 @@ class VoteMixin(object):
     Mixin with a custom action to vote
     """
 
-    @action(detail=True, methods=[ "PUT"])
+    @action(detail=True, methods=["PUT"])
     def vote(self, request, **kwargs):
         # votes
         serializer = VoteSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        vote = serializer.validated_data.get('vote')
+        vote = serializer.validated_data.get("vote")
         obj = self.get_object()
         if vote == "up":
             obj.votes.up(request.user.pk)
@@ -37,13 +37,10 @@ class VoteSerializerMixin(serializers.Serializer):
     user_vote = serializers.SerializerMethodField(read_only=True)
 
     def get_user_vote(self, obj):
-        request = self.context["request"]
-        if request.user.is_authenticated:
+        request = self.context.get("request")
+        if request and request.user.is_authenticated:
             vote = obj.votes.get(request.user.id)
-            votes_mapping = {
-                0: "up",
-                1: "down"
-            }
+            votes_mapping = {0: "up", 1: "down"}
             return votes_mapping.get(vote.action) if vote else None
         else:
             return None
