@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM python:3.8.3-buster
+FROM python:3.6-buster
 
 RUN apt-get update -y
 RUN apt-get -y install libpq-dev gcc
@@ -10,7 +10,7 @@ COPY requirements.txt /code/
 COPY ./lamusitheque/ /code/
 
 WORKDIR /code
-RUN pip install --upgrade pip==21.2.4
+RUN pip install --upgrade pip==19.3.1 setuptools==45
 RUN pip install -r requirements.txt
 
 

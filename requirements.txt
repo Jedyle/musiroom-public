@@ -27,7 +27,6 @@ django-environ==0.4.5
 django-etc==0.10.0
 django-extensions==2.1.5
 django-filter==2.1.0
-django-filters==0.2.1
 django-forms-bootstrap==3.1.0
 django-htmlmin==0.10.0
 django-jchart==0.4.2
@@ -73,7 +72,6 @@ pexpect==4.6.0
 pickleshare==0.7.5
 Pillow==5.2.0
 pinax-badges==2.0.0
-pkg-resources==0.0.0
 prompt-toolkit==2.0.8
 psycopg2==2.7.5
 ptyprocess==0.6.0
