@@ -13,6 +13,9 @@ from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework.response import Response
 
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+
 from albums.api.filters import AlbumFilter, ArtistFilter
 from albums.api.serializers import (
     GenreSerializer,
@@ -27,7 +30,6 @@ from albums.models import Genre, Album, Artist, AlbumGenre, UserInterest
 from albums.scraper import ParseSimilarArtists, ParseArtist
 from albums.settings import SIMILAR_ARTISTS_LENGTH
 from lamusitheque.apiutils.mixins import VoteMixin
-from lamusitheque.apiutils.serializers import VoteSerializer
 from lamusitheque.apiutils.viewsets import (
     CreateListRetrieveViewset,
     ListRetrieveViewset,
@@ -83,6 +85,13 @@ class AlbumViewset(ListRetrieveViewset):
         album = Album.objects.get_from_api(mbid)
         self.check_object_permissions(self.request, album)
         return album
+
+    @action(detail=False, methods=["GET"])
+    @method_decorator(cache_page(60 * 60))
+    def latest(self, request):
+        albums = Album.objects.filter(release_date__isnull=False, cover__isnull=False).exclude(cover__exact="").order_by("-release_date")[:18]
+        serializer = self.get_serializer(albums, many=True)
+        return Response(serializer.data)
 
     @action(detail=True, methods=["GET"])
     def real_genres(self, request, mbid=None):
@@ -204,7 +213,6 @@ class ArtistViewset(ListRetrieveViewset):
         parser = ParseSimilarArtists(artist.mbid, limit=limit)
         if not parser.load():
             return Response(status=status.HTTP_404_NOT_FOUND)
-        serializer = ArtistSerializer(artist)
         similar = parser.get_artists()
         return Response({"similar": {"count": len(similar), "items": similar}})
 

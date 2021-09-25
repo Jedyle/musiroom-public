@@ -1,3 +1,10 @@
+import requests
+import os
+
+from django.conf import settings
+
+from django.core.files import File
+from django.core.files.temp import NamedTemporaryFile
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.staticfiles.templatetags.staticfiles import static
@@ -127,6 +134,8 @@ class Album(models.Model):
     title = models.CharField(max_length=500)
     release_date = models.DateField(blank=True, null=True)
     cover = models.CharField(max_length=100, null=True)
+    # same as cover, but the actual image stored in our system (for more speed)
+    media_cover = models.ImageField(upload_to="album_covers", null=True)
     tracks = JSONField(null=True)
 
     TYPE_CHOICES = (
@@ -160,6 +169,17 @@ class Album(models.Model):
 
     objects = AlbumManager()
 
+    def save(self, *args, **kwargs):
+        if not self.media_cover and self.cover:
+            response = requests.get(PROTOCOL + COVER_URL + "release/" + self.cover)
+            if response.ok:
+                tmp_file = NamedTemporaryFile()
+                tmp_file.write(response.content)
+                tmp_file.flush()
+                img = File(tmp_file)
+                self.media_cover.save(os.path.basename(self.cover), img)
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return self.title
 
@@ -182,7 +202,7 @@ class Album(models.Model):
     def get_cover(self):
         if self.cover:
             return PROTOCOL + COVER_URL + "release/" + self.cover
-        return static("albums/images/default_cover.png")
+        return settings.BACKEND_URL + static("albums/images/default_cover.png")
 
     def get_preview(self):
         return self.get_cover()

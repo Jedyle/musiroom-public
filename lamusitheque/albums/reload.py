@@ -15,12 +15,13 @@ def reload_tracks(mbid):
         return
 
 
-def reload_covers(mbid):
+def reload_covers(mbid, override=False):
     album = Album.objects.get(mbid=mbid)
-    if album.cover == "":
+    if album.cover == "" or override:
         parse_cover = ParseCover(mbid)
         if parse_cover.load():
             album.cover = parse_cover.get_cover_small()
+            album.media_cover = None
             album.save()
             print(album)
 
