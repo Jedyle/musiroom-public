@@ -7,7 +7,7 @@ RUN apt-get -y install libpq-dev gcc
 ENV PYTHONUNBUFFERED=1
 
 COPY requirements.txt /code/
-COPY ./herodotus/ /code/
+COPY ./lamusitheque/ /code/
 
 WORKDIR /code
 RUN pip install --upgrade pip==21.2.4
