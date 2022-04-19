@@ -93,7 +93,6 @@ class ListItemViewset(viewsets.ModelViewSet):
 
     @action(detail=False, methods=["GET"])
     def positions(self, request, lists_pk=None):
-        print(self.get_queryset())
         serializer = ShortListItemSerializer(self.get_queryset(), many=True)
         return Response(serializer.data)
 
@@ -118,6 +117,7 @@ def user_lists_with_album(request):
     listItemsForAlbum = ListItem.objects.filter(
         item_list__user=request.user, album__mbid=mbid
     )
-    print(listItemsForAlbum)
-    serializer = ListItemWithListSerializer(listItemsForAlbum, many=True, context={"request": request})
+    serializer = ListItemWithListSerializer(
+        listItemsForAlbum, many=True, context={"request": request}
+    )
     return Response(serializer.data)

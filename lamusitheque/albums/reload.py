@@ -23,7 +23,6 @@ def reload_covers(mbid, override=False):
             album.cover = parse_cover.get_cover_small()
             album.media_cover = None
             album.save()
-            print(album)
 
 
 def reload_all(method=reload_tracks):

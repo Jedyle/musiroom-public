@@ -28,7 +28,6 @@ class VoteMixin(object):
         # (doesn't update by itself, don't know why)
         obj = self.get_object()
         serializer = self.get_serializer(obj)
-        print(serializer.__class__)
         return Response(serializer.data)
 
 

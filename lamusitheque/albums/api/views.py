@@ -49,8 +49,7 @@ class GenreViewset(CreateListRetrieveViewset):
     lookup_field = "slug"
 
     def get_queryset(self):
-        # if asked a list, we directly display a tree
-        print(self.action)
+        # if asked a list, we directly display a tree        
         if self.action == "list":
             return Genre.objects.filter(parent__isnull=True)
         elif self.action == "create":

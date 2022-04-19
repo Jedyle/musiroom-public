@@ -57,7 +57,6 @@ class DiscussionSerializer(
         super().validate(data)
 
         if data.get("content_type") is not None:
-            print(data)
             target = (
                 data["content_type"].model_class().objects.filter(id=data["object_id"])
             )

@@ -157,14 +157,12 @@ class AlbumGenreSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         genre = validated_data["genre"]
-        print(genre)
         mbid = self.context.get("mbid")
         album = get_object_or_404(Album, mbid=mbid)
         user = None
         request = self.context.get("request")
         if request and hasattr(request, "user"):
             user = request.user
-        print(genre)
         albumgenre = AlbumGenre(album=album, genre=genre, user=user)
         albumgenre.save()
         if user is not None:

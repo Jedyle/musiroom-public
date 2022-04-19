@@ -40,7 +40,12 @@ class ConversationSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         # we only change membership information, so don"t support changing title for example"
         users = [el["user"] for el in validated_data.pop("membership_set")]
-        current_active_users = [membership.user for membership in Membership.objects.filter(conversation=instance, is_active=True)]
+        current_active_users = [
+            membership.user
+            for membership in Membership.objects.filter(
+                conversation=instance, is_active=True
+            )
+        ]
         added_users = [user for user in users if user not in current_active_users]
         removed_users = [user for user in current_active_users if user not in users]
 
@@ -70,9 +75,7 @@ class ConversationSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         user = self.get_user()
-        print(attrs, user)
         users = [u for u in attrs.get("membership_set") if u["user"] != user]
-        print("users", users)
         if len(users) < 1:
             raise serializers.ValidationError(
                 "Discussion must at least contain another user"

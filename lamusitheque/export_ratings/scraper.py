@@ -259,9 +259,3 @@ def compute_file(username, config, temp_dir=""):
     driver.quit()
 
     return filename, errorfile
-
-
-# def read_file(file):
-#     with open(file, 'r') as infile:
-#         for line in infile:
-#             print(line.split(' ')[0], int(line.split(' ')[1]))

@@ -273,7 +273,6 @@ ALLOW_ANONYMOUS_FEEDBACK = True
 # Albums
 
 YOUTUBE_API_KEY = env("YOUTUBE_API_KEY")
-print(YOUTUBE_API_KEY)
 
 
 # Discussion settings

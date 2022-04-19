@@ -23,12 +23,12 @@ class DiscussionViewset(viewsets.ModelViewSet, VoteMixin):
     serializer_class = DiscussionSerializer
     permission_classes = (IsUserOrReadOnly,)
     filter_class = DiscussionFilter
-    ordering_fields = ('vote_score', 'created')
+    ordering_fields = ("vote_score", "created")
 
     def get_serializer_class(self):
         serializer_class = self.serializer_class
 
-        if self.request.method in ['PUT', 'PATCH']:
+        if self.request.method in ["PUT", "PATCH"]:
             serializer_class = DiscussionUpdateSerializer
 
         return serializer_class
@@ -45,7 +45,7 @@ class DiscussionViewset(viewsets.ModelViewSet, VoteMixin):
     def partial_update(self, request, *args, **kwargs):
         return super().update(request, *args, partial=True, **kwargs)
 
-    
+
 class UserDiscussionViewset(viewsets.GenericViewSet, mixins.ListModelMixin):
     """
     View to list a user's discussions
@@ -64,9 +64,5 @@ class UserDiscussionViewset(viewsets.GenericViewSet, mixins.ListModelMixin):
 def get_discussion_object(request, model, object_id):
     model_klass = get_object_or_404(ContentType, model=model).model_class()
     dobject = get_object_or_404(model_klass, id=object_id)
-    print(dobject, model)
-    serializer = ShortAlbumSerializer if model == 'album' else ShortArtistSerializer
-    return Response({
-        "object": serializer(dobject).data,
-        "model": model
-    })
+    serializer = ShortAlbumSerializer if model == "album" else ShortArtistSerializer
+    return Response({"object": serializer(dobject).data, "model": model})
