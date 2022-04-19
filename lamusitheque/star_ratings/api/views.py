@@ -92,7 +92,9 @@ class UserUserRatingViewset(viewsets.GenericViewSet, mixins.ListModelMixin):
 @permission_classes([IsAuthenticated])
 def followees_ratings(request):
     ids = request.GET.get("ids")
-    if ids is not None:
+    if ids == "":
+        ids == []
+    elif ids is not None:
         try:
             ids = [int(el) for el in ids.split(",")]
         except ValueError:
@@ -120,7 +122,9 @@ def followees_ratings(request):
 @permission_classes([IsAuthenticated])
 def user_ratings(request):
     ids = request.GET.get("ids")
-    if ids is not None:
+    if ids == "":
+        ids = []
+    elif ids is not None:
         try:
             ids = [int(el) for el in ids.split(",")]
         except ValueError:

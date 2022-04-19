@@ -315,8 +315,10 @@ class UserInterestsViewset(viewsets.GenericViewSet, mixins.ListModelMixin):
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def user_interests(request):
-    ids = request.GET.get("ids")
-    if ids is not None:
+    ids = request.GET.get("ids", [])
+    if ids == "":
+        ids = []
+    elif ids is not None:
         try:
             ids = [int(el) for el in ids.split(",")]
         except ValueError:
