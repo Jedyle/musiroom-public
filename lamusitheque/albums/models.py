@@ -205,7 +205,12 @@ class Album(models.Model):
         return settings.BACKEND_URL + static("albums/images/default_cover.png")
 
     def get_media_cover(self):
-        return settings.BACKEND_URL + self.media_cover.url
+        cover = (
+            self.media_cover.url
+            if self.media_cover
+            else static("albums/images/default_cover.png")
+        )
+        return settings.BACKEND_URL + cover
 
     def get_preview(self):
         return self.get_cover()
