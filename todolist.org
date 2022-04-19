@@ -1,18 +1,22 @@
-* TODO make auth tokens expire after a certain time 
-* TODO add pytest with factoryboy
-
-
-* TODO refactor + pytest
-* TODO add i18n language support (for actions / notifications mostly)
-* TODO fix the 'append slash' 500 error
-* TODO add user rating stats for followees
-
-
 * ERRORS
 ** Remove album.cover and .get_cover and use .media_cover everywhere
 ** 500 error with CreateUserRatingView when object already exists
-** When we add a rating, disable the interest for the album by default (backend + frontend)
-** Do cases when user is not connected (e.g : show rating in album page ?)
-** LastFM api does not give artist image anymore : find another source
 ** Artist/Albums Page : use placeholders during loading (can be pretty long)
 ** Search album, artists... takes accents 
+
+
+* BACKEND
+** fix youtube link (find new API key from google console)
+** albums : remove references to 'cover' and 'get_cover', replace everything by 'media_cover'
+** rename project from 'lamusitheque' to ??? (find name)
+** pytest : add tests everytime a bug is fixed
+** upgrade python and django (now blocked because of pinax badges)
+** LastFM api does not give artist image anymore : find another source
+** When we add a rating, disable the interest for the album by default (backend + frontend)
+
+* FRONTEND
+** Migrate to NextJS
+** Refactor components (remove useless components, remove containers/ folder...)
+
+* DEPLOYMENT
+** prepare docker-compose shell for dev and for prod
