@@ -12,8 +12,14 @@ from user_profile.models import Profile
 
 @receiver(badge_awarded)
 def notify_badge_awarded(badge_award, **kwargs):
-    notify.send(badge_award.user, recipient=badge_award.user, verb="You have received the badge ", target=badge_award)
-    action.send(badge_award.user, verb='received the badge', action_object=badge_award)
+    print(badge_award)
+    notify.send(
+        badge_award.user,
+        recipient=badge_award.user,
+        verb="You have received the badge ",
+        target=badge_award,
+    )
+    action.send(badge_award.user, verb="received the badge", action_object=badge_award)
 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
@@ -23,7 +29,9 @@ def create_profile(sender, instance=None, created=False, **kwargs):
         Token.objects.create(user=instance)
         # bind an user_profile and a 'top albums' list to the user_profile
         profile = Profile(user=instance)
-        top_albums = ListObj(user=instance, title="Top Albums de " + instance.username, ordered=True)
+        top_albums = ListObj(
+            user=instance, title=instance.username + " Top Albums", ordered=True
+        )
         top_albums.save()
         profile.top_albums = top_albums
         profile.save()

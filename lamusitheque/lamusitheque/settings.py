@@ -273,6 +273,8 @@ ALLOW_ANONYMOUS_FEEDBACK = True
 # Albums
 
 YOUTUBE_API_KEY = env("YOUTUBE_API_KEY")
+print(YOUTUBE_API_KEY)
+
 
 # Discussion settings
 
@@ -310,10 +312,6 @@ CELERY_BEAT_SCHEDULE = {
     "update-badges": {
         "task": "user_profile.tasks.update_badges",
         "schedule": crontab(minute=1, hour=2),
-    },
-    "notif-inactive-users": {
-        "task": "user_profile.tasks.send_email_to_inactive_user",
-        "schedule": crontab(day_of_month=1, hour=1, minute=1),
     },
 }
 

@@ -4,37 +4,36 @@ from pinax.badges.base import Badge, BadgeAwarded, BadgeDetail
 from pinax.badges.registry import badges
 
 from albums.models import AlbumGenre
-from discussions.models import Discussion
 from reviews.models import Review
 from star_ratings.models import UserRating
 
 
-class MusicophileBadge(Badge):
-    slug = "musicophile"
+class MusicLoverBadge(Badge):
+    slug = "music_lover"
     levels = [
         BadgeDetail(
-            name="Musicophile débutant",
-            description="Un bon début pour ce membre qui a noté au moins 1 album. Mais ce serait dommage qu'il s'arrête là, n'est ce pas ?"
+            name="Beginner Music Lover",
+            description="This user has rated at least one album.",
         ),
         BadgeDetail(
-            name="Musicophile, niveau bronze",
-            description="Un membre actif qui a noté pas moins de 200 oeuvres. Mais il lui reste encore du chemin à parcourir pour rentrer dans un cercle encore plus fermé."
+            name="Music Lover - Bronze",
+            description="This user has rated more than 200 albums !",
         ),
         BadgeDetail(
-            name="Musicophile, niveau argent",
-            description="Un membre cultivé qui a noté pas moins de 500 oeuvres. Il ambitionne sans doute de tutoyer les sommets de la culture musicale, mais il lui reste encore du travail."
+            name="Music Lover - Silver",
+            description="This user has rated more than 500 albums !",
         ),
         BadgeDetail(
-            name="Musicophile, niveau or",
-            description="Ce membre est un boulimique de musique, il a noté pas moins de 1000 oeuvres sur ce site. Mais quelque chose nous dit qu'il a encore faim."
+            name="Music Lover - Gold",
+            description="This user has rated more than 1000 albums !",
         ),
     ]
 
     images = [
-        static('images/badges/MusicophileBeginner.png'),
-        static('images/badges/MusicophileBronze.png'),
-        static('images/badges/MusicophileSilver.png'),
-        static('images/badges/MusicophileGold.png'),
+        static("images/badges/MusicophileBeginner.png"),
+        static("images/badges/MusicophileBronze.png"),
+        static("images/badges/MusicophileSilver.png"),
+        static("images/badges/MusicophileGold.png"),
     ]
 
     multiple = False
@@ -56,32 +55,32 @@ class MusicophileBadge(Badge):
             return BadgeAwarded(level=1)
 
 
-class CritiqueBadge(Badge):
-    slug = "critique"
+class ReviewerBadge(Badge):
+    slug = "reviewer"
     levels = [
         BadgeDetail(
-            name="Critique en herbe",
-            description="Ce membre a dégainé sa plume électronique pour écrire sa première critique. C'est un début prometteur."
+            name="Beginner Reviewer",
+            description="This user has written his first review.",
         ),
         BadgeDetail(
-            name="Critique, niveau bronze",
-            description="Un membre actif qui a critiqué pas moins de 20 oeuvres. L'histoire ne nous dit pas si ses critiques font 1 ligne ou 300 lignes chacunes. Mais du chemin reste à parcourir sur la route des chroniqueurs."
+            name="Reviewer - Bronze",
+            description="This user has written more than 20 reviews.",
         ),
         BadgeDetail(
-            name="Critique, niveau argent",
-            description="Un critique averti qui a écrit sur plus de 50 oeuvres. Il n'est pas loin de toucher au Graal du chroniqueur."
+            name="Reviewer - Silver",
+            description="This user has written more than 50 reviews.",
         ),
         BadgeDetail(
-            name="Critique, niveau or",
-            description="Ce membre ne peut s'empêcher de donner son avis sur tout : il a d'ailleurs critiqué plus de 100 oeuvres sur ce site. Il est d'ailleurs sans doute en train de rédiger un nouveau pamphlet à l'heure actuelle."
+            name="Reviewer - Gold",
+            description="This user has written more than 100 reviews.",
         ),
     ]
 
     images = [
-        static('images/badges/CritiqueBeginner.png'),
-        static('images/badges/CritiqueBronze.png'),
-        static('images/badges/CritiqueSilver.png'),
-        static('images/badges/CritiqueGold.png'),
+        static("images/badges/CritiqueBeginner.png"),
+        static("images/badges/CritiqueBronze.png"),
+        static("images/badges/CritiqueSilver.png"),
+        static("images/badges/CritiqueGold.png"),
     ]
 
     multiple = False
@@ -103,32 +102,32 @@ class CritiqueBadge(Badge):
             return BadgeAwarded(level=1)
 
 
-class ContributeurBadge(Badge):
-    slug = "contributeur"
+class ContributorBadge(Badge):
+    slug = "contributor"
     levels = [
         BadgeDetail(
-            name="Contributeur débutant",
-            description="Ce membre a contribué à la renommée de La Musithèque en proposant son premier genre pour un album."
+            name="Beginner Contributor",
+            description="This member has helped the community by suggesting a genre for an album.",
         ),
         BadgeDetail(
-            name="Contributeur, niveau bronze",
-            description="On remercie vivement ce membre qui a proposé plus de 50 genres pour différents albums. Il contribue ainsi à la renommée nationale de La Musithèque."
+            name="Contributor - Bronze",
+            description="Many thanks to this user who has suggested more than 50 genres for various albums.",
         ),
         BadgeDetail(
-            name="Contributeur, niveau argent",
-            description="Ce membre a donné de son temps pour proposer plus de 100 genres pour différents albums. Il contribue ainsi à la renommée mondiale de La Musithèque."
+            name="Contributor - Silver",
+            description="Many thanks to this user who has suggested more than 100 genres for various albums.",
         ),
         BadgeDetail(
-            name="Contributeur, niveau or",
-            description="Ce membre est un véritable philanthrope, il a contribué à la renommée interstellaire de La Musithèque en proposant pas moins de 200 genres sur des albums. On ne l'oubliera jamais."
+            name="Contributor - Gold",
+            description="Many thanks to this user who has suggested more than 200 genres for various albums..",
         ),
     ]
 
     images = [
-        static('images/badges/ContributeurBeginner.png'),
-        static('images/badges/ContributeurBronze.png'),
-        static('images/badges/ContributeurSilver.png'),
-        static('images/badges/ContributeurGold.png'),
+        static("images/badges/ContributeurBeginner.png"),
+        static("images/badges/ContributeurBronze.png"),
+        static("images/badges/ContributeurSilver.png"),
+        static("images/badges/ContributeurGold.png"),
     ]
 
     multiple = False
@@ -150,32 +149,17 @@ class ContributeurBadge(Badge):
             return BadgeAwarded(level=1)
 
 
-class PipeletteBadge(Badge):
-    slug = "pipelette"
+class PionneerBadge(Badge):
+    slug = "pionneer"
     levels = [
         BadgeDetail(
-            name="Timide (niveau 1)",
-            description="Ce membre commence timidement son séjour sur La Musithèque en postant sa première discussion."
-        ),
-        BadgeDetail(
-            name="Gazouilleur (niveau 2)",
-            description="Ce membre participe à la vie de La Musithèque, il a déjà proposé plus de 20 discussions."
-        ),
-        BadgeDetail(
-            name="Pipelette (niveau 3)",
-            description="Ce membre est très certainement chanteur dans un groupe à succès, car il ne peut s'empêcher de parler. Il a déjà démarré plus de 50 discussions sur le site."
-        ),
-        BadgeDetail(
-            name="Grand Orateur (niveau 4)",
-            description="Tel Bruce Dickinson, ce membre est un orateur hors pair et un showman de tous les instants. Il a déjà écrit plus de 100 discussions sur le site."
+            name="Pionneer",
+            description="This user one among the happy few. He is one of the 200 first members of the community.",
         ),
     ]
 
     images = [
-        static('images/badges/PipeletteBeginner.png'),
-        static('images/badges/PipeletteBronze.png'),
-        static('images/badges/PipeletteSilver.png'),
-        static('images/badges/PipeletteGold.png'),
+        static("images/badges/Pionnier.png"),
     ]
 
     multiple = False
@@ -186,39 +170,7 @@ class PipeletteBadge(Badge):
 
     def award(self, **state):
         user = state["user"]
-        disc_count = Discussion.objects.filter(user=user).count()
-        if disc_count >= 100:
-            return BadgeAwarded(level=4)
-        elif disc_count >= 50:
-            return BadgeAwarded(level=3)
-        elif disc_count >= 20:
-            return BadgeAwarded(level=2)
-        elif disc_count >= 1:
-            return BadgeAwarded(level=1)
-
-
-class PionnierBadge(Badge):
-    slug = "pionnier"
-    levels = [
-        BadgeDetail(
-            name="Pionnier",
-            description="Tel les Beatles, ce membre est un pionnier à la pointe de l'innovation musicale. Il appartient en effet au cercle très fermé des 200 premiers membres du site."
-        ),
-    ]
-
-    images = [
-        static('images/badges/Pionnier.png'),
-    ]
-
-    multiple = False
-
-    events = [
-        "daily_award",
-    ]
-
-    def award(self, **state):
-        user = state["user"]
-        if user in User.objects.order_by('date_joined')[:200]:
+        if user in User.objects.order_by("date_joined")[:200]:
             return BadgeAwarded(level=1)
 
 
@@ -227,12 +179,12 @@ class Top10Badge(Badge):
     levels = [
         BadgeDetail(
             name="Top 10",
-            description="Ce membre est fier d'afficher ses goûts musicaux sur la toile. Il a ajouté 10 oeuvres à son top albums."
+            description="This member has added his top 10 albums.",
         ),
     ]
 
     images = [
-        static('images/badges/Top_10.png'),
+        static("images/badges/Top_10.png"),
     ]
 
     multiple = False
@@ -252,12 +204,11 @@ def regular_badge_update():
     users = User.objects.all()
 
     for user in users:
-        badges.possibly_award_badge('daily_award', user=user)
+        badges.possibly_award_badge("daily_award", user=user)
 
 
-badges.register(MusicophileBadge)
-badges.register(CritiqueBadge)
-badges.register(ContributeurBadge)
-badges.register(PionnierBadge)
-badges.register(PipeletteBadge)
+badges.register(MusicLoverBadge)
+badges.register(ReviewerBadge)
+badges.register(ContributorBadge)
+badges.register(PionneerBadge)
 badges.register(Top10Badge)
