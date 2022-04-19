@@ -90,11 +90,12 @@ class ShortAlbumSerializer(serializers.ModelSerializer):
     """
 
     cover = serializers.SerializerMethodField()
+    media_cover = serializers.CharField(source="get_media_cover")
 
     class Meta:
         model = Album
-        fields = ("title", "mbid", "cover")
-        read_only_fields = ("title", "mbid", "cover")
+        fields = ("title", "mbid", "cover", "media_cover")
+        read_only_fields = ("title", "mbid", "cover", "media_cover")
         lookup_field = "mbid"
 
     def get_cover(self, obj):
