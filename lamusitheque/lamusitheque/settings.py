@@ -108,7 +108,7 @@ STATICFILES_FINDERS = (
     "compressor.finders.CompressorFinder",
 )
 
-SITE_ID = 1
+SITE_ID = 4
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",

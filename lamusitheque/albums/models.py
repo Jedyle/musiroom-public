@@ -204,6 +204,9 @@ class Album(models.Model):
             return PROTOCOL + COVER_URL + "release/" + self.cover
         return settings.BACKEND_URL + static("albums/images/default_cover.png")
 
+    def get_media_cover(self):
+        return settings.BACKEND_URL + self.media_cover.url
+
     def get_preview(self):
         return self.get_cover()
 
@@ -222,9 +225,7 @@ class Album(models.Model):
         )
 
     def activity_data(self):
-        return {
-            "mbid": self.mbid
-        }
+        return {"mbid": self.mbid}
 
 
 discussions_registry.register(Album)

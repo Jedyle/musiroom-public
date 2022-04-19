@@ -51,6 +51,7 @@ class AlbumSerializer(serializers.ModelSerializer):
     tracks = serializers.JSONField()
     artists = ArtistListSerializer(many=True)
     cover = serializers.CharField(source="get_cover")
+    media_cover = serializers.CharField(source="get_media_cover")
     rating = RatingSerializer()
     real_genres = ShortGenreSerializer(many=True, read_only=True)
 
@@ -148,9 +149,7 @@ class AlbumGenreSerializer(serializers.ModelSerializer):
 
     def validate_genre(self, value):
         mbid = self.context.get("mbid")
-        duplicate = AlbumGenre.objects.filter(
-            album__mbid=mbid, genre=value
-        ).exists()
+        duplicate = AlbumGenre.objects.filter(album__mbid=mbid, genre=value).exists()
         if duplicate:
             raise serializers.ValidationError(_("This field must be unique."))
         return value

@@ -89,7 +89,11 @@ class AlbumViewset(ListRetrieveViewset):
     @action(detail=False, methods=["GET"])
     @method_decorator(cache_page(60 * 60))
     def latest(self, request):
-        albums = Album.objects.filter(release_date__isnull=False, cover__isnull=False).exclude(cover__exact="").order_by("-release_date")[:18]
+        albums = (
+            Album.objects.filter(release_date__isnull=False, cover__isnull=False)
+            .exclude(cover__exact="")
+            .order_by("-release_date")[:18]
+        )
         serializer = self.get_serializer(albums, many=True)
         return Response(serializer.data)
 
