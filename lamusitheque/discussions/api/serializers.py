@@ -8,11 +8,6 @@ from albums.models import Album, Artist
 from discussions.models import Discussion
 from lamusitheque.apiutils.mixins import VoteSerializerMixin
 
-ALLOWED_DISCUSSION_MODELS = [Album, Artist]
-ALLOWED_DISCUSSION_CONTENT_TYPES = ContentType.objects.get_for_models(
-    *ALLOWED_DISCUSSION_MODELS
-).values()
-
 
 class DiscussionMixin(serializers.Serializer):
     content_object = GenericRelatedField(
@@ -47,6 +42,10 @@ class DiscussionSerializer(
         )
 
     def validate_content_type(self, data):
+        ALLOWED_DISCUSSION_MODELS = [Album, Artist]
+        ALLOWED_DISCUSSION_CONTENT_TYPES = ContentType.objects.get_for_models(
+            *ALLOWED_DISCUSSION_MODELS
+        ).values()
         if (data is not None) and (data not in ALLOWED_DISCUSSION_CONTENT_TYPES):
             raise serializers.ValidationError(
                 "You cannot create a discussion about this model"

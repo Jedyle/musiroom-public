@@ -6,10 +6,13 @@
 
 
 * BACKEND
+** DONE fix migration issue with moderation
+CLOSED: [2022-04-21 jeu. 11:48]
 ** fix youtube link (find new API key from google console)
 ** albums : remove references to 'cover' and 'get_cover', replace everything by 'media_cover'
 ** rename project from 'lamusitheque' to ??? (find name)
 ** pytest : add tests everytime a bug is fixed
+*** first to add : test that migrations can be launched
 ** upgrade python and django (now blocked because of pinax badges)
 ** LastFM api does not give artist image anymore : find another source
 ** When we add a rating, disable the interest for the album by default (backend + frontend)

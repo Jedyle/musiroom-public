@@ -9,12 +9,21 @@ from star_ratings.models import UserRating
 from star_ratings.api.serializers import RatingSerializer
 
 
+class GenreSlugRelatedField(serializers.SlugRelatedField):
+    """
+    This field is required so we do not expose Genre.objects.all() directly inside the serializer class.
+    evaluating Genre.objects.all() causes a call to django-moderation, which causes a failure when the migrations have not yet been launched
+    """
+
+    def get_queryset(self):
+        return Genre.objects.all()
+
+
 class GenreSerializer(serializers.ModelSerializer):
-    parent = serializers.SlugRelatedField(
+    parent = GenreSlugRelatedField(
         many=False,
         read_only=False,
         slug_field="slug",
-        queryset=Genre.objects.all(),
         allow_null=True,
     )
 
@@ -112,9 +121,7 @@ class AlbumGenreSerializer(serializers.ModelSerializer):
     """
 
     album = serializers.SlugRelatedField(slug_field="mbid", read_only=True)
-    genre = serializers.SlugRelatedField(
-        slug_field="slug", queryset=Genre.objects.all()
-    )
+    genre = GenreSlugRelatedField(slug_field="slug")
     genre_details = serializers.SerializerMethodField(read_only=True)
     user = serializers.SlugRelatedField(slug_field="username", read_only=True)
     user_vote = serializers.SerializerMethodField(read_only=True)

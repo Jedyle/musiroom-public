@@ -12,6 +12,8 @@ WORKDIR /app
 RUN pip install --upgrade pip==19.3.1 setuptools==45
 RUN pip install -r requirements.txt
 
+CMD tail -f /dev/null
+
 FROM base as prod
 
 COPY ./lamusitheque/ /app/

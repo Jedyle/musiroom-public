@@ -49,7 +49,7 @@ class GenreViewset(CreateListRetrieveViewset):
     lookup_field = "slug"
 
     def get_queryset(self):
-        # if asked a list, we directly display a tree        
+        # if asked a list, we directly display a tree
         if self.action == "list":
             return Genre.objects.filter(parent__isnull=True)
         elif self.action == "create":
@@ -62,7 +62,12 @@ class GenreListViewset(ListViewset):
     serializer_class = ShortGenreSerializer
     pagination_class = None
     lookup_field = "slug"
-    queryset = Genre.objects.all()
+
+    def get_queryset(self):
+        """
+        Required to initialize app, because django-moderation reads this value
+        """
+        return Genre.objects.all()
 
 
 class AlbumViewset(ListRetrieveViewset):
