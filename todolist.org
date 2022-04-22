@@ -8,6 +8,7 @@
 * BACKEND
 ** DONE fix migration issue with moderation
 CLOSED: [2022-04-21 jeu. 11:48]
+** DONE fix registration mail template missing
 ** fix youtube link (find new API key from google console)
 ** albums : remove references to 'cover' and 'get_cover', replace everything by 'media_cover'
 ** rename project from 'lamusitheque' to ??? (find name)
@@ -16,8 +17,10 @@ CLOSED: [2022-04-21 jeu. 11:48]
 ** upgrade python and django (now blocked because of pinax badges)
 ** LastFM api does not give artist image anymore : find another source
 ** When we add a rating, disable the interest for the album by default (backend + frontend)
+** send confirmation mails in celery task
 
 * FRONTEND
+** Use react helmet for SEO
 ** Migrate to NextJS
 ** Refactor components (remove useless components, remove containers/ folder...)
 

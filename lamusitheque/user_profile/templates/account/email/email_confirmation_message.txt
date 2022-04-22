@@ -1,4 +1,3 @@
-{% load profile %}
 {% load i18n %}
 {% autoescape off %}
 

@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from django.utils.encoding import force_text
 from django.utils.http import urlsafe_base64_decode
+from django.db import transaction
 from pinax.badges.models import BadgeAward
 from rest_framework import status
 from rest_framework.decorators import action
@@ -32,6 +33,7 @@ class RegisterUserView(generics.CreateAPIView):
 
     serializer_class = CreateUserSerializer
 
+    @transaction.atomic
     def create(self, request, *args, **kwargs):
         serializer = CreateUserSerializer(data=request.data)
         if not serializer.is_valid():
@@ -140,7 +142,10 @@ class ProfileViewset(ListRetrieveViewset):
     def top(self, request, **kwargs):
         user = self.get_object()
         serializer = ListItemSerializer(user.top_albums.listitem_set, many=True)
-        return Response({"id": user.top_albums.id, "items": serializer.data}, status=status.HTTP_200_OK)
+        return Response(
+            {"id": user.top_albums.id, "items": serializer.data},
+            status=status.HTTP_200_OK,
+        )
 
 
 class NotificationViewset(viewsets.GenericViewSet, mixins.ListModelMixin):
