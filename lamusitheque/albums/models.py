@@ -2,7 +2,6 @@ import requests
 import os
 
 from django.conf import settings
-
 from django.core.files import File
 from django.core.files.temp import NamedTemporaryFile
 from django.contrib.auth.models import User
@@ -18,11 +17,14 @@ from jsonfield.fields import JSONField
 from siteflags.models import ModelWithFlag
 from vote.models import VoteModel
 
-from albums.utils import load_album_if_not_exists, create_artist_from_mbid
+from albums.utils import (
+    load_album_if_not_exists,
+    create_artist_from_mbid,
+    fetch_youtube_link,
+)
 from discussions.register import discussions_registry
 from star_ratings.models import Rating
 from .scraper import PROTOCOL, COVER_URL, ParseArtistPhoto
-
 
 # Create your models here.
 
@@ -137,6 +139,7 @@ class Album(models.Model):
     # same as cover, but the actual image stored in our system (for more speed)
     media_cover = models.ImageField(upload_to="album_covers", null=True)
     tracks = JSONField(null=True)
+    youtube_link = models.CharField(max_length=200, null=True)
 
     TYPE_CHOICES = (
         ("SI", "Single"),
@@ -203,6 +206,14 @@ class Album(models.Model):
         if self.cover:
             return PROTOCOL + COVER_URL + "release/" + self.cover
         return settings.BACKEND_URL + static("albums/images/default_cover.png")
+
+    def get_youtube_link(self):
+        if self.youtube_link:
+            return self.youtube_link
+        else:
+            self.youtube_link = fetch_youtube_link(self)
+            self.save()
+            return self.youtube_link
 
     def get_media_cover(self):
         cover = (

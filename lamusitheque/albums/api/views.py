@@ -1,7 +1,5 @@
 import re
 
-from youtube_api import YouTubeDataAPI
-from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.db.models import Q
@@ -147,10 +145,7 @@ class AlbumViewset(ListRetrieveViewset):
     @action(detail=True, methods=["GET"])
     def youtube_link(self, request, mbid=None):
         album = self.get_object()
-        search_string = f"{album.artists.first().name} {album.title}"
-        yt = YouTubeDataAPI(settings.YOUTUBE_API_KEY)
-        res = yt.search(search_string, max_results=1)
-        return Response({"link": f"https://youtube.com/watch?v={res[0]['video_id']}"})
+        return Response({"link": album.get_youtube_link()})
 
     @action(detail=True, methods=["GET"])
     def same_artist(self, request, mbid=None):

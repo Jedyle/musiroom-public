@@ -1,14 +1,21 @@
 from django.urls import reverse
+from django.conf import settings
 
 from albums.scraper import ParseAlbum, ParseCover, ParseArtist
+
+from youtube_api import YouTubeDataAPI
 
 
 def compute_artists_links(album):
     all_artists = album.artists.all()
-    artists = [{'name': artist.name, 'mbid': artist.mbid} for artist in all_artists]
-    artists_links = ["<a href='{}'>{}</a>".format(reverse('albums:artist', args=[artist['mbid']]), artist['name']) for
-                     artist in artists]
-    return ', '.join(artists_links)
+    artists = [{"name": artist.name, "mbid": artist.mbid} for artist in all_artists]
+    artists_links = [
+        "<a href='{}'>{}</a>".format(
+            reverse("albums:artist", args=[artist["mbid"]]), artist["name"]
+        )
+        for artist in artists
+    ]
+    return ", ".join(artists_links)
 
 
 # TODO : refactor and remove local imports
@@ -38,21 +45,33 @@ def load_album_if_not_exists(mbid):
             album.artists.add(author)
             tags = parser.get_tags()
             for tag in tags:
-                genres = Genre.objects.filter(name__iexact=tag.lower().replace('-', ' '))
+                genres = Genre.objects.filter(
+                    name__iexact=tag.lower().replace("-", " ")
+                )
                 if genres.count() > 0:
                     genre = genres[0]
-                    album_genre, created = AlbumGenre.objects.get_or_create(album=album, genre=genre)
+                    album_genre, created = AlbumGenre.objects.get_or_create(
+                        album=album, genre=genre
+                    )
                     if created:
                         album_genre.num_vote_up = 1
                         album_genre.save()
 
         album.save()
-        artists = [{'name': author.name, 'mbid': author.mbid} for author in authors]
+        artists = [{"name": author.name, "mbid": author.mbid} for author in authors]
         return album, artists
+
+
+def fetch_youtube_link(album):
+    yt = YouTubeDataAPI(settings.YOUTUBE_API_KEY)
+    search_string = f"{album.artists.first().name} {album.title}"
+    res = yt.search(search_string, max_results=1)
+    return f"https://youtube.com/watch?v={res[0]['video_id']}"
 
 
 def create_artist_from_mbid(mbid, page, search):
     from albums.models import Artist
+
     parser = ParseArtist(mbid, page=page, name=search)
     if parser.load():
         artist = Artist.objects.create(mbid=mbid, name=parser.get_name())
@@ -62,12 +81,15 @@ def create_artist_from_mbid(mbid, page, search):
 
 def get_artists_in_db(artist_dict):
     from albums.models import Artist
+
     artists = []
     for artist_elt in artist_dict:
         try:
-            artist = Artist.objects.get(mbid=artist_elt['mbid'])
+            artist = Artist.objects.get(mbid=artist_elt["mbid"])
             artists.append(artist)
         except Artist.DoesNotExist:
-            artist = Artist.objects.create(mbid=artist_elt['mbid'], name=artist_elt['name'])
+            artist = Artist.objects.create(
+                mbid=artist_elt["mbid"], name=artist_elt["name"]
+            )
             artists.append(artist)
     return artists

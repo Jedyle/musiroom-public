@@ -5,7 +5,7 @@ from albums.models import Album, Artist
 from albums.tests.factories import AlbumFactory, ArtistFactory
 
 
-class TestAlbumList:
+class TestAlbumListView:
 
     URL = "/api/albums/"
 
@@ -16,7 +16,7 @@ class TestAlbumList:
         assert len(response.json()["results"]) == 5
 
 
-class TestAlbumRetrieve:
+class TestAlbumRetrieveView:
 
     URL = "/api/albums/{}/"
 
@@ -46,7 +46,17 @@ class TestAlbumRetrieve:
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
-class TestArtistList:
+class TestAlbumGetYoutubeLinkAction:
+    URL = "/api/albums/{}/youtube_link/"
+
+    def test_ok(self, client):
+        album = AlbumFactory(youtube_link="fake")
+        response = client.get(self.URL.format(album.mbid))
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json() == {"link": "fake"}
+
+
+class TestArtistListView:
 
     URL = "/api/artists/"
 
