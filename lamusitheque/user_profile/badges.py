@@ -154,7 +154,7 @@ class PionneerBadge(Badge):
     levels = [
         BadgeDetail(
             name="Pionneer",
-            description="This user one among the happy few. He is one of the 200 first members of the community.",
+            description="This user is among the happy few. He is one of the 200 first members of the community.",
         ),
     ]
 
