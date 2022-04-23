@@ -9,7 +9,10 @@
 ** DONE fix migration issue with moderation
 CLOSED: [2022-04-21 jeu. 11:48]
 ** DONE fix registration mail template missing
-** fix youtube link (find new API key from google console)
+** DONE fix youtube link (find new API key from google console)
+CLOSED: [2022-04-23 sam. 19:36]
+** PROD : pb with SITE_ID. In mail template for user activation, domain is not printed
+** default from email doesn't work
 ** albums : remove references to 'cover' and 'get_cover', replace everything by 'media_cover'
 ** rename project from 'lamusitheque' to ??? (find name)
 ** DONE pytest : add tests everytime a bug is fixed
@@ -18,9 +21,11 @@ CLOSED: [2022-04-23 sam. 12:25]
 ** upgrade python and django (now blocked because of pinax badges)
 ** LastFM api does not give artist image anymore : find another source
 ** When we add a rating, disable the interest for the album by default (backend + frontend)
-** send confirmation mails in celery task
+** DONE send confirmation mails in celery task
+CLOSED: [2022-04-23 sam. 19:36]
 
 * FRONTEND
+** Mobile : navbar doesn't go away after clicking on a link
 ** Use react helmet for SEO
 ** Migrate to NextJS
 ** Refactor components (remove useless components, remove containers/ folder...)

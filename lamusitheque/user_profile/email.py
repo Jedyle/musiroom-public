@@ -9,7 +9,7 @@ from django.utils.http import urlsafe_base64_encode
 from user_profile.tokens import profile_activation_token
 
 
-def send_activation_email(site_pk, username):
+def send_activation_email(username):
     """
     Send an activation email to the newly registrated user
     :param request: the request object
@@ -17,14 +17,13 @@ def send_activation_email(site_pk, username):
     :return: nothing, sends an activation email to the user
     """
     user = User.objects.get(username=username)
-    site = Site.objects.get(pk=site_pk)
     uid = urlsafe_base64_encode(force_bytes(user.pk)).decode()
     token = profile_activation_token.make_token(user)
     message = render_to_string(
         "account/email/email_confirmation_message.txt",
         {
             "user": user,
-            "site_name": site.domain,
+            "site_name": settings.FRONTEND_APP_NAME,
             "activate_url": f"{settings.FRONTEND_APP_NAME}/confirm?token={token}&uid={uid}",
         },
     )
