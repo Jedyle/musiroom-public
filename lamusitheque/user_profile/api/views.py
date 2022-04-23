@@ -42,7 +42,9 @@ class RegisterUserView(generics.CreateAPIView):
             user = serializer.save()
             # mail must be sent only after user is successfully added in database
             transaction.on_commit(
-                lambda: send_user_activation_email.delay(user.username)
+                lambda: send_user_activation_email.delay(
+                    get_current_site(request).pk, user.username
+                )
             )
         return Response(
             {"message": "A confirmation email has been sent.", **serializer.data},

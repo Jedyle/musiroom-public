@@ -35,7 +35,7 @@ class TestRegisterView:
         }
         response = client.post(self.URL, data=userdata, content_type="application/json")
         assert response.status_code == status.HTTP_201_CREATED, response.json()
-        mock_celery_send_email.assert_called_once_with("fakeuser")
+        mock_celery_send_email.assert_called_once_with(mocker.ANY, "fakeuser")
         user = django_user_model.objects.get(username="fakeuser")
         assert user.is_active is False
         assert user.profile
