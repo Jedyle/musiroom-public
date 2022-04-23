@@ -1,17 +1,13 @@
-from __future__ import absolute_import, unicode_literals
-
-from celery import task
-from django.core.mail import EmailMultiAlternatives
-from django.template.loader import render_to_string
-from django.utils import timezone
-
+import celery
 from .badges import regular_badge_update
-from .models import Profile
+from .email import send_activation_email
 
 
-@task()
+@celery.task
 def update_badges():
     regular_badge_update()
 
 
-DAYS_OF_INACTIVITY = 30
+@celery.task
+def send_user_activation_email(site_pk, username):
+    send_activation_email(site_pk, username)

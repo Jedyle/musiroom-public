@@ -57,7 +57,9 @@ class ProfileAvatarSerializer(serializers.ModelSerializer):
 
 
 class CreateUserSerializer(serializers.ModelSerializer):
-    email = serializers.EmailField(required=True, validators=[UniqueValidator(queryset=User.objects.all())])
+    email = serializers.EmailField(
+        required=True, validators=[UniqueValidator(queryset=User.objects.all())]
+    )
     password_confirm = serializers.CharField(write_only=True)
 
     class Meta:
@@ -159,7 +161,7 @@ class NotificationSerializer(serializers.ModelSerializer):
             Discussion: DiscussionSerializer(),
             Review: ReviewSerializer(),
             BadgeAward: BadgeSerializer(),
-            ExportReport: ExportReadSerializer()
+            ExportReport: ExportReadSerializer(),
         }
     )
 
