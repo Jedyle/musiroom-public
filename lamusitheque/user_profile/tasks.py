@@ -9,5 +9,5 @@ def update_badges():
 
 
 @celery.task
-def send_user_activation_email(site_pk, username):
-    send_activation_email(site_pk, username)
+def send_user_activation_email(username):
+    send_activation_email(username)
