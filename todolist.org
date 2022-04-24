@@ -11,7 +11,8 @@ CLOSED: [2022-04-21 jeu. 11:48]
 ** DONE fix registration mail template missing
 ** DONE fix youtube link (find new API key from google console)
 CLOSED: [2022-04-23 sam. 19:36]
-** PROD : pb with SITE_ID. In mail template for user activation, domain is not printed
+** DONE PROD : pb with SITE_ID. In mail template for user activation, domain is not printed
+CLOSED: [2022-04-24 dim. 11:01]
 ** default from email doesn't work
 ** albums : remove references to 'cover' and 'get_cover', replace everything by 'media_cover'
 ** rename project from 'lamusitheque' to ??? (find name)
@@ -23,6 +24,8 @@ CLOSED: [2022-04-23 sam. 12:25]
 ** When we add a rating, disable the interest for the album by default (backend + frontend)
 ** DONE send confirmation mails in celery task
 CLOSED: [2022-04-23 sam. 19:36]
+** DONE when creating user, email unicity constraint must not consider inactive users
+CLOSED: [2022-04-24 dim. 11:10]
 
 * FRONTEND
 ** Mobile : navbar doesn't go away after clicking on a link
@@ -31,5 +34,7 @@ CLOSED: [2022-04-23 sam. 19:36]
 ** Refactor components (remove useless components, remove containers/ folder...)
 
 * DEPLOYMENT
-** prepare docker-compose shell for dev and for prod
+** DONE prepare docker-compose shell for dev and for prod
+CLOSED: [2022-04-24 dim. 11:02]
 ** later, use ansible playbooks to deploy automatically
+** find something suitable for project management (note all these todolists)

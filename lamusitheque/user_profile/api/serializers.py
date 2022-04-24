@@ -58,7 +58,8 @@ class ProfileAvatarSerializer(serializers.ModelSerializer):
 
 class CreateUserSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(
-        required=True, validators=[UniqueValidator(queryset=User.objects.all())]
+        required=True,
+        validators=[UniqueValidator(queryset=User.objects.filter(is_active=True))],
     )
     password_confirm = serializers.CharField(write_only=True)
 

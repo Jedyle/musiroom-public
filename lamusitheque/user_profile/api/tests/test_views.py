@@ -77,3 +77,55 @@ class TestRegisterView:
         response = client.post(self.URL, data=userdata, content_type="application/json")
         assert response.status_code == status.HTTP_400_BAD_REQUEST, response.json()
         mock_celery_send_email.assert_not_called()
+
+    def test_mail_exists(
+        self,
+        client,
+        mocker,
+        mock_transaction,
+        mock_celery_send_email,
+        django_user_model,
+    ):
+        """
+        If a user has been set inactive, its email must not be taken into account when validating a new user's email
+        """
+        django_user_model.objects.create(
+            username="fakeuser", password="fakepass", email="test@mail.com"
+        )
+        userdata = {
+            "email": "test@mail.com",
+            "username": "fakeuser2",
+            "password": "fakepassword",
+            "password_confirm": "fakepassword",
+        }
+        response = client.post(self.URL, data=userdata, content_type="application/json")
+        assert response.status_code == status.HTTP_400_BAD_REQUEST, response.json()
+        mock_celery_send_email.assert_not_called()
+        assert "email" in response.json()
+
+    def test_mail_exists_for_inactive_user(
+        self,
+        client,
+        mocker,
+        mock_transaction,
+        mock_celery_send_email,
+        django_user_model,
+    ):
+        """
+        If a user has been set inactive, its email must not be taken into account when validating a new user's email
+        """
+        django_user_model.objects.create(
+            username="fakeuser",
+            password="fakepass",
+            email="test@mail.com",
+            is_active=False,
+        )
+        userdata = {
+            "email": "test@mail.com",
+            "username": "fakeuser2",
+            "password": "fakepassword",
+            "password_confirm": "fakepassword",
+        }
+        response = client.post(self.URL, data=userdata, content_type="application/json")
+        assert response.status_code == status.HTTP_201_CREATED, response.json()
+        mock_celery_send_email.assert_called_once_with(mocker.ANY, "fakeuser2")
