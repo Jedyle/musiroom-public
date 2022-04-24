@@ -13,7 +13,8 @@ CLOSED: [2022-04-21 jeu. 11:48]
 CLOSED: [2022-04-23 sam. 19:36]
 ** DONE PROD : pb with SITE_ID. In mail template for user activation, domain is not printed
 CLOSED: [2022-04-24 dim. 11:01]
-** default from email doesn't work
+** DONE default from email doesn't work
+CLOSED: [2022-04-24 dim. 11:21]
 ** albums : remove references to 'cover' and 'get_cover', replace everything by 'media_cover'
 ** rename project from 'lamusitheque' to ??? (find name)
 ** DONE pytest : add tests everytime a bug is fixed
@@ -32,6 +33,7 @@ CLOSED: [2022-04-24 dim. 11:10]
 ** Use react helmet for SEO
 ** Migrate to NextJS
 ** Refactor components (remove useless components, remove containers/ folder...)
+** Use musicbrainz API instead of scraping
 
 * DEPLOYMENT
 ** DONE prepare docker-compose shell for dev and for prod

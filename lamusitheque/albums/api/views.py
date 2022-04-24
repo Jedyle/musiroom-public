@@ -216,8 +216,22 @@ class ArtistViewset(ListRetrieveViewset):
         parser = ParseSimilarArtists(artist.mbid, limit=limit)
         if not parser.load():
             return Response(status=status.HTTP_404_NOT_FOUND)
-        similar = parser.get_artists()
-        return Response({"similar": {"count": len(similar), "items": similar}})
+
+        similar_from_parser = parser.get_artists()
+        values_from_artists_in_db = [
+            {"name": artist.name, "mbid": artist.mbid, "image": artist.get_photo()}
+            for artist in Artist.objects.filter(
+                mbid__in=[el["mbid"] for el in similar_from_parser]
+            )
+        ]
+        artists_in_db = [a["mbid"] for a in values_from_artists_in_db]
+        response = []
+        for artist in similar_from_parser:
+            if artist["mbid"] not in artists_in_db:
+                response.append(artist)
+        response += values_from_artists_in_db
+
+        return Response({"similar": {"count": len(response), "items": response}})
 
     @action(detail=True, methods=["GET"])
     def discography(self, request, mbid=None):

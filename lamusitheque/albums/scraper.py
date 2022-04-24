@@ -163,18 +163,12 @@ class ParseSearchArtists(ParseSearch):
 
 
 class ParseArtistPhoto:
-    def __init__(self, artist_id, protocol=PROTOCOL, url=LASTFM_API_URL):
+    def __init__(self, artist_id, protocol=PROTOCOL):
         self.artist_id = artist_id
         self.url = (
-            protocol
-            + url
-            + "?method=artist.getinfo"
-            + "&api_key="
-            + LASTFM_API_KEY
-            + "&format=json"
-            + "&mbid="
-            + self.artist_id
+            f"https://musicbrainz.org/ws/2/artist/{artist_id}?inc=url-rels&fmt=json"
         )
+        # self.url = "https://commons.wikimedia.org/wiki/Special:Redirect/file/" + next(el for el in res['relations'] if el['type'] == 'image')['url']['resource'].split('File:')[-1]
 
     def load(self):
         req = requests.get(self.url)
@@ -184,11 +178,16 @@ class ParseArtistPhoto:
 
     def get_thumb(self):
         try:
-            images = self.json["artist"]["image"]
-            if images:
-                return images[-1]["#text"]
-            return ""
-        except:
+            return (
+                "https://commons.wikimedia.org/wiki/Special:Redirect/file/"
+                + next(
+                    el
+                    for el in self.json["relations"]
+                    if el["type"] == "image"
+                    and "commons.wikimedia.org" in el["url"]["resource"]
+                )["url"]["resource"].split("File:")[-1]
+            )
+        except StopIteration:
             return ""
 
 

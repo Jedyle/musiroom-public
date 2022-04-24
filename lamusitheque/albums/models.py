@@ -310,16 +310,19 @@ class Artist(models.Model):
         return reverse("artist-detail", args=[self.mbid])
 
     def get_photo(self):
+        default_photo_url = settings.BACKEND_URL + static("images/artist.jpg")
         if self.photo is None:
             parser = ParseArtistPhoto(self.mbid)
             if parser.load():
                 photo = parser.get_thumb()
                 self.photo = photo
                 self.save()
+                print("photo", photo)
                 if photo != "":
                     return photo
+                return default_photo_url
         elif self.photo == "":
-            return static("images/artist.jpg")
+            return default_photo_url
         return self.photo
 
     def get_preview(self):
