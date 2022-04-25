@@ -6,7 +6,7 @@
 		
 * Create configuration
 
-Go to lamusitheque/settings and create a file settings.py :
+Go to musiroom/settings and create a file settings.py :
 
 	from . import * # import __init__ configuration
 	
@@ -25,7 +25,7 @@ Go to lamusitheque/settings and create a file settings.py :
 
 * Launch migrations and run
 
-		cd lamusitheque
+		cd musiroom
 		./manage.py migrate
 		./manage.py runserver
 		
