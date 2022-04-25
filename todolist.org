@@ -34,10 +34,12 @@ CLOSED: [2022-04-24 dim. 11:10]
 * FRONTEND
 ** DONE Mobile : navbar doesn't go away after clicking on a link
 CLOSED: [2022-04-24 dim. 13:44]
-** User /review page : no link and preview of review !
+** DONE User /review page : no link and preview of review !
+CLOSED: [2022-04-25 lun. 12:38]
 ** Use react helmet for SEO
 ** Migrate to NextJS
-** Refactor components (remove useless components, remove containers/ folder...)
+** DONE Refactor components (remove useless components, remove containers/ folder...)
+CLOSED: [2022-04-25 lun. 12:38]
 
 * DEPLOYMENT
 ** DONE prepare docker-compose shell for dev and for prod
