@@ -15,7 +15,7 @@ urlpatterns = [
     path(
         "auth/password/reset/",
         auth_views.PasswordResetView.as_view(
-            extra_email_context={"domain": settings.BACKEND_URL}
+            extra_email_context={"domain": settings.BACKEND_URL.lstrip("https://")}
         ),
         name="reset_password",
     ),
