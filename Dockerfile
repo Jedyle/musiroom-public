@@ -17,5 +17,5 @@ FROM base as prod
 
 COPY ./lamusitheque/ /app/
 RUN pip install gunicorn==20.1.0
-CMD python manage.py collectstatic --no-input && python manage.py migrate && gunicorn lamusitheque.wsgi:application --bind 0.0.0.0:8000
+CMD python manage.py collectstatic --no-input && python manage.py migrate && gunicorn lamusitheque.wsgi:application --bind 0.0.0.0:8000 --workers=3 --threads=2
 
