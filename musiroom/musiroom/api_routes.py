@@ -41,6 +41,5 @@ References all api routes, including the ones from external packages
 schema_view = get_schema_view(title="Musiroom API")
 
 urlpatterns = [
-    url(r"auth/", include("rest_auth.urls")),
     url(r"schema/", schema_view),
 ] + api_patterns

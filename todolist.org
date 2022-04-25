@@ -40,6 +40,7 @@ CLOSED: [2022-04-25 lun. 12:38]
 ** Migrate to NextJS
 ** DONE Refactor components (remove useless components, remove containers/ folder...)
 CLOSED: [2022-04-25 lun. 12:38]
+** forgot password feature !
 
 * DEPLOYMENT
 ** DONE prepare docker-compose shell for dev and for prod

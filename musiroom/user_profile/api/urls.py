@@ -1,6 +1,8 @@
 from django.conf.urls import url
+from django.urls import include
 from rest_framework_nested import routers
-
+from django.contrib.auth import views as auth_views
+from django.views.defaults import page_not_found
 from ajax_follower.api.views import FollowersViewset, FolloweesViewset
 from albums.api.views import UserInterestsViewset
 from discussions.api.views import UserDiscussionViewset
@@ -46,6 +48,7 @@ registration_patterns = [
     ),
     url(r"auth/user/delete", DestroyProfileView.as_view()),
     url(r"auth/user/avatar", UpdateAvatarView.as_view()),
+    url(r"auth/", include("rest_auth.urls")),
 ]
 
 urlpatterns = registration_patterns + router.urls + user_nested_router.urls

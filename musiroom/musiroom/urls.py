@@ -20,6 +20,8 @@ from django.contrib import admin
 
 urlpatterns = [
     url(r"^manage/", admin.site.urls),
+    # special urls for reset password
+    url(r"", include("user_profile.urls")),
     url(r"api/", include("musiroom.api_routes")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
