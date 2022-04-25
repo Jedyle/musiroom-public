@@ -59,7 +59,6 @@ class ArtistListSerializer(serializers.ModelSerializer):
 class AlbumSerializer(serializers.ModelSerializer):
     tracks = serializers.JSONField()
     artists = ArtistListSerializer(many=True)
-    cover = serializers.CharField(source="get_cover")
     media_cover = serializers.CharField(source="get_media_cover")
     rating = RatingSerializer()
     real_genres = ShortGenreSerializer(many=True, read_only=True)
@@ -69,7 +68,7 @@ class AlbumSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Album
-        exclude = ("users_interested",)
+        exclude = ("users_interested", "cover")
         lookup_field = "mbid"
 
     def get_user_rating(self, obj):
@@ -98,17 +97,13 @@ class ShortAlbumSerializer(serializers.ModelSerializer):
     Used by AlbumGenreSerializer (no need to get the album tracks here for example)
     """
 
-    cover = serializers.SerializerMethodField()
     media_cover = serializers.CharField(source="get_media_cover")
 
     class Meta:
         model = Album
-        fields = ("title", "mbid", "cover", "media_cover")
-        read_only_fields = ("title", "mbid", "cover", "media_cover")
+        fields = ("title", "mbid", "media_cover")
+        read_only_fields = ("title", "mbid", "media_cover")
         lookup_field = "mbid"
-
-    def get_cover(self, obj):
-        return obj.get_cover()
 
 
 class AlbumGenreSerializer(serializers.ModelSerializer):

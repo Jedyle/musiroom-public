@@ -25,6 +25,7 @@ class TestAlbumRetrieveView:
         album = AlbumFactory()
         response = client.get(self.URL.format(album.mbid))
         assert response.status_code == status.HTTP_200_OK
+        assert "cover" not in response.json()
 
     @pytest.mark.api
     def test_album_retrieve_in_musicbrainz(self, client):
@@ -35,6 +36,7 @@ class TestAlbumRetrieveView:
         assert not Album.objects.filter(mbid=mbid).exists()
         response = client.get(self.URL.format(mbid))
         assert response.status_code == status.HTTP_200_OK
+        assert "cover" not in response.json()
         album = Album.objects.get(mbid=mbid)  # assert object exists
         assert album.artists.count() == 1  # Opeth
 
