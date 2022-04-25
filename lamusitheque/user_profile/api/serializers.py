@@ -27,6 +27,8 @@ class ProfileSerializer(serializers.ModelSerializer):
         exclude = ("user", "top_albums")
         read_only_fields = ("avatar",)
 
+    avatar = serializers.CharField(source="get_avatar")
+
 
 class UserProfileSerializer(serializers.ModelSerializer):
     profile = ProfileSerializer(required=True)
@@ -37,9 +39,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
         read_only_fields = ("username",)
 
     def update(self, instance, validated_data):
-        print(validated_data)
         profile = instance.profile
-
         profile_data = validated_data.pop("profile")
         for key in profile_data:
             setattr(profile, key, profile_data[key])
@@ -101,7 +101,7 @@ class PublicProfileSerializer(serializers.ModelSerializer):
         slug_field="username", many=False, read_only=True
     )
     first_name = serializers.SerializerMethodField()
-    avatar = serializers.SerializerMethodField()
+    avatar = serializers.CharField(source="get_avatar")
     date_joined = serializers.SerializerMethodField()
     birth = serializers.SerializerMethodField()
     sex = serializers.SerializerMethodField()
@@ -118,9 +118,6 @@ class PublicProfileSerializer(serializers.ModelSerializer):
 
     def get_nb_reviews(self, profile):
         return Review.objects.filter(rating__user=profile.user).count()
-
-    def get_avatar(self, profile):
-        return profile.get_avatar()
 
     def get_date_joined(self, profile):
         return profile.user.date_joined
