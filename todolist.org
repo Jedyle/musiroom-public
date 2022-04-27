@@ -30,6 +30,7 @@ CLOSED: [2022-04-23 sam. 19:36]
 ** DONE when creating user, email unicity constraint must not consider inactive users
 CLOSED: [2022-04-24 dim. 11:10]
 ** Use musicbrainz API instead of scraping
+** In password reset, mail should show https instead of http for backend url
 
 * FRONTEND
 ** DONE Mobile : navbar doesn't go away after clicking on a link
