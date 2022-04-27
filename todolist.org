@@ -32,6 +32,8 @@ CLOSED: [2022-04-24 dim. 11:10]
 ** Use musicbrainz API instead of scraping
 ** In password reset, mail should show https instead of http for backend url
 ** Badges : only show latest badge in one category
+** add activity stream in home
+*** bug : "user" started following '' (empty object)
 
 * FRONTEND
 ** DONE Mobile : navbar doesn't go away after clicking on a link
