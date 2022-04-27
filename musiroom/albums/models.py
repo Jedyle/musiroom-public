@@ -317,7 +317,6 @@ class Artist(models.Model):
                 photo = parser.get_thumb()
                 self.photo = photo
                 self.save()
-                print("photo", photo)
                 if photo != "":
                     return photo
                 return default_photo_url

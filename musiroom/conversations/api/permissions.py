@@ -15,7 +15,6 @@ def user_is_active_in_conversation(user, conversation):
 
 class IsInConversation(permissions.BasePermission):
     def has_permission(self, request, view):
-        print("USER", request.user)
         return request.user.is_authenticated
 
     def has_object_permission(self, request, view, obj):
