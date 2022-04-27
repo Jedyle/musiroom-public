@@ -121,7 +121,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "debug_toolbar.middleware.DebugToolbarMiddleware",
-    "django.middleware.locale.LocaleMiddleware",
+    # "django.middleware.locale.LocaleMiddleware",
     "user_profile.middleware.UpdateLastActivityMiddleware",
 ]
 
@@ -197,7 +197,7 @@ CACHES = {
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
 
-LANGUAGE_CODE = "fr"
+LANGUAGE_CODE = "en"
 
 TIME_ZONE = "Europe/Paris"
 
