@@ -213,7 +213,7 @@ class ParseSimilarArtists:
         return req.status_code == 200
 
     def get_artists(self):
-        artists = self.json["similarartists"]["artist"]
+        artists = self.json.get("similarartists", {}).get("artist", [])
         res = []
         i = 0
         while (len(res) < min(self.limit, len(artists))) and (i < len(artists)):
