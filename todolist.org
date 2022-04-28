@@ -32,12 +32,14 @@ CLOSED: [2022-04-23 sam. 19:36]
 ** DONE when creating user, email unicity constraint must not consider inactive users
 CLOSED: [2022-04-24 dim. 11:10]
 ** Use musicbrainz API instead of scraping
-** In password reset, mail should show https instead of http for backend url
+** DONE In password reset, mail should show https instead of http for backend url
+   CLOSED: [2022-04-28 jeu. 17:47]
 ** Badges : only show latest badge in one category
 ** add activity stream in home
 *** bug : "user" started following '' (empty object)
 ** SOCIAL AUTHENTICATION
-** Album type is not verbose
+** DONE Album type is not verbose
+   CLOSED: [2022-04-28 jeu. 17:47]
 * FRONTEND
 ** DONE Mobile : navbar doesn't go away after clicking on a link
 CLOSED: [2022-04-24 dim. 13:44]
