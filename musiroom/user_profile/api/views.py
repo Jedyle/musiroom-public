@@ -3,7 +3,6 @@ from django.shortcuts import get_object_or_404
 from django.utils.encoding import force_text
 from django.utils.http import urlsafe_base64_decode
 from django.db import transaction
-from pinax.badges.models import BadgeAward
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -20,6 +19,7 @@ from user_profile.api.serializers import (
     BadgeSerializer,
     ProfileAvatarSerializer,
 )
+from user_profile.badges import distinct_badges_for_user
 from django.contrib.sites.shortcuts import get_current_site
 from user_profile.tasks import send_user_activation_email
 from user_profile.models import Profile
@@ -180,5 +180,4 @@ class BadgesViewset(viewsets.GenericViewSet, mixins.ListModelMixin):
     serializer_class = BadgeSerializer
 
     def get_queryset(self):
-        username = self.kwargs["users_user__username"]
-        return BadgeAward.objects.filter(user__username=username)
+        return distinct_badges_for_user(self.kwargs["users_user__username"])

@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.contrib.staticfiles.templatetags.staticfiles import static
+from pinax.badges.models import BadgeAward
 from pinax.badges.base import Badge, BadgeAwarded, BadgeDetail
 from pinax.badges.registry import badges
 
@@ -202,9 +203,16 @@ class Top10Badge(Badge):
 
 def regular_badge_update():
     users = User.objects.all()
-
     for user in users:
         badges.possibly_award_badge("daily_award", user=user)
+
+
+def distinct_badges_for_user(username):
+    return (
+        BadgeAward.objects.filter(user__username=username)
+        .order_by("slug", "-level")
+        .distinct("slug")
+    )
 
 
 badges.register(MusicLoverBadge)

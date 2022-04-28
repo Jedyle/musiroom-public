@@ -47,7 +47,8 @@ CLOSED: [2022-04-24 dim. 13:44]
 CLOSED: [2022-04-25 lun. 12:38]
 ** Use react helmet for SEO
 ** Migrate to NextJS
-** Gender stil in french
+** DONE Gender stil in french
+CLOSED: [2022-04-28 jeu. 18:01]
 ** DONE Refactor components (remove useless components, remove containers/ folder...)
 CLOSED: [2022-04-25 lun. 12:38]
 ** DONE forgot password feature !
