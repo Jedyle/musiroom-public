@@ -34,9 +34,9 @@ class Profile(models.Model):
     )
 
     SEX = [
-        ("M", "Homme"),
-        ("F", "Femme"),
-        ("N", "Anonyme"),
+        ("M", "Male"),
+        ("F", "Female"),
+        ("N", "Anonymous"),
     ]
 
     sex = models.CharField("Sex", max_length=1, default="N", choices=SEX)

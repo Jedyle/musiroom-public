@@ -65,7 +65,8 @@ class AlbumSerializer(serializers.ModelSerializer):
 
     user_rating = serializers.SerializerMethodField()
     followees_avg = serializers.SerializerMethodField()
-
+    album_type = serializers.CharField(source="get_album_type_display")
+    
     class Meta:
         model = Album
         exclude = ("users_interested", "cover")

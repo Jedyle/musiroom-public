@@ -148,7 +148,7 @@ class Album(models.Model):
         ("LI", "Live"),
         ("CP", "Compilation"),
         ("RE", "Remix"),
-        ("UK", "Inconnu"),
+        ("UK", "Unknown"),
     )
 
     album_type = models.CharField(max_length=2, choices=TYPE_CHOICES, default="LP")

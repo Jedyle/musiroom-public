@@ -1,5 +1,4 @@
 from django.urls import path, re_path
-from django.contrib.sites.models import Site
 from django.conf import settings
 from django.contrib.auth import views as auth_views
 from django.views.defaults import page_not_found
@@ -15,7 +14,10 @@ urlpatterns = [
     path(
         "auth/password/reset/",
         auth_views.PasswordResetView.as_view(
-            extra_email_context={"domain": settings.BACKEND_URL.lstrip("https://")}
+            extra_email_context={
+                "domain": settings.BACKEND_URL.lstrip("https://"),
+                "protocol": "https"
+            }
         ),
         name="reset_password",
     ),
@@ -32,7 +34,7 @@ urlpatterns = [
     path(
         "auth/password/reset/complete/",
         auth_views.PasswordResetCompleteView.as_view(
-            extra_context={"site": Site.objects.get_current()}
+            extra_context={"domain": settings.FRONTEND_URL}
         ),
         name="password_reset_complete",
     ),
