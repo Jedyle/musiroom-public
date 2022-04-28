@@ -34,10 +34,14 @@ CLOSED: [2022-04-24 dim. 11:10]
 ** Use musicbrainz API instead of scraping
 ** DONE In password reset, mail should show https instead of http for backend url
    CLOSED: [2022-04-28 jeu. 17:47]
-** Badges : only show latest badge in one category
+** DONE Badges : only show latest badge in one category
+CLOSED: [2022-04-28 jeu. 18:39]
 ** add activity stream in home
-*** bug : "user" started following '' (empty object)
+*** DONE bug : "user" started following '' (empty object)
+CLOSED: [2022-04-28 jeu. 18:38]
+*** Aggregate action for user rating / user following and unfollowing, etc
 ** SOCIAL AUTHENTICATION
+** Allow to order my ratings per score
 ** DONE Album type is not verbose
    CLOSED: [2022-04-28 jeu. 17:47]
 * FRONTEND
@@ -52,7 +56,6 @@ CLOSED: [2022-04-28 jeu. 18:01]
 ** DONE Refactor components (remove useless components, remove containers/ folder...)
 CLOSED: [2022-04-25 lun. 12:38]
 ** DONE forgot password feature !
-** Add activity in home page
 ** spotify integration (+ amazon etc)
    
 * DEPLOYMENT
