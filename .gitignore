@@ -10,3 +10,6 @@ media/
 .idea
 venv
 dumps
+celerybeat-schedule
+.coverage
+myfile
