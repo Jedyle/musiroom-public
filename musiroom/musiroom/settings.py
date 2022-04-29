@@ -249,7 +249,7 @@ STAR_RATINGS_RANGE = 10
 #
 
 CSRF_COOKIE_NAME = "XSRF-TOKEN"
-CSRF_TRUSTED_ORIGINS = ["*"]
+CSRF_TRUSTED_ORIGINS = ["https://*.musiroom.com"]
 
 # Comments
 
