@@ -8,25 +8,34 @@ from .models import Profile
 class ProfileInline(admin.StackedInline):
     model = Profile
     can_delete = False
-    verbose_name_plural = 'Profil'
-    fk_name = 'user'
+    verbose_name_plural = "Profil"
+    fk_name = "user"
 
 
 class CustomUserAdmin(UserAdmin):
     inlines = (ProfileInline,)
     list_display = (
-        'username', 'email', 'first_name', 'last_name', 'is_staff', 'get_birth', 'get_sex', 'get_description',
-        'get_avatar')
+        "username",
+        "email",
+        "is_active",
+        "is_staff",
+        "first_name",
+        "last_name",
+        "get_birth",
+        "get_sex",
+        "get_description",
+        "get_avatar",
+    )
 
     def get_birth(self, instance):
         return instance.profile.birth
 
-    get_birth.short_description = "Date de naissance"
+    get_birth.short_description = "Birth date"
 
     def get_sex(self, instance):
         return instance.profile.sex
 
-    get_sex.short_description = "Sexe"
+    get_sex.short_description = "Gender"
 
     def get_description(self, instance):
         return instance.profile.description
@@ -39,10 +48,10 @@ class CustomUserAdmin(UserAdmin):
                 thumb=instance.profile.avatar.url,
             )
         else:
-            return ''
+            return ""
 
     get_avatar.allow_tags = True
-    get_avatar.short_description = 'Avatar'
+    get_avatar.short_description = "Avatar"
 
     def get_inline_instances(self, request, obj=None):
         if not obj:

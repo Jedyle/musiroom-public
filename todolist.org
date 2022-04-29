@@ -23,7 +23,8 @@ CLOSED: [2022-04-24 dim. 13:37]
 ** DONE pytest : add tests everytime a bug is fixed
 CLOSED: [2022-04-23 sam. 12:25]
 *** first to add : test that migrations can be launched
-** upgrade python and django (now blocked because of pinax badges)
+** DONE upgrade python and django (now blocked because of pinax badges)
+CLOSED: [2022-04-29 ven. 16:55]
 ** DONE LastFM api does not give artist image anymore : find another source
 CLOSED: [2022-04-24 dim. 13:03]
 ** When we add a rating, disable the interest for the album by default (backend + frontend)
