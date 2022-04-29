@@ -10,6 +10,9 @@ from lists.models import ListObj
 from user_profile.models import Profile
 
 
+BADGE_LABEL = "badge"
+
+
 @receiver(badge_awarded)
 def notify_badge_awarded(badge_award, **kwargs):
     print(badge_award)
@@ -19,7 +22,12 @@ def notify_badge_awarded(badge_award, **kwargs):
         verb="You have received the badge ",
         target=badge_award,
     )
-    action.send(badge_award.user, verb="received the badge", action_object=badge_award)
+    action.send(
+        badge_award.user,
+        verb="received the badge",
+        action_object=badge_award,
+        label=BADGE_LABEL,
+    )
 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)

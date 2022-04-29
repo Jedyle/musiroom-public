@@ -17,6 +17,10 @@ except ImportError:
     now = datetime.datetime.now
 
 
+FOLLOW_LABEL = "follow"
+UNFOLLOW_LABEL = "unfollow"
+
+
 def follow(user, obj, send_action=True, actor_only=True, flag="", **kwargs):
     """
     Creates a relationship allowing the object's activities to appear in the
@@ -55,6 +59,7 @@ def follow(user, obj, send_action=True, actor_only=True, flag="", **kwargs):
                 verb=_("started following"),
                 action_object=obj,
                 target=obj,
+                label=FOLLOW_LABEL,
                 **kwargs
             )
         else:
@@ -63,6 +68,7 @@ def follow(user, obj, send_action=True, actor_only=True, flag="", **kwargs):
                 verb=_("started %s" % flag),
                 action_object=obj,
                 target=obj,
+                label=FOLLOW_LABEL,
                 **kwargs
             )
     return instance
@@ -93,9 +99,13 @@ def unfollow(user, obj, send_action=False, flag=""):
 
     if send_action:
         if not flag:
-            action.send(user, verb=_("stopped following"), target=obj)
+            action.send(
+                user, verb=_("stopped following"), target=obj, label=UNFOLLOW_LABEL
+            )
         else:
-            action.send(user, verb=_("stopped %s" % flag), target=obj)
+            action.send(
+                user, verb=_("stopped %s" % flag), target=obj, label=UNFOLLOW_LABEL
+            )
 
 
 def is_following(user, obj, flag=""):

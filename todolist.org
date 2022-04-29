@@ -62,6 +62,12 @@ CLOSED: [2022-04-28 jeu. 18:01]
 CLOSED: [2022-04-25 lun. 12:38]
 ** DONE forgot password feature !
 ** spotify integration (+ amazon etc)
+** latest things on home page
+** social sign in
+** nb rates
+** add announcements in home page (django announcements ?)
+
+labels = FOLLOW_LABEL, UNFOLLOW_LABEL
    
 * DEPLOYMENT
 ** DONE prepare docker-compose shell for dev and for prod

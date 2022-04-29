@@ -29,7 +29,11 @@ class ActionSerializer(serializers.ModelSerializer):
         res = obj.target
         if res is None:
             return None
-        return {"name": str(res), "id": res.id}
+        return {
+            "name": str(res),
+            "id": res.id,
+            **getattr(res, "activity_data", lambda: dict())(),
+        }
 
     def get_action_object(self, obj):
         res = obj.action_object
@@ -39,7 +43,7 @@ class ActionSerializer(serializers.ModelSerializer):
             "name": str(res),
             "id": res.id,
             # just set a method like this if your need to add fields per target
-            **(res.activity_data() if hasattr(res, "activity_data") else {}),
+            **getattr(res, "activity_data", lambda: dict())(),
         }
 
     class Meta:

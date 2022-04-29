@@ -5,6 +5,9 @@ from actstream import action
 from lists.models import ListItem
 
 
+ADD_TO_LIST_LABEL = "list_add"
+
+
 @receiver(post_save, sender=ListItem)
 def save_list_handler(sender, instance, created, **kwargs):
     if created:
@@ -13,7 +16,13 @@ def save_list_handler(sender, instance, created, **kwargs):
         instance.order = nb_items
         instance.save()
         list_obj.save()
-        action.send(list_obj.user, verb="added", action_object=instance.album, target=instance.item_list)
+        action.send(
+            list_obj.user,
+            verb="added",
+            action_object=instance.album,
+            target=instance.item_list,
+            label=ADD_TO_LIST_LABEL,
+        )
 
 
 @receiver(post_delete, sender=ListItem)
