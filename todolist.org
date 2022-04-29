@@ -42,6 +42,8 @@ CLOSED: [2022-04-28 jeu. 18:38]
 *** Aggregate action for user rating / user following and unfollowing, etc
 ** SOCIAL AUTHENTICATION
 ** Allow to order my ratings per score
+** DONE SC scrape : catch webdriver exceptions to continue task
+CLOSED: [2022-04-29 ven. 08:39]
 ** DONE Album type is not verbose
    CLOSED: [2022-04-28 jeu. 17:47]
 * FRONTEND

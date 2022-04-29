@@ -123,34 +123,33 @@ def export_from_sc(username, sc_username, config, erase_old):
     failures = []
 
     try:
-        with transaction.atomic():
-            with temp_disconnect_signal(
-                post_save, sender=UserRating, receiver=save_rating_handler
-            ):
-                new_ratings, conflicts = rate(user, successfile, erase_old)
+        with temp_disconnect_signal(
+            post_save, sender=UserRating, receiver=save_rating_handler
+        ):
+            new_ratings, conflicts = rate(user, successfile, erase_old)
 
-            failures = get_failures(errorfile)
+        failures = get_failures(errorfile)
 
-            json_output = {
-                "from": "Senscritique",
-                "erase_old": erase_old,
-                "what_to_export": config,
-                "newly_created": new_ratings,
-                "conflicts": conflicts,
-                "not_found": failures,
-            }
-            report_file = ContentFile(json.dumps(json_output))
-            report = ExportReport(user=user)
-            report.save()
-            report.report.save(name="", content=report_file)
-            notify.send(
-                sender=user,
-                recipient=user,
-                verb="a exporté ses données",
-                target=report,
-                to_str=export_success_str(report),
-            )
-            action.send(user, verb="a exporté ses données depuis Senscritique !")
+        json_output = {
+            "from": "Senscritique",
+            "erase_old": erase_old,
+            "what_to_export": config,
+            "newly_created": new_ratings,
+            "conflicts": conflicts,
+            "not_found": failures,
+        }
+        report_file = ContentFile(json.dumps(json_output))
+        report = ExportReport(user=user)
+        report.save()
+        report.report.save(name="", content=report_file)
+        notify.send(
+            sender=user,
+            recipient=user,
+            verb="a exporté ses données",
+            target=report,
+            to_str=export_success_str(report),
+        )
+        action.send(user, verb="a exporté ses données depuis Senscritique !")
     except (OSError, IntegrityError, NameError, KeyError, ValueError):
         notify.send(
             sender=user,

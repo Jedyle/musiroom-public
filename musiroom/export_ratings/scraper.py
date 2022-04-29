@@ -188,24 +188,28 @@ def parse_data_for_type(user, type_id, filename, errorfile, driver):
     page = 1
     while elements:
         for element in elements:
-            album_data = parse_album_data(element)
-            best_result = search_best_result(album_data, TYPES[type_id])
-            if best_result:
-                with open(filename, "a") as infile:
-                    infile.write(
-                        "{} {}\n".format(
-                            best_result["album_mbid"], album_data["rating"]
+            try:
+                album_data = parse_album_data(element)
+                print(album_data)
+                best_result = search_best_result(album_data, TYPES[type_id])
+                if best_result:
+                    with open(filename, "a") as infile:
+                        infile.write(
+                            "{} {}\n".format(
+                                best_result["album_mbid"], album_data["rating"]
+                            )
                         )
-                    )
-            else:
-                with open(errorfile, "a") as error:
-                    error.write(
-                        "{}///{}///{}\n".format(
-                            album_data["album"],
-                            ", ".join(album_data["artists"]),
-                            album_data["rating"],
+                else:
+                    with open(errorfile, "a") as error:
+                        error.write(
+                            "{}///{}///{}\n".format(
+                                album_data["album"],
+                                ", ".join(album_data["artists"]),
+                                album_data["rating"],
+                            )
                         )
-                    )
+            except:
+                continue
         page += 1
         parser.load_page(page)
         elements = parser.get_page_data()
