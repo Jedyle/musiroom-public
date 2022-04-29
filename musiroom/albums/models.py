@@ -1,5 +1,6 @@
 import requests
 import os
+import re
 
 from django.conf import settings
 from django.core.files import File
@@ -9,10 +10,11 @@ from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.core.validators import MinLengthValidator, MaxLengthValidator
 from django.db import models
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.http import Http404
 from django.urls import reverse
 from django.template.defaultfilters import slugify
+from django.shortcuts import get_object_or_404
 from jsonfield.fields import JSONField
 from siteflags.models import ModelWithFlag
 from vote.models import VoteModel
@@ -117,6 +119,10 @@ class Genre(models.Model):
         return self.genre_set.all().order_by("name")
 
 
+SLUG_ALL_VALUE = "all"
+YEAR_ALL_VALUE = "all"
+
+
 class AlbumManager(models.Manager):
     def get_from_api(self, mbid):
         """
@@ -129,6 +135,35 @@ class AlbumManager(models.Manager):
         if album is None:
             raise Http404
         return album
+
+    def get_top(self, year, slug):
+        albums = self.all()
+        if year != YEAR_ALL_VALUE:
+            m = re.match(r"^([0-9]{4})s$", year)
+            if m is not None:
+                decade = int(m.group(1))
+                years = [(decade + i) for i in range(10)]
+            else:
+                years = [int(year)]
+            albums = albums.filter(release_date__year__in=years)
+
+        if slug != SLUG_ALL_VALUE:
+            genre = get_object_or_404(Genre, slug=slug)
+            associated_genres = genre.get_all_children()
+            albums = albums.filter(
+                Q(albumgenre__genre__in=associated_genres)
+                & Q(albumgenre__is_genre=True)
+            )
+
+        albums = albums.filter(
+            Q(ratings__isnull=False)
+            & Q(ratings__average__gt=1.0)
+            & Q(ratings__count__gt=2)
+        ).order_by("-ratings__average", "title")
+
+        albums = albums.distinct().prefetch_related("artists")[:100]
+        return albums
+
 
 
 class Album(models.Model):

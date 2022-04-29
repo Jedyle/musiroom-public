@@ -195,6 +195,8 @@ CACHES = {
     }
 }
 
+CACHE_TOP_ALBUMS_TIMEOUT = 1800
+
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
 

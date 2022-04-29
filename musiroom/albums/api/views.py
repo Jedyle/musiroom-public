@@ -1,8 +1,6 @@
-import re
-
 from django.contrib.auth.models import User
+from django.conf import settings
 from django.core.cache import cache
-from django.db.models import Q
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from rest_framework import generics, viewsets, mixins
@@ -267,10 +265,6 @@ class ArtistViewset(ListRetrieveViewset):
         )
 
 
-SLUG_ALL_VALUE = "all"
-YEAR_ALL_VALUE = "all"
-
-
 class TopAlbumsView(generics.ListAPIView):
     serializer_class = AlbumSerializer
     pagination_class = None
@@ -278,37 +272,12 @@ class TopAlbumsView(generics.ListAPIView):
     def get_queryset(self):
         year = self.kwargs["year"]
         slug = self.kwargs["slug"]
-        albums = Album.objects.all()
-        if year != YEAR_ALL_VALUE:
-            m = re.match(r"^([0-9]{4})s$", year)
-            if m is not None:
-                decade = int(m.group(1))
-                years = [(decade + i) for i in range(10)]
-            else:
-                years = [int(year)]
-            albums = albums.filter(release_date__year__in=years)
-
-        if slug != SLUG_ALL_VALUE:
-            genre = get_object_or_404(Genre, slug=slug)
-            associated_genres = genre.get_all_children()
-            albums = albums.filter(
-                Q(albumgenre__genre__in=associated_genres)
-                & Q(albumgenre__is_genre=True)
-            )
-
-        albums = albums.filter(
-            Q(ratings__isnull=False)
-            & Q(ratings__average__gt=1.0)
-            & Q(ratings__count__gt=2)
-        ).order_by("-ratings__average", "title")
-
-        cache_albums = cache.get("top_album_albums_{}_{}".format(slug, year))
-        if cache_albums is None:
-            albums = albums.distinct().prefetch_related("artists")[:100]
-            cache.set("top_album_albums_{}_{}".format(slug, year), albums)
+        cache_top = cache.get(f"top_album_albums_{slug}_{year}")
+        if cache_top is None:
+            albums = Album.objects.get_top(year=year, slug=slug)
+            cache.set(f"top_album_albums_{slug}_{year}", albums, timeout=settings.CACHE_TOP_ALBUMS_TIMEOUT)
         else:
-            albums = cache_albums
-
+            albums = cache_top
         return albums
 
 
