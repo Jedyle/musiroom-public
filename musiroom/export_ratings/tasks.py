@@ -149,7 +149,6 @@ def export_from_sc(username, sc_username, config, erase_old):
             target=report,
             to_str=export_success_str(report),
         )
-        action.send(user, verb="a exporté ses données depuis Senscritique !")
     except (OSError, IntegrityError, NameError, KeyError, ValueError):
         notify.send(
             sender=user,
