@@ -18,7 +18,7 @@ def send_activation_email(site_pk, username):
     """
     user = User.objects.get(username=username)
     site = Site.objects.get(pk=site_pk)
-    uid = urlsafe_base64_encode(force_bytes(user.pk)).decode()
+    uid = urlsafe_base64_encode(force_bytes(user.pk))
     token = profile_activation_token.make_token(user)
     message = render_to_string(
         "account/email/email_confirmation_message.txt",

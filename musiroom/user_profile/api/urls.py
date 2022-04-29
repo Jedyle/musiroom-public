@@ -1,4 +1,4 @@
-from django.urls import include, re_path
+from django.urls import include, re_path, path
 from rest_framework_nested import routers
 from ajax_follower.api.views import FollowersViewset, FolloweesViewset
 from albums.api.views import UserInterestsViewset
@@ -36,7 +36,7 @@ user_nested_router.register(r"followees", FolloweesViewset, basename="followees"
 registration_patterns = [
     re_path(r"registration/$", RegisterUserView.as_view()),
     re_path(
-        r"registration/activate/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$",
+        r"registration/activate/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]+-[0-9A-Za-z]+)/$",
         ActivateProfileView.as_view(),
     ),
     re_path(
