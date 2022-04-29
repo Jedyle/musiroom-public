@@ -1,7 +1,7 @@
 from django.apps import apps
 from django.contrib.contenttypes.models import ContentType
 from django.utils.six import text_type
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 from actstream import settings
 from actstream.registry import check
@@ -131,7 +131,7 @@ def action_handler(verb, **kwargs):
     actor = kwargs.pop("sender")
 
     # We must store the unstranslated string
-    # If verb is an ugettext_lazyed string, fetch the original string
+    # If verb is an gettext_lazyed string, fetch the original string
     if hasattr(verb, "_proxy____args"):
         verb = verb._proxy____args[0]
 

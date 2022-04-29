@@ -1,7 +1,7 @@
 import json
 import os
 
-from celery import task
+from celery import shared_task
 from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.core.files.base import ContentFile
@@ -103,7 +103,7 @@ def notify_not_exported(username, *args, **kwargs):
     )
 
 
-@task
+@shared_task
 @single_task_by_user(60 * 60, notify_not_exported)
 def export_from_sc(username, sc_username, config, erase_old):
     user = User.objects.get(username=username)

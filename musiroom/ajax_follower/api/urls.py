@@ -1,6 +1,4 @@
-from django.conf.urls import url
+from django.urls import re_path
 from . import views
 
-urlpatterns = [
-    url(r'^followees/$', views.FollowView.as_view())
-]
+urlpatterns = [re_path(r"^followees/$", views.FollowView.as_view())]

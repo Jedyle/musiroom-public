@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from django.contrib.staticfiles.templatetags.staticfiles import static
+from django.templatetags.static import static
 from pinax.badges.models import BadgeAward
 from pinax.badges.base import Badge, BadgeAwarded, BadgeDetail
 from pinax.badges.registry import badges

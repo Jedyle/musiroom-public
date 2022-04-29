@@ -7,7 +7,7 @@ from django.core.files import File
 from django.core.files.temp import NamedTemporaryFile
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericRelation
-from django.contrib.staticfiles.templatetags.staticfiles import static
+from django.templatetags.static import static
 from django.core.validators import MinLengthValidator, MaxLengthValidator
 from django.db import models
 from django.db.models import Count, Q
@@ -15,7 +15,6 @@ from django.http import Http404
 from django.urls import reverse
 from django.template.defaultfilters import slugify
 from django.shortcuts import get_object_or_404
-from jsonfield.fields import JSONField
 from siteflags.models import ModelWithFlag
 from vote.models import VoteModel
 
@@ -165,7 +164,6 @@ class AlbumManager(models.Manager):
         return albums
 
 
-
 class Album(models.Model):
     mbid = models.CharField(db_index=True, max_length=36, unique=True)
     title = models.CharField(max_length=500)
@@ -173,7 +171,7 @@ class Album(models.Model):
     cover = models.CharField(max_length=100, null=True)
     # same as cover, but the actual image stored in our system (for more speed)
     media_cover = models.ImageField(upload_to="album_covers", null=True)
-    tracks = JSONField(null=True)
+    tracks = models.JSONField(null=True)
     youtube_link = models.CharField(max_length=200, null=True)
 
     TYPE_CHOICES = (

@@ -4,7 +4,6 @@ from django.conf import settings
 import django.core.validators
 from django.db import migrations, models
 import django.db.models.deletion
-import jsonfield.fields
 
 
 class Migration(migrations.Migration):
@@ -17,94 +16,237 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Album',
+            name="Album",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('mbid', models.CharField(db_index=True, max_length=36, unique=True)),
-                ('title', models.CharField(max_length=500)),
-                ('release_date', models.DateField(blank=True, null=True)),
-                ('cover', models.CharField(max_length=100, null=True)),
-                ('tracks', jsonfield.fields.JSONField(null=True)),
-                ('album_type', models.CharField(choices=[('SI', 'Single'), ('LP', 'LP'), ('EP', 'EP'), ('LI', 'Live'), ('CP', 'Compilation'), ('RE', 'Remix'), ('UK', 'Inconnu')], default='LP', max_length=2)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("mbid", models.CharField(db_index=True, max_length=36, unique=True)),
+                ("title", models.CharField(max_length=500)),
+                ("release_date", models.DateField(blank=True, null=True)),
+                ("cover", models.CharField(max_length=100, null=True)),
+                ("tracks", models.JSONField(null=True)),
+                (
+                    "album_type",
+                    models.CharField(
+                        choices=[
+                            ("SI", "Single"),
+                            ("LP", "LP"),
+                            ("EP", "EP"),
+                            ("LI", "Live"),
+                            ("CP", "Compilation"),
+                            ("RE", "Remix"),
+                            ("UK", "Inconnu"),
+                        ],
+                        default="LP",
+                        max_length=2,
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Album',
+                "verbose_name": "Album",
             },
         ),
         migrations.CreateModel(
-            name='AlbumGenre',
+            name="AlbumGenre",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('vote_score', models.IntegerField(db_index=True, default=0)),
-                ('num_vote_up', models.PositiveIntegerField(db_index=True, default=0)),
-                ('num_vote_down', models.PositiveIntegerField(db_index=True, default=0)),
-                ('is_genre', models.BooleanField(default=False)),
-                ('album', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='albums.Album')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("vote_score", models.IntegerField(db_index=True, default=0)),
+                ("num_vote_up", models.PositiveIntegerField(db_index=True, default=0)),
+                (
+                    "num_vote_down",
+                    models.PositiveIntegerField(db_index=True, default=0),
+                ),
+                ("is_genre", models.BooleanField(default=False)),
+                (
+                    "album",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="albums.Album"
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Artist',
+            name="Artist",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('mbid', models.CharField(db_index=True, max_length=36, unique=True, validators=[django.core.validators.MinLengthValidator(36), django.core.validators.MaxLengthValidator(36)])),
-                ('name', models.CharField(max_length=100)),
-                ('photo', models.CharField(max_length=150, null=True)),
-                ('albums', models.ManyToManyField(blank=True, related_name='artists', to='albums.Album')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "mbid",
+                    models.CharField(
+                        db_index=True,
+                        max_length=36,
+                        unique=True,
+                        validators=[
+                            django.core.validators.MinLengthValidator(36),
+                            django.core.validators.MaxLengthValidator(36),
+                        ],
+                    ),
+                ),
+                ("name", models.CharField(max_length=100)),
+                ("photo", models.CharField(max_length=150, null=True)),
+                (
+                    "albums",
+                    models.ManyToManyField(
+                        blank=True, related_name="artists", to="albums.Album"
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Artiste',
+                "verbose_name": "Artiste",
             },
         ),
         migrations.CreateModel(
-            name='Genre',
+            name="Genre",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(help_text='Genre name', max_length=200, unique=True, verbose_name='Name')),
-                ('description', models.TextField(blank=True, default='', help_text='Description du genre', null=True, verbose_name='Description')),
-                ('slug', models.SlugField(help_text='Slug for urls', max_length=255, unique=True, verbose_name='Slug')),
-                ('parent', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='albums.Genre')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(
+                        help_text="Genre name",
+                        max_length=200,
+                        unique=True,
+                        verbose_name="Name",
+                    ),
+                ),
+                (
+                    "description",
+                    models.TextField(
+                        blank=True,
+                        default="",
+                        help_text="Description du genre",
+                        null=True,
+                        verbose_name="Description",
+                    ),
+                ),
+                (
+                    "slug",
+                    models.SlugField(
+                        help_text="Slug for urls",
+                        max_length=255,
+                        unique=True,
+                        verbose_name="Slug",
+                    ),
+                ),
+                (
+                    "parent",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="albums.Genre",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Genre',
-                'verbose_name_plural': 'Genres',
-                'ordering': ('name',),
+                "verbose_name": "Genre",
+                "verbose_name_plural": "Genres",
+                "ordering": ("name",),
             },
         ),
         migrations.CreateModel(
-            name='UserInterest',
+            name="UserInterest",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('date_created', models.DateTimeField(auto_now=True, verbose_name='Creation date')),
-                ('album', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='albums.Album')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "date_created",
+                    models.DateTimeField(auto_now=True, verbose_name="Creation date"),
+                ),
+                (
+                    "album",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="albums.Album"
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.AddField(
-            model_name='albumgenre',
-            name='genre',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='albums.Genre'),
+            model_name="albumgenre",
+            name="genre",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="albums.Genre"
+            ),
         ),
         migrations.AddField(
-            model_name='albumgenre',
-            name='user',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL),
+            model_name="albumgenre",
+            name="user",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
         migrations.AddField(
-            model_name='album',
-            name='genres',
-            field=models.ManyToManyField(blank=True, related_name='albums', through='albums.AlbumGenre', to='albums.Genre'),
+            model_name="album",
+            name="genres",
+            field=models.ManyToManyField(
+                blank=True,
+                related_name="albums",
+                through="albums.AlbumGenre",
+                to="albums.Genre",
+            ),
         ),
         migrations.AddField(
-            model_name='album',
-            name='users_interested',
-            field=models.ManyToManyField(blank=True, related_name='interests', through='albums.UserInterest', to=settings.AUTH_USER_MODEL),
+            model_name="album",
+            name="users_interested",
+            field=models.ManyToManyField(
+                blank=True,
+                related_name="interests",
+                through="albums.UserInterest",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
         migrations.AlterUniqueTogether(
-            name='userinterest',
-            unique_together={('album', 'user')},
+            name="userinterest",
+            unique_together={("album", "user")},
         ),
         migrations.AlterUniqueTogether(
-            name='albumgenre',
-            unique_together={('album', 'genre')},
+            name="albumgenre",
+            unique_together={("album", "genre")},
         ),
     ]

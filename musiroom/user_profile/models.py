@@ -6,7 +6,7 @@ from PIL import Image
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.files.uploadedfile import InMemoryUploadedFile
-from django.contrib.staticfiles.templatetags.staticfiles import static
+from django.templatetags.static import static
 from django.db import models
 from pinax.badges.models import BadgeAward
 

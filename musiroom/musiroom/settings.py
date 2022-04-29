@@ -28,7 +28,7 @@ env = environ.Env(
     STATIC_ROOT=(str, BASE_DIR / "media"),
     SENTRY_DSN=(str, ""),
 )
-environ.Env.read_env()
+environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
 
 sentry_sdk.init(
     dsn=env("SENTRY_DSN"),
@@ -71,13 +71,12 @@ INSTALLED_APPS = [
     "debug_toolbar",
     "compressor",
     "django_unused_media",
-    "django_forms_bootstrap",
     "rest_framework",
     "rest_framework_swagger",
     "django_filters",
     "rest_framework_filters",
     "rest_framework.authtoken",
-    "rest_auth",
+    "dj_rest_auth",
     "corsheaders",
     "generic_relations",
     "siteflags",
@@ -155,6 +154,8 @@ WSGI_APPLICATION = "musiroom.wsgi.application"
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
 DATABASES = {"default": env.db()}  # reads env DATABASE_URL
+# django 3 update
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators

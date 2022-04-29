@@ -1,4 +1,4 @@
-FROM python:3.6.9-buster as base
+FROM python:3.10-buster as base
 
 RUN apt-get update -y
 RUN apt-get -y install libpq-dev gcc
@@ -15,7 +15,7 @@ ENV PYTHONUNBUFFERED=1
 COPY requirements.txt /app/
 
 WORKDIR /app
-RUN pip install --upgrade pip==19.3.1 setuptools==45
+RUN pip install --upgrade pip==22.0.4 setuptools==61.3.1 wheel==0.37.1
 RUN pip install -r requirements.txt
 
 CMD python manage.py runserver 0.0.0.0:8000

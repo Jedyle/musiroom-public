@@ -1,7 +1,5 @@
-from django.conf.urls import url
+from django.urls import re_path
 
 from feedback.api.views import FeedbackCreateView
 
-urlpatterns = [
-    url(r'feedbacks/', FeedbackCreateView.as_view())
-]
+urlpatterns = [re_path(r"feedbacks/", FeedbackCreateView.as_view())]

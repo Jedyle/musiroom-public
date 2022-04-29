@@ -14,20 +14,20 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.conf import settings
-from django.conf.urls import include, url
+from django.urls import include, re_path
 from django.conf.urls.static import static
 from django.contrib import admin
 
 urlpatterns = [
-    url(r"^manage/", admin.site.urls),
+    re_path(r"^manage/", admin.site.urls),
     # special urls for reset password
-    url(r"", include("user_profile.urls")),
-    url(r"api/", include("musiroom.api_routes")),
+    re_path(r"", include("user_profile.urls")),
+    re_path(r"api/", include("musiroom.api_routes")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:
     import debug_toolbar
 
     urlpatterns = [
-        url(r"^__debug__/", include(debug_toolbar.urls)),
+        re_path(r"^__debug__/", include(debug_toolbar.urls)),
     ] + urlpatterns
