@@ -1,10 +1,8 @@
 from rest_framework import viewsets, status, mixins
-from rest_framework.decorators import action
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 
 from musiroom.apiutils.mixins import VoteMixin
-from musiroom.apiutils.serializers import VoteSerializer
 from reviews.api.filters import ReviewFilter
 from reviews.api.permissions import IsUserOrReadOnly
 from reviews.api.serializers import ReviewSerializer, ReviewCreateSerializer
@@ -62,6 +60,12 @@ class UserReviewViewset(viewsets.GenericViewSet, mixins.ListModelMixin):
     queryset = Review.objects.all()
     filter_class = ReviewFilter
     serializer_class = ReviewSerializer
+    ordering_fields = [
+        "date_last_change",
+        "date_publication",
+        "rating__score",
+        "vote_score",
+    ]
 
     def get_queryset(self):
         username = self.kwargs["users_user__username"]
