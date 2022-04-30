@@ -21,5 +21,4 @@ urlpatterns = [
         r"tops/(?P<slug>([a-zA-Z-_]+))/(?P<year>([0-9]{4}s?|all))/$",
         views.TopAlbumsView.as_view(),
     ),
-    re_path("interests/self", views.user_interests),
 ]

@@ -1,12 +1,11 @@
-from django.contrib.auth.models import User
 from django.conf import settings
 from django.core.cache import cache
 from django.http import Http404
 from django.shortcuts import get_object_or_404
-from rest_framework import generics, viewsets, mixins
+from rest_framework import generics
 from rest_framework import status
-from rest_framework.decorators import action, api_view, permission_classes
-from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
+from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 
 from django.utils.decorators import method_decorator
@@ -18,11 +17,10 @@ from albums.api.serializers import (
     AlbumSerializer,
     ArtistSerializer,
     AlbumGenreSerializer,
-    UserInterestSerializer,
     ShortGenreSerializer,
 )
 from albums.api.service import add_album_details
-from albums.models import Genre, Album, Artist, AlbumGenre, UserInterest
+from albums.models import Genre, Album, Artist, AlbumGenre
 from albums.scraper import ParseSimilarArtists, ParseArtist
 from albums.settings import SIMILAR_ARTISTS_LENGTH
 from musiroom.apiutils.mixins import VoteMixin
@@ -110,35 +108,6 @@ class AlbumViewset(ListRetrieveViewset):
 
     def get_serializer_context(self):
         return {"request": self.request}
-
-    @action(detail=True, methods=["GET", "PUT"], permission_classes=[IsAuthenticated])
-    def user_interest(self, request, mbid=None):
-        """
-        If method = GET, returns whether the user has added the album in his 'interests' list.
-        If method = PUT, adds or delete the album in his 'interests' list, based on a 'value'
-        field in the form (true or false).
-        """
-        album = self.get_object()
-        if request.method == "GET":
-            return Response(
-                {
-                    "user": request.user.username,
-                    "interest": album.users_interested.filter(
-                        username=request.user.username
-                    ).exists(),
-                }
-            )
-        elif request.method == "PUT":
-            serializer = UserInterestSerializer(data=request.data)
-            serializer.is_valid(raise_exception=True)
-            value = serializer.validated_data.get("value")
-            # add user interest (or get it if exists)
-            user_interest, created = UserInterest.objects.get_or_create(
-                album=album, user=request.user
-            )
-            if not value:  # if value=false, delete
-                user_interest.delete()
-            return Response({"user": request.user.username, "interest": value})
 
     @action(detail=True, methods=["GET"])
     def youtube_link(self, request, mbid=None):
@@ -275,43 +244,11 @@ class TopAlbumsView(generics.ListAPIView):
         cache_top = cache.get(f"top_album_albums_{slug}_{year}")
         if cache_top is None:
             albums = Album.objects.get_top(year=year, slug=slug)
-            cache.set(f"top_album_albums_{slug}_{year}", albums, timeout=settings.CACHE_TOP_ALBUMS_TIMEOUT)
+            cache.set(
+                f"top_album_albums_{slug}_{year}",
+                albums,
+                timeout=settings.CACHE_TOP_ALBUMS_TIMEOUT,
+            )
         else:
             albums = cache_top
         return albums
-
-
-class UserInterestsViewset(viewsets.GenericViewSet, mixins.ListModelMixin):
-    serializer_class = AlbumSerializer
-
-    def get_queryset(self):
-        username = self.kwargs["users_user__username"]
-        user = get_object_or_404(User, username=username)
-        album_title = self.request.query_params.get("album_title__icontains")
-        queryset = user.interests
-        if album_title:
-            queryset = queryset.filter(title__icontains=album_title)
-        return queryset.all()
-
-
-@api_view(["GET"])
-@permission_classes([IsAuthenticated])
-def user_interests(request):
-    ids = request.GET.get("ids", [])
-    if ids == "":
-        ids = []
-    elif ids is not None:
-        try:
-            ids = [int(el) for el in ids.split(",")]
-        except ValueError:
-            return Response(
-                {"message": "IDs are not integers"}, status=status.HTTP_400_BAD_REQUEST
-            )
-    else:
-        return Response(
-            {"message": "Parameter 'ids' is required"},
-            status=status.HTTP_400_BAD_REQUEST,
-        )
-    user = request.user
-    interests_list = UserInterest.objects.filter(user=user, album__ratings__id__in=ids)
-    return Response({"interests": [el.album.ratings.get().id for el in interests_list]})

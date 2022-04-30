@@ -1,15 +1,17 @@
 from django.db.models import Q, Avg
 from django.shortcuts import get_object_or_404
-from rest_framework import viewsets, mixins, generics, status
+from rest_framework import viewsets, mixins, generics, status, serializers
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from star_ratings.api.filters import UserRatingFilter
+import rest_framework_filters
+from star_ratings.api.filters import UserRatingFilter, UserRatingOrderingFilterBackend
 
 from star_ratings.api.serializers import (
     RatingSerializer,
     UserRatingSerializer,
     ExtendedUserRatingSerializer,
+    ShortUserRatingSerializer,
 )
 from star_ratings.models import Rating, UserRating
 
@@ -55,6 +57,10 @@ class CreateUserRatingView(generics.CreateAPIView):
     def post(self, request, rating_id):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+        if UserRating.objects.filter(user=request.user, rating__id=rating_id).exists():
+            raise serializers.ValidationError(
+                "This user has already rated this object."
+            )
         serializer.save(rating_id=rating_id, user=request.user)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
@@ -78,6 +84,10 @@ class UserUserRatingViewset(viewsets.GenericViewSet, mixins.ListModelMixin):
 
     serializer_class = ExtendedUserRatingSerializer
     filter_class = UserRatingFilter
+    filter_backends = (
+        rest_framework_filters.backends.RestFrameworkFilterBackend,
+        UserRatingOrderingFilterBackend,
+    )
 
     def get_queryset(self):
         username = self.kwargs["users_user__username"]
@@ -138,5 +148,7 @@ def user_ratings(request):
         )
     user = request.user
     ratings_list = UserRating.objects.filter(rating_id__in=ids).filter(user=user)
-    ratings_list = {el.rating_id: el.score for el in ratings_list}
+    ratings_list = {
+        el.rating_id: ShortUserRatingSerializer(el).data for el in ratings_list
+    }
     return Response({"ratings": ratings_list})

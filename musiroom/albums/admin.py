@@ -4,12 +4,13 @@ from django.utils.html import format_html
 from siteflags.utils import get_flag_model
 
 from moderation.admin import ModerationAdmin
-from .models import Album, Artist, Genre, UserInterest
+from .models import Album, Artist, Genre
 
 
 # TODO : ModerationAdmin blocks migrations when creating a new database ! Fix this.
 
 # Register your models here.
+
 
 class GenreParentFilter(admin.SimpleListFilter):
     # Human-readable title which will be displayed in the
@@ -17,7 +18,7 @@ class GenreParentFilter(admin.SimpleListFilter):
     title = "parent"
 
     # Parameter for the filter that will be used in the URL query.
-    parameter_name = 'parent'
+    parameter_name = "parent"
 
     def lookups(self, request, model_admin):
         """
@@ -28,7 +29,9 @@ class GenreParentFilter(admin.SimpleListFilter):
         in the right sidebar.
         """
         parents = set([genre.parent for genre in model_admin.model.objects.all()])
-        return [('none', 'None')] + [(genre.slug, genre.name) for genre in parents if genre is not None]
+        return [("none", "None")] + [
+            (genre.slug, genre.name) for genre in parents if genre is not None
+        ]
 
     def queryset(self, request, queryset):
         """
@@ -38,7 +41,7 @@ class GenreParentFilter(admin.SimpleListFilter):
         """
         # Compare the requested value (either '80s' or '90s')
         # to decide how to filter the queryset.
-        if self.value() == 'none':
+        if self.value() == "none":
             return queryset.filter(parent__isnull=True)
         elif self.value():
             return queryset.filter(parent__slug=self.value())
@@ -48,7 +51,7 @@ class GenreParentFilter(admin.SimpleListFilter):
 
 class GenreAdmin(ModerationAdmin):
     verbose_name = "Genre"
-    search_fields = ['name']
+    search_fields = ["name"]
     list_filter = [GenreParentFilter]
 
 
@@ -73,33 +76,37 @@ class ArtistAdmin(admin.ModelAdmin):
     ]
     extra = 1
     verbose_name = "Artist"
-    search_fields = ['name']
-    exclude = ('albums',)
+    search_fields = ["name"]
+    exclude = ("albums",)
 
 
 @admin.register(Album)
 class AlbumAdmin(admin.ModelAdmin):
     inlines = [AlbumGenreInline, AlbumArtistInline]
     extra = 1
-    search_fields = ['title']
+    search_fields = ["title"]
 
 
 FLAG_MODEL = get_flag_model()
 
 
 class FlagModelAdmin(admin.ModelAdmin):
-    list_display = ('time_created', 'content_type', 'link_to_object', 'status')
-    readonly_fields = ('time_created', 'content_type', 'link_to_object', 'status')
-    search_fields = ('object_id', 'content_type', 'user')
-    list_filter = ('time_created', 'status', 'content_type')
-    ordering = ('-time_created',)
-    date_hierarchy = 'time_created'
+    list_display = ("time_created", "content_type", "link_to_object", "status")
+    readonly_fields = ("time_created", "content_type", "link_to_object", "status")
+    search_fields = ("object_id", "content_type", "user")
+    list_filter = ("time_created", "status", "content_type")
+    ordering = ("-time_created",)
+    date_hierarchy = "time_created"
 
     def link_to_object(self, instance):
         try:
-            link = format_html("<a href='{}'>{}</a>",
-                               reverse('albums:album_genres', args=[instance.linked_object.album.mbid]),
-                               instance.linked_object)
+            link = format_html(
+                "<a href='{}'>{}</a>",
+                reverse(
+                    "albums:album_genres", args=[instance.linked_object.album.mbid]
+                ),
+                instance.linked_object,
+            )
         except:
             link = ""
         return link
@@ -107,5 +114,3 @@ class FlagModelAdmin(admin.ModelAdmin):
 
 admin.site.unregister(FLAG_MODEL)
 admin.site.register(FLAG_MODEL, FlagModelAdmin)
-
-admin.site.register(UserInterest)

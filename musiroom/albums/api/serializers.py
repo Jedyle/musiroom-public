@@ -6,7 +6,7 @@ from rest_framework_recursive.fields import RecursiveField
 
 from albums.models import Genre, Album, Artist, AlbumGenre
 from star_ratings.models import UserRating
-from star_ratings.api.serializers import RatingSerializer
+from star_ratings.api.serializers import RatingSerializer, UserRatingSerializer
 
 
 class GenreSlugRelatedField(serializers.SlugRelatedField):
@@ -66,10 +66,10 @@ class AlbumSerializer(serializers.ModelSerializer):
     user_rating = serializers.SerializerMethodField()
     followees_avg = serializers.SerializerMethodField()
     album_type = serializers.CharField(source="get_album_type_display")
-    
+
     class Meta:
         model = Album
-        exclude = ("users_interested", "cover")
+        exclude = ("cover",)
         lookup_field = "mbid"
 
     def get_user_rating(self, obj):
@@ -78,7 +78,7 @@ class AlbumSerializer(serializers.ModelSerializer):
             user_rating = UserRating.objects.for_instance_by_user(
                 obj, user=request.user
             )
-            return user_rating.score if user_rating else None
+            return UserRatingSerializer(user_rating).data if user_rating else None
 
     def get_followees_avg(self, obj):
         request = self.context.get("request")
@@ -182,7 +182,3 @@ class ArtistSerializer(serializers.ModelSerializer):
     class Meta:
         model = Artist
         exclude = ("albums",)
-
-
-class UserInterestSerializer(serializers.Serializer):
-    value = serializers.BooleanField(required=True)

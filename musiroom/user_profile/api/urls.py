@@ -1,7 +1,6 @@
-from django.urls import include, re_path, path
+from django.urls import include, re_path
 from rest_framework_nested import routers
 from ajax_follower.api.views import FollowersViewset, FolloweesViewset
-from albums.api.views import UserInterestsViewset
 from discussions.api.views import UserDiscussionViewset
 from lists.api.views import UserListViewset
 from reviews.api.views import UserReviewViewset
@@ -28,7 +27,6 @@ user_nested_router.register(
 )
 user_nested_router.register(r"reviews", UserReviewViewset, basename="reviews")
 user_nested_router.register(r"ratings", UserUserRatingViewset, basename="ratings")
-user_nested_router.register(r"interests", UserInterestsViewset, basename="interests")
 user_nested_router.register(r"badges", BadgesViewset, basename="badges")
 user_nested_router.register(r"followers", FollowersViewset, basename="followers")
 user_nested_router.register(r"followees", FolloweesViewset, basename="followees")

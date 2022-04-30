@@ -126,7 +126,7 @@ class AbstractBaseRating(models.Model):
 
     def followees_ratings_stats(self, user):
         followees_user_ratings = self.user_ratings.filter(
-            user__followers__follower=user
+            score__isnull=False, user__followers__follower=user
         )
         scores = [el.score for el in followees_user_ratings]
         stats = {

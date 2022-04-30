@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from albums.models import Album
+from reviews.models import Review
 from reviews.api.simple_serializers import SimpleReviewSerializer
 from star_ratings.models import Rating, UserRating
 from user_profile.api.short_serializers import ShortUserSerializer
@@ -14,6 +15,12 @@ class RatingSerializer(serializers.ModelSerializer):
         exclude = ("object_id", "content_type")
 
 
+class ShortUserRatingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserRating
+        fields = ("score", "is_interested", "is_in_collection")
+
+
 class UserRatingSerializer(serializers.ModelSerializer):
 
     review = SimpleReviewSerializer(read_only=True)
@@ -23,6 +30,7 @@ class UserRatingSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserRating
         fields = (
+            "id",
             "review",
             "user",
             "score",
@@ -46,6 +54,16 @@ class UserRatingSerializer(serializers.ModelSerializer):
             )
         return data
 
+    def update(self, instance, validated_data):
+        print(validated_data)
+        if (
+            validated_data.get("score") is None
+            and Review.objects.filter(rating=instance).exists()
+        ):
+            Review.objects.filter(rating=instance).delete()
+        instance.save()
+        return super().update(instance, validated_data)
+
 
 class ExtendedUserRatingSerializer(serializers.ModelSerializer):
 
@@ -55,12 +73,15 @@ class ExtendedUserRatingSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserRating
         fields = (
+            "id",
             "content_object",
             "user",
             "rating",
             "score",
             "is_interested",
             "is_in_collection",
+            "modified",
+            "created",
         )
         read_only_fields = ("rating", "user")
 

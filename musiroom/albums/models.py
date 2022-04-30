@@ -195,14 +195,6 @@ class Album(models.Model):
 
     ratings = GenericRelation(Rating, related_query_name="albums")
 
-    users_interested = models.ManyToManyField(
-        User,
-        related_name="interests",
-        blank=True,
-        through="UserInterest",
-        through_fields=("album", "user"),
-    )
-
     objects = AlbumManager()
 
     def save(self, *args, **kwargs):
@@ -298,18 +290,6 @@ class AlbumGenre(VoteModel, ModelWithFlag, models.Model):
 
     class Meta:
         unique_together = ("album", "genre")
-
-
-class UserInterest(models.Model):
-    album = models.ForeignKey(Album, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    date_created = models.DateTimeField("Creation date", auto_now=True)
-
-    def __str__(self):
-        return "%s wants to listen to %s " % (self.user.username, self.album.title)
-
-    class Meta:
-        unique_together = ("album", "user")
 
 
 class ArtistManager(models.Manager):
