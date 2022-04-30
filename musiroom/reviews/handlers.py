@@ -23,9 +23,10 @@ def save_review_handler(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=UserRating)
 def save_rating_handler(sender, instance, created, **kwargs):
-    action.send(
-        instance.user,
-        verb="gave " + str(instance.score) + " to",
-        action_object=instance.rating.content_object,
-        label=RATE_LABEL,
-    )
+    if instance.score:
+        action.send(
+            instance.user,
+            verb="gave " + str(instance.score) + " to",
+            action_object=instance.rating.content_object,
+            label=RATE_LABEL,
+        )
