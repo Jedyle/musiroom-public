@@ -55,7 +55,7 @@ class CreateUserRatingView(generics.CreateAPIView):
     def post(self, request, rating_id):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        user_rating = serializer.save(rating_id=rating_id, user=request.user)
+        serializer.save(rating_id=rating_id, user=request.user)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 

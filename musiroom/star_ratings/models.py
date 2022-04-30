@@ -204,7 +204,17 @@ class UserRating(TimeStampedModel):
         settings.AUTH_USER_MODEL, blank=True, null=True, on_delete=models.CASCADE
     )
     ip = models.GenericIPAddressField(blank=True, null=True)
-    score = models.PositiveSmallIntegerField()
+
+    # the rating the user gave
+    score = models.PositiveSmallIntegerField(null=True)
+
+    # whether the user is interested in listening to the album
+    is_interested = models.BooleanField(null=False, default=False)
+
+    # whether a user has album in collection
+    # if album is rated, it is in collection
+    is_in_collection = models.BooleanField(null=False, default=True)
+
     rating = models.ForeignKey(
         get_star_ratings_rating_model_name(),
         related_name="user_ratings",

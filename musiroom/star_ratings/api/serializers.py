@@ -2,13 +2,13 @@ from rest_framework import serializers
 from albums.models import Album
 from reviews.api.simple_serializers import SimpleReviewSerializer
 from star_ratings.models import Rating, UserRating
-from generic_relations.relations import GenericRelatedField
 from user_profile.api.short_serializers import ShortUserSerializer
+
 
 class RatingSerializer(serializers.ModelSerializer):
 
     average = serializers.FloatField(min_value=1, max_value=10)
-    
+
     class Meta:
         model = Rating
         exclude = ("object_id", "content_type")
@@ -17,31 +17,58 @@ class RatingSerializer(serializers.ModelSerializer):
 class UserRatingSerializer(serializers.ModelSerializer):
 
     review = SimpleReviewSerializer(read_only=True)
-    user = serializers.SlugRelatedField(slug_field='username', read_only=True)
-    score = serializers.IntegerField(min_value=1, max_value=10)
-    
+    user = serializers.SlugRelatedField(slug_field="username", read_only=True)
+    score = serializers.IntegerField(allow_null=True, min_value=1, max_value=10)
+
     class Meta:
         model = UserRating
-        exclude = ('ip', )
-        read_only_fields = ('rating', 'user')
+        fields = (
+            "review",
+            "user",
+            "score",
+            "is_interested",
+            "is_in_collection",
+            "rating",
+        )
+        read_only_fields = ("rating", "user")
+
+    def validate(self, data):
+        score = data.get("score")
+        is_interested = data.get("is_interested", False)
+        is_in_collection = data.get("is_in_collection", True)
+        if (score is not None) and (is_in_collection is False):
+            raise serializers.ValidationError(
+                "Must set is_in_collection to True if rating is not null"
+            )
+        if (score is None) and (is_in_collection is False) and (is_interested is False):
+            raise serializers.ValidationError(
+                "No field amoung score, is_in_collection and is_interested is set. Delete the rating is that case !"
+            )
+        return data
 
 
 class ExtendedUserRatingSerializer(serializers.ModelSerializer):
 
     content_object = serializers.SerializerMethodField()
     user = ShortUserSerializer(read_only=True)
-    
+
     class Meta:
         model = UserRating
-        exclude = ('ip', )
-        read_only_fields = ('rating', 'user')
+        fields = (
+            "content_object",
+            "user",
+            "rating",
+            "score",
+            "is_interested",
+            "is_in_collection",
+        )
+        read_only_fields = ("rating", "user")
 
     def get_content_object(self, obj):
         # local import to avoid circular import issues
         from albums.api.serializers import AlbumSerializer
-        serializers_classes = {
-            Album: AlbumSerializer
-        }
+
+        serializers_classes = {Album: AlbumSerializer}
         ct = obj.rating.content_type
         serializer_class = serializers_classes.get(ct.model_class())
         if serializer_class is None:
