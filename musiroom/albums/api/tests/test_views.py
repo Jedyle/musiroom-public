@@ -58,6 +58,16 @@ class TestAlbumGetYoutubeLinkAction:
         assert response.json() == {"link": "fake"}
 
 
+class TestAlbumGetSpotifyLinkAction:
+    URL = "/api/albums/{}/spotify_link/"
+
+    def test_ok(self, client):
+        album = AlbumFactory(spotify_link="fake")
+        response = client.get(self.URL.format(album.mbid))
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json() == {"link": "fake"}
+
+
 class TestArtistListView:
 
     URL = "/api/artists/"

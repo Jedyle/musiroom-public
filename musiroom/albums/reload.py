@@ -24,7 +24,7 @@ def reload_covers(mbid, override=False):
             album.media_cover = None
             album.save()
 
-
+            
 def reload_all(method=reload_tracks):
     start = time.time()
     albums = Album.objects.all()

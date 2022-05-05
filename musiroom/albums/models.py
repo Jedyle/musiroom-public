@@ -23,6 +23,7 @@ from albums.utils import (
     create_artist_from_mbid,
     fetch_youtube_link,
 )
+from albums.scrapers.spotify import MBToSpotify
 from discussions.register import discussions_registry
 from star_ratings.models import Rating
 from .scraper import PROTOCOL, COVER_URL, ParseArtistPhoto
@@ -173,6 +174,7 @@ class Album(models.Model):
     media_cover = models.ImageField(upload_to="album_covers", null=True)
     tracks = models.JSONField(null=True)
     youtube_link = models.CharField(max_length=200, null=True)
+    spotify_link = models.CharField(max_length=200, null=True)
 
     TYPE_CHOICES = (
         ("SI", "Single"),
@@ -239,6 +241,14 @@ class Album(models.Model):
             self.youtube_link = fetch_youtube_link(self)
             self.save()
             return self.youtube_link
+
+    def get_spotify_link(self):
+        if self.spotify_link:
+            return self.spotify_link
+        else:
+            self.spotify_link = MBToSpotify().find_album(self.mbid)
+            self.save()
+            return self.spotify_link
 
     def get_media_cover(self):
         cover = (

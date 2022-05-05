@@ -115,6 +115,11 @@ class AlbumViewset(ListRetrieveViewset):
         return Response({"link": album.get_youtube_link()})
 
     @action(detail=True, methods=["GET"])
+    def spotify_link(self, request, mbid=None):
+        album = self.get_object()
+        return Response({"link": album.get_spotify_link()})
+
+    @action(detail=True, methods=["GET"])
     def same_artist(self, request, mbid=None):
         album = self.get_object()
         queryset = self.queryset.filter(artists__in=album.artists.all()).exclude(

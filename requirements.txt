@@ -37,3 +37,8 @@ django-cors-headers==3.11.0
 Pillow==9.1.0
 
 django-debug-toolbar==3.2.4
+
+
+# Scrapers
+spotipy==2.19.0
+musicbrainzngs==0.7.1
