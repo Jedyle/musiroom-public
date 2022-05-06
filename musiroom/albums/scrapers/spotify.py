@@ -26,3 +26,5 @@ class MBToSpotify:
         )
         if len(spotify_search["albums"]["items"]) >= 1:
             return spotify_search["albums"]["items"][0]["external_urls"]["spotify"]
+        # empty string will fill the column, so that API is not called again
+        return ""

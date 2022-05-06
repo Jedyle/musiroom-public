@@ -4,7 +4,7 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from rest_framework_recursive.fields import RecursiveField
 
-from albums.models import Genre, Album, Artist, AlbumGenre
+from albums.models import Genre, Album, Artist, AlbumGenre, AlbumLinks
 from star_ratings.models import UserRating
 from star_ratings.api.serializers import RatingSerializer, UserRatingSerializer
 
@@ -84,6 +84,16 @@ class AlbumSerializer(serializers.ModelSerializer):
         request = self.context.get("request")
         if request and not request.user.is_anonymous:
             return obj.rating.followees_ratings_stats(request.user)["average"]
+
+
+class AlbumLinksSerializer(serializers.ModelSerializer):
+    album = serializers.SlugRelatedField(slug_field="mbid", read_only=True)
+    youtube = serializers.CharField(source="get_youtube", read_only=True)
+    spotify = serializers.CharField(source="get_spotify", read_only=True)
+
+    class Meta:
+        model = AlbumLinks
+        fields = ("album", "youtube", "spotify")
 
 
 class ShortArtistSerializer(serializers.ModelSerializer):

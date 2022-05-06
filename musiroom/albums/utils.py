@@ -3,8 +3,6 @@ from django.conf import settings
 
 from albums.scraper import ParseAlbum, ParseCover, ParseArtist
 
-from youtube_api import YouTubeDataAPI
-
 
 def compute_artists_links(album):
     all_artists = album.artists.all()
@@ -60,13 +58,6 @@ def load_album_if_not_exists(mbid):
         album.save()
         artists = [{"name": author.name, "mbid": author.mbid} for author in authors]
         return album, artists
-
-
-def fetch_youtube_link(album):
-    yt = YouTubeDataAPI(settings.YOUTUBE_API_KEY)
-    search_string = f"{album.artists.first().name} {album.title}"
-    res = yt.search(search_string, max_results=1)
-    return f"https://youtube.com/watch?v={res[0]['video_id']}"
 
 
 def create_artist_from_mbid(mbid, page, search):

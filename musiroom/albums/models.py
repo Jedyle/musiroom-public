@@ -20,10 +20,10 @@ from vote.models import VoteModel
 
 from albums.utils import (
     load_album_if_not_exists,
-    create_artist_from_mbid,
-    fetch_youtube_link,
+    create_artist_from_mbid
 )
 from albums.scrapers.spotify import MBToSpotify
+from albums.scrapers.youtube import fetch_youtube_link
 from discussions.register import discussions_registry
 from star_ratings.models import Rating
 from .scraper import PROTOCOL, COVER_URL, ParseArtistPhoto
@@ -173,8 +173,6 @@ class Album(models.Model):
     # same as cover, but the actual image stored in our system (for more speed)
     media_cover = models.ImageField(upload_to="album_covers", null=True)
     tracks = models.JSONField(null=True)
-    youtube_link = models.CharField(max_length=200, null=True)
-    spotify_link = models.CharField(max_length=200, null=True)
 
     TYPE_CHOICES = (
         ("SI", "Single"),
@@ -234,22 +232,6 @@ class Album(models.Model):
             return PROTOCOL + COVER_URL + "release/" + self.cover
         return settings.BACKEND_URL + static("albums/images/default_cover.png")
 
-    def get_youtube_link(self):
-        if self.youtube_link:
-            return self.youtube_link
-        else:
-            self.youtube_link = fetch_youtube_link(self)
-            self.save()
-            return self.youtube_link
-
-    def get_spotify_link(self):
-        if self.spotify_link:
-            return self.spotify_link
-        else:
-            self.spotify_link = MBToSpotify().find_album(self.mbid)
-            self.save()
-            return self.spotify_link
-
     def get_media_cover(self):
         cover = (
             self.media_cover.url
@@ -280,6 +262,37 @@ class Album(models.Model):
 
 
 discussions_registry.register(Album)
+
+
+class AlbumLinks(models.Model):
+    album = models.OneToOneField(Album, on_delete=models.CASCADE, related_name="links")
+    youtube = models.CharField(max_length=200, null=True)
+    spotify = models.CharField(max_length=200, null=True)
+
+    def _get_or_create_field(self, field, create_field_function):
+        if getattr(self, field):
+            return getattr(self, field)
+        else:
+            setattr(self, field, create_field_function(self.album))
+            self.save()
+            return getattr(self, field)
+
+    def get_youtube(self):
+        return self._get_or_create_field("youtube", fetch_youtube_link)
+
+    def get_spotify(self):
+        return self._get_or_create_field(
+            "spotify", lambda album: MBToSpotify().find_album(album.mbid)
+        )
+
+    def reset(self):
+        """
+        Call this function to regenerate the links
+        They will be set to None, hence get_xxx will redo the API call
+        """
+        self.spotify = None
+        self.youtube = None
+        self.save()
 
 
 class AlbumGenre(VoteModel, ModelWithFlag, models.Model):

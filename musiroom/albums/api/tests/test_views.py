@@ -48,24 +48,22 @@ class TestAlbumRetrieveView:
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
-class TestAlbumGetYoutubeLinkAction:
-    URL = "/api/albums/{}/youtube_link/"
+class TestAlbumGetLinksAction:
+
+    URL = "/api/albums/{}/links/"
 
     def test_ok(self, client):
-        album = AlbumFactory(youtube_link="fake")
+        album = AlbumFactory()
+        album.links.youtube = "yt_fake"
+        album.links.spotify = "sp_fake"
+        album.links.save()
         response = client.get(self.URL.format(album.mbid))
         assert response.status_code == status.HTTP_200_OK
-        assert response.json() == {"link": "fake"}
-
-
-class TestAlbumGetSpotifyLinkAction:
-    URL = "/api/albums/{}/spotify_link/"
-
-    def test_ok(self, client):
-        album = AlbumFactory(spotify_link="fake")
-        response = client.get(self.URL.format(album.mbid))
-        assert response.status_code == status.HTTP_200_OK
-        assert response.json() == {"link": "fake"}
+        assert response.json() == {
+            "album": album.mbid,
+            "youtube": "yt_fake",
+            "spotify": "sp_fake",
+        }
 
 
 class TestArtistListView:

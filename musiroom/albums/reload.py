@@ -23,7 +23,6 @@ def reload_covers(mbid, override=False):
             album.cover = parse_cover.get_cover_small()
             album.media_cover = None
             album.save()
-
             
 def reload_all(method=reload_tracks):
     start = time.time()
@@ -32,3 +31,8 @@ def reload_all(method=reload_tracks):
         method(album.mbid)
     end = time.time()
     return end - start
+
+
+def reload_all_links(**kwargs):
+    for album in Album.objects.filter(**kwargs):
+        album.links.reset()

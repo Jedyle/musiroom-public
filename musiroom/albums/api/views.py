@@ -18,6 +18,7 @@ from albums.api.serializers import (
     ArtistSerializer,
     AlbumGenreSerializer,
     ShortGenreSerializer,
+    AlbumLinksSerializer
 )
 from albums.api.service import add_album_details
 from albums.models import Genre, Album, Artist, AlbumGenre
@@ -110,14 +111,10 @@ class AlbumViewset(ListRetrieveViewset):
         return {"request": self.request}
 
     @action(detail=True, methods=["GET"])
-    def youtube_link(self, request, mbid=None):
+    def links(self, request, mbid=None):
         album = self.get_object()
-        return Response({"link": album.get_youtube_link()})
-
-    @action(detail=True, methods=["GET"])
-    def spotify_link(self, request, mbid=None):
-        album = self.get_object()
-        return Response({"link": album.get_spotify_link()})
+        serializer = AlbumLinksSerializer(album.links)
+        return Response(serializer.data)
 
     @action(detail=True, methods=["GET"])
     def same_artist(self, request, mbid=None):
