@@ -55,7 +55,6 @@ class UserRatingSerializer(serializers.ModelSerializer):
         return data
 
     def update(self, instance, validated_data):
-        print(validated_data)
         if (
             validated_data.get("score") is None
             and Review.objects.filter(rating=instance).exists()

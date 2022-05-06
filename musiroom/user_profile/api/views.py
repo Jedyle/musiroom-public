@@ -161,8 +161,6 @@ class NotificationViewset(viewsets.GenericViewSet, mixins.ListModelMixin):
     filter_class = NotificationFilter
 
     def get_queryset(self):
-        for el in self.request.user.notifications.all():
-            print(el.actor, el.target)
         return self.request.user.notifications.all()
 
     @action(detail=False, methods=["get"])

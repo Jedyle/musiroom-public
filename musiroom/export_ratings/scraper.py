@@ -190,7 +190,6 @@ def parse_data_for_type(user, type_id, filename, errorfile, driver):
         for element in elements:
             try:
                 album_data = parse_album_data(element)
-                print(album_data)
                 best_result = search_best_result(album_data, TYPES[type_id])
                 if best_result:
                     with open(filename, "a") as infile:

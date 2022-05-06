@@ -15,7 +15,6 @@ BADGE_LABEL = "badge"
 
 @receiver(badge_awarded)
 def notify_badge_awarded(badge_award, **kwargs):
-    print(badge_award)
     notify.send(
         badge_award.user,
         recipient=badge_award.user,

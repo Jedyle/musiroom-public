@@ -53,7 +53,6 @@ class ActionManager(GFKManager):
         """
         check(model)
         ctype = ContentType.objects.get_for_model(model)
-        print(ctype)
         return self.public(
             (
                 Q(target_content_type=ctype)

@@ -11,7 +11,6 @@ COMMENT_LABEL = "comment"
 
 @receiver(post_save, sender=Comment)
 def comment_activity(sender, instance, created, **kwargs):
-    print("coucou")
     if created:
         action.send(
             instance.user,
