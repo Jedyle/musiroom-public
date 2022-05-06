@@ -42,3 +42,4 @@ django-debug-toolbar==3.2.4
 # Scrapers
 spotipy==2.19.0
 musicbrainzngs==0.7.1
+deezer-python==5.3.2

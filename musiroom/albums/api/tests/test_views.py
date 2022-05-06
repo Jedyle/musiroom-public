@@ -56,6 +56,7 @@ class TestAlbumGetLinksAction:
         album = AlbumFactory()
         album.links.youtube = "yt_fake"
         album.links.spotify = "sp_fake"
+        album.links.deezer = "deez_fake"
         album.links.save()
         response = client.get(self.URL.format(album.mbid))
         assert response.status_code == status.HTTP_200_OK
@@ -63,6 +64,7 @@ class TestAlbumGetLinksAction:
             "album": album.mbid,
             "youtube": "yt_fake",
             "spotify": "sp_fake",
+            "deezer": "deez_fake"
         }
 
 

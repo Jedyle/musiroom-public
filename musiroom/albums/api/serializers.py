@@ -90,10 +90,11 @@ class AlbumLinksSerializer(serializers.ModelSerializer):
     album = serializers.SlugRelatedField(slug_field="mbid", read_only=True)
     youtube = serializers.CharField(source="get_youtube", read_only=True)
     spotify = serializers.CharField(source="get_spotify", read_only=True)
+    deezer = serializers.CharField(source="get_deezer", read_only=True)
 
     class Meta:
         model = AlbumLinks
-        fields = ("album", "youtube", "spotify")
+        fields = ("album", "youtube", "spotify", "deezer")
 
 
 class ShortArtistSerializer(serializers.ModelSerializer):

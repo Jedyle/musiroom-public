@@ -23,6 +23,7 @@ from albums.utils import (
     create_artist_from_mbid
 )
 from albums.scrapers.spotify import MBToSpotify
+from albums.scrapers.deezer import MBToDeezer
 from albums.scrapers.youtube import fetch_youtube_link
 from discussions.register import discussions_registry
 from star_ratings.models import Rating
@@ -268,6 +269,7 @@ class AlbumLinks(models.Model):
     album = models.OneToOneField(Album, on_delete=models.CASCADE, related_name="links")
     youtube = models.CharField(max_length=200, null=True)
     spotify = models.CharField(max_length=200, null=True)
+    deezer = models.CharField(max_length=200, null=True)
 
     def _get_or_create_field(self, field, create_field_function):
         if getattr(self, field):
@@ -283,6 +285,11 @@ class AlbumLinks(models.Model):
     def get_spotify(self):
         return self._get_or_create_field(
             "spotify", lambda album: MBToSpotify().find_album(album.mbid)
+        )
+
+    def get_deezer(self):
+        return self._get_or_create_field(
+            "deezer", lambda album: MBToDeezer().find_album(album.mbid)
         )
 
     def reset(self):
