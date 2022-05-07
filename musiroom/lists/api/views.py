@@ -61,6 +61,12 @@ class ListItemViewset(viewsets.ModelViewSet):
             return ListItemSerializer
         return ListItemWriteSerializer
 
+    def paginate_queryset(self, queryset, view=None):
+        if "no_page" in self.request.query_params:
+            return None
+        else:
+            return self.paginator.paginate_queryset(queryset, self.request, view=self)
+
     def get_queryset(self):
         listobj = get_object_or_404(ListObj, id=self.kwargs["lists_pk"])
         return ListItem.objects.filter(item_list=listobj)
