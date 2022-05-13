@@ -23,24 +23,25 @@ def save_review_handler(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=UserRating)
 def save_rating_handler(sender, instance, created, **kwargs):
-    if instance.score:
-        action.send(
-            instance.user,
-            verb="gave " + str(instance.score) + " to",
-            action_object=instance.rating.content_object,
-            label=RATE_LABEL,
-        )
-    elif instance.is_in_collection:
-        action.send(
-            instance.user,
-            verb="added an album to his collection : ",
-            action_object=instance.rating.content_object,
-            label=RATE_LABEL,
-        )
-    elif instance.is_interested:
-        action.send(
-            instance.user,
-            verb="wants to listen to",
-            action_object=instance.rating.content_object,
-            label=RATE_LABEL,
-        )
+    if created:
+        if instance.score:
+            action.send(
+                instance.user,
+                verb="gave " + str(instance.score) + " to",
+                action_object=instance.rating.content_object,
+                label=RATE_LABEL,
+            )
+        elif instance.is_in_collection:
+            action.send(
+                instance.user,
+                verb="added an album to his collection : ",
+                action_object=instance.rating.content_object,
+                label=RATE_LABEL,
+            )
+        elif instance.is_interested:
+            action.send(
+                instance.user,
+                verb="wants to listen to",
+                action_object=instance.rating.content_object,
+                label=RATE_LABEL,
+            )
