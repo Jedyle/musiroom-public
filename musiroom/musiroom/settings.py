@@ -269,12 +269,12 @@ DJANGO_NOTIFICATIONS_CONFIG = {
 # Feedback
 
 FEEDBACK_CHOICES = (
-    ("bug", "Reporter un bug"),
-    ("suggestion", "Faire une suggestion"),
-    ("signal", "Signaler un comportement"),
-    ("album", "Rapporter un album non présent sur le site"),
+    ("bug", "Report a bug"),
+    ("suggestion", "Suggest new feature"),
+    ("signal", "Signal inappropriate behavior"),
+    ("data", "Report album / genre / artist not present on the site"),
+    ("other", "Something else")
 )
-ALLOW_ANONYMOUS_FEEDBACK = True
 
 # Albums
 
