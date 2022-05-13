@@ -3,13 +3,14 @@ from django.contrib.auth.models import User
 from django.urls import reverse
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from django.core.validators import MinLengthValidator
 
 
 class Feedback(models.Model):
     type = models.CharField(
         choices=settings.FEEDBACK_CHOICES, max_length=100, verbose_name=_("Type")
     )
-    message = models.TextField(verbose_name=_("Message"))
+    message = models.TextField(verbose_name=_("Message"), validators=[MinLengthValidator(10)])
     time = models.DateTimeField(auto_now_add=True, verbose_name=_("Time"))
     user = models.ForeignKey(
         User,
