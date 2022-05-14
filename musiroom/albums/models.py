@@ -18,10 +18,7 @@ from django.shortcuts import get_object_or_404
 from siteflags.models import ModelWithFlag
 from vote.models import VoteModel
 
-from albums.utils import (
-    load_album_if_not_exists,
-    create_artist_from_mbid
-)
+from albums.utils import load_album_if_not_exists, create_artist_from_mbid
 from albums.scrapers.spotify import MBToSpotify
 from albums.scrapers.deezer import MBToDeezer
 from albums.scrapers.youtube import fetch_youtube_link
@@ -168,7 +165,7 @@ class AlbumManager(models.Manager):
 
 class Album(models.Model):
     mbid = models.CharField(db_index=True, max_length=36, unique=True)
-    title = models.CharField(max_length=500)
+    title = models.CharField(max_length=500, db_index=True)
     release_date = models.DateField(blank=True, null=True)
     cover = models.CharField(max_length=100, null=True)
     # same as cover, but the actual image stored in our system (for more speed)
@@ -210,6 +207,8 @@ class Album(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
+        if self.artists.exists():
+            return f"{self.artists.first().name} - {self.title}"
         return self.title
 
     def verbose_name(self):
@@ -340,7 +339,7 @@ class Artist(models.Model):
         unique=True,
         validators=[MinLengthValidator(36), MaxLengthValidator(36)],
     )
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, db_index=True)
     albums = models.ManyToManyField(Album, related_name="artists", blank=True)
     photo = models.CharField(max_length=150, null=True)
 

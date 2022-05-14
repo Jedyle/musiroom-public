@@ -273,7 +273,7 @@ FEEDBACK_CHOICES = (
     ("suggestion", "Suggest new feature"),
     ("signal", "Signal inappropriate behavior"),
     ("data", "Report album / genre / artist not present on the site"),
-    ("other", "Something else")
+    ("other", "Something else"),
 )
 
 # Albums
@@ -289,13 +289,6 @@ DISCUSSIONS_SEARCH_FIELDS = {
     "artist": "name",
 }
 
-# Autocomplete settings
-
-AUTOCOMPLETE_SEARCH_FIELDS = {
-    "album": "title",
-    "artist": "name",
-    "user": "username",
-}
 
 # User absolute url
 
