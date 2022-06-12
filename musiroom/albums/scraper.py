@@ -1,4 +1,5 @@
 import datetime
+from django.conf import settings
 
 import requests
 from bs4 import BeautifulSoup
@@ -10,7 +11,7 @@ ARTIST = "artist/"
 ALBUM = "release-group/"
 SEARCH = "search"
 
-LASTFM_API_KEY = "f92f74bff80870fe482db287a02685c3"
+LASTFM_API_KEY = settings.LASTFM_API_KEY
 LASTFM_API_URL = "ws.audioscrobbler.com/2.0/"
 
 

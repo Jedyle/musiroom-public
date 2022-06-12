@@ -279,7 +279,7 @@ FEEDBACK_CHOICES = (
 # Albums
 
 YOUTUBE_API_KEY = env("YOUTUBE_API_KEY")
-
+LASTFM_API_KEY = env("LASTFM_API_KEY")
 
 # Discussion settings
 
