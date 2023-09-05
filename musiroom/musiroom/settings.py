@@ -50,6 +50,7 @@ SECRET_KEY = env("SECRET_KEY")
 DEBUG = env("DEBUG")
 
 ADMIN = [('Jeremy', 'jeremy.lixandre@protonmail.com')]
+SERVER_EMAIL = "noreply@musiroom.com"
 
 BACKEND_URL = env("BACKEND_URL")
 FRONTEND_URL = env("FRONTEND_URL")
