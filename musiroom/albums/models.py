@@ -341,7 +341,7 @@ class Artist(models.Model):
     )
     name = models.CharField(max_length=100, db_index=True)
     albums = models.ManyToManyField(Album, related_name="artists", blank=True)
-    photo = models.CharField(max_length=150, null=True)
+    photo = models.CharField(max_length=300, null=True)
 
     objects = ArtistManager()
 
