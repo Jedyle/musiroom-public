@@ -1,9 +1,9 @@
 {% load i18n %}
 {% autoescape off %}
 
-{% blocktrans with site_name=current_site.name site_domain=current_site.domain %} Hello from {{ site_name }}!
+{% blocktrans with site_name=current_site.name site_domain=current_site.domain %} Hello {{ user }}!
 
-You're receiving this e-mail because user {{ user }} has given yours as an e-mail address to connect their profile.
+You're receiving this e-mail because user {{ user }} has given yours as an e-mail address to connect their profile on {{ site_name }}.
 
 To confirm this is correct, go to {{ activate_url }}
 {% endblocktrans %}{% endautoescape %}
