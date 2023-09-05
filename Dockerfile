@@ -19,6 +19,13 @@ RUN pip install -r requirements.txt
 
 CMD python manage.py runserver 0.0.0.0:8000
 
+FROM base as dev
+COPY requirements.dev.txt /app/
+COPY setup.cfg /app/
+COPY conftest.py /app/
+RUN pip install -r requirements.dev.txt
+CMD python manage.py runserver 0.0.0.0:8000
+
 FROM base as prod
 
 COPY ./musiroom/ /app/
