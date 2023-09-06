@@ -49,9 +49,6 @@ SECRET_KEY = env("SECRET_KEY")
 
 DEBUG = env("DEBUG")
 
-ADMIN = [('Jeremy', 'jeremy.lixandre@protonmail.com')]
-SERVER_EMAIL = "noreply@musiroom.com"
-
 BACKEND_URL = env("BACKEND_URL")
 FRONTEND_URL = env("FRONTEND_URL")
 
@@ -361,3 +358,27 @@ CORS_ORIGIN_ALLOW_ALL = True
 # FRONTEND
 
 FRONTEND_APP_NAME = env("FRONTEND_APP_NAME")
+
+# LOGGING
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',  # Adjust the level as needed
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'DEBUG',  # Adjust the level as needed
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console"],
+            "level": os.getenv("DJANGO_LOG_LEVEL", "DEBUG"),
+            "propagate": False,
+        },
+    },
+}
