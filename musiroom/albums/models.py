@@ -245,6 +245,7 @@ class Album(models.Model):
 
     class Meta:
         verbose_name = "Album"
+        ordering = ("pk",)
 
     @property
     def rating(self):
