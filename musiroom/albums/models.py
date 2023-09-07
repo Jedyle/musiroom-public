@@ -17,6 +17,7 @@ from django.template.defaultfilters import slugify
 from django.shortcuts import get_object_or_404
 from siteflags.models import ModelWithFlag
 from vote.models import VoteModel
+from django.db.utils import DataError
 
 from albums.utils import load_album_if_not_exists, create_artist_from_mbid
 from albums.scrapers.spotify import MBToSpotify
@@ -359,7 +360,14 @@ class Artist(models.Model):
             if parser.load():
                 photo = parser.get_thumb()
                 self.photo = photo
-                self.save()
+                try:
+                    self.save()
+                except django.db.utils.DataError as e:
+                    # if photo url is too long, fail silently
+                    # TODO : rename photo instead
+                    print(e)
+                    self.photo = ""
+                    self.save()
                 if photo != "":
                     return photo
                 return default_photo_url

@@ -1,4 +1,4 @@
-FROM python:3.10-buster as base
+FROM python:3.10-bullseye as base
 
 RUN apt-get update -y
 RUN apt-get -y install libpq-dev gcc
