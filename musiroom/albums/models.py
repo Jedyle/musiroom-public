@@ -362,7 +362,7 @@ class Artist(models.Model):
                 self.photo = photo
                 try:
                     self.save()
-                except django.db.utils.DataError as e:
+                except DataError as e:
                     # if photo url is too long, fail silently
                     # TODO : rename photo instead
                     print(e)
